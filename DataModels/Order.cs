@@ -11,14 +11,14 @@ namespace DataModels
     /// </summary>
     public class Order : INotifyPropertyChanged
     {
-        //--- fields ---
+        #region Fields
         private List<OrderItem> _orderItems;
         private static int _id = 1000;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        #endregion
 
-        //--- ctor ---
-
+        #region Constructors
         /// <summary>
         /// Initializes the Order with the creation DateTime and sets the OrderState to New.
         /// </summary>
@@ -42,8 +42,9 @@ namespace DataModels
             OrderStateId = StateId;
             Id = _id++;
         }
+        #endregion
 
-        //--- props ---
+        #region Props
         public int Id { get; }
         public DateTime DateTime { get; set; }
         public int OrderStateId { get; set; }
@@ -77,8 +78,9 @@ namespace DataModels
             }
         }
         public int ItemsCount => _orderItems.Count;
+        #endregion
 
-        //--- methods ---
+        #region Methods
         /// <summary>
         /// Adds a new OrderItem to the Order
         /// </summary>
@@ -99,6 +101,9 @@ namespace DataModels
             _orderItems.Remove(item);
         }
 
+        /// <summary>
+        /// When the last order was cancelled before submit the Id goes back one position.
+        /// </summary>
         public void CancelLastOrder()
         {
             _id--;
@@ -112,9 +117,14 @@ namespace DataModels
             OrderStateId = 2;
         }
 
+        /// <summary>
+        /// Raises the PropertyChanged event when the property value has changed.
+        /// </summary>
+        /// <param name="propertyName"></param>
         public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

@@ -3,11 +3,20 @@ using System.Runtime.CompilerServices;
 
 namespace DataModels
 {
+    /// <summary>
+    /// Defines the OrderItem object. 
+    /// </summary>
+    /// <remarks>
+    /// An OrderItem is a StockItem assigned to an Order with a number(Quantity) of products.
+    /// </remarks>
     public class OrderItem : INotifyPropertyChanged
     {
+        #region Fields
         private int _onBackOrder;
         private int _quantity;
+        #endregion
 
+        #region Constructors
         public OrderItem()
         { }
         public OrderItem(int orderId, int itemId)
@@ -32,6 +41,9 @@ namespace DataModels
             Quantity = 0;
             _onBackOrder = 0;
         }
+        #endregion
+
+        #region Props
         public int OrderHeaderId { get; set; }
         public int StockItemId { get; set; }
         public string Description { get; set; }
@@ -57,11 +69,19 @@ namespace DataModels
         }
         public bool HasItemsOnBackOrder => OnBackOrder > 0;
         public decimal Total => Price * Quantity;
+        #endregion
 
+        #region Events
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        /// <summary>
+        /// Raises the PropertyChanged event when the property value has changed.
+        /// </summary>
+        /// <param name="propertyName"></param>
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }
