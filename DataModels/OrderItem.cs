@@ -6,6 +6,8 @@ namespace DataModels
     public class OrderItem : INotifyPropertyChanged
     {
         private int _onBackOrder;
+        private int _quantity;
+
         public OrderItem()
         { }
         public OrderItem(int orderId, int itemId)
@@ -34,7 +36,16 @@ namespace DataModels
         public int StockItemId { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
-        public int Quantity { get; set; }
+        public int Quantity
+        {
+            get => _quantity;
+            set
+            {
+                _quantity = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Total));
+            }
+        }
         public int OnBackOrder
         {
             get => _onBackOrder;

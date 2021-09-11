@@ -11,13 +11,12 @@ namespace OrderMgmtSystem.ViewModels
 {
     public class AddItemViewModel : ViewModelBase
     {
-        public Object obj;
         private readonly IDialogService _dialogService;
         public AddItemViewModel(List<StockItem> stockItems)
         {
             _dialogService = new DialogService();
             StockItems = new List<StockItem>(stockItems);
-            AddItemCommand = new DelegateCommand<StockItem>(AddItemToStockItemsList);
+            AddItemCommand = new DelegateCommand<StockItem>(AddItem);
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
         /// <param name="selectedItem">(Binding)The stock item corresponding to the row where the button is located</param>
-        public void AddItemToStockItemsList(StockItem selectedItem)
+        public void AddItem(StockItem selectedItem)
         {
             int availableStock = selectedItem.InStock;
             // Fetch a quantity from the user
@@ -50,6 +49,7 @@ namespace OrderMgmtSystem.ViewModels
                 .FirstOrDefault(item => item.Id == selectedItem.Id);
 
             // The StockItem class implements INotifyPropertyChanged and raises PropertyChanged on StockItems to notify bindings
+            // The StockItem class handles the negative stock if not enoug items available
             if (changedItem != null) changedItem.InStock -= qty;
 
             // Create the new OrderItem
@@ -62,7 +62,7 @@ namespace OrderMgmtSystem.ViewModels
                 orderItem.OnBackOrder = qty - availableStock;
             }
 
-            // Raise OrderItemSelected to notify MainWindow and close this Modal View
+            // Pass the new item Raise OrderItemSelected to notify MainWindow and close this Modal View
             OnOrderItemSelected(orderItem);
         }
 

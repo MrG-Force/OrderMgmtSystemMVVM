@@ -16,6 +16,8 @@
                      Name="Selector" />
       <RowDefinition Height="*"
                      Name="Buttons" />
+      <RowDefinition Height="auto"
+                     Name="Warning" />
     </Grid.RowDefinitions>
     <Grid.Resources>
       <BooleanToVisibilityConverter x:Key="BoolConverter"  />
@@ -26,10 +28,11 @@
                Margin="15,10,15,10"
                HorizontalAlignment="Center" />
     <Border BorderBrush="#99FFAB00"
+            Grid.Row="3"
             Background="#F4F4F4"
             Panel.ZIndex="2"
             BorderThickness="3"
-            Margin="5,10,5,5"
+            Margin="5,5,5,5"
             CornerRadius="5"
             Visibility="{Binding NotEnoughStock, Converter={StaticResource BoolConverter} }">
       <Grid Name="WarningGrid">
@@ -146,7 +149,7 @@
               Grid.Column="1"
               Content="Cancel"
               Width="auto"
-              Margin="15, 5, 15, 5"
+              Margin="15, 10, 15, 5"
               Height="30"
               IsCancel="True"
               Background="#FFEC6A6A" />

@@ -5,6 +5,7 @@ using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -84,11 +85,26 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal void AddOrderItem(OrderItem newItem)
         {
-            newItem.OrderHeaderId = Order.Id;
-            OrderItems.Add(newItem);
-            Order.AddItem(newItem);
-            RaisePropertyChanged(nameof(Order));
-            SubmitOrderCommand.RaiseCanExecuteChanged();
+            // TODO: check if an item with the same id is already in the order
+            OrderItem repItem = OrderItems
+                .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
+            if (repItem == null)
+            {
+                newItem.OrderHeaderId = Order.Id;
+                OrderItems.Add(newItem);
+                Order.AddItem(newItem);
+                RaisePropertyChanged(nameof(Order));
+                SubmitOrderCommand.RaiseCanExecuteChanged();
+            }
+            else
+            {
+                // Notify bindings
+                repItem.Quantity += newItem.Quantity;
+                // Sincronize items on back order
+                repItem.OnBackOrder += newItem.OnBackOrder;
+                RaisePropertyChanged(nameof(Order));
+                //Order.RaisePropertyChanged(nameof(Order.Total));
+            }
         }
 
         /// <summary>

@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace DataModels
 {
     /// <summary>
     /// A class that represents an order in the system.
     /// </summary>
-    public class Order
+    public class Order : INotifyPropertyChanged
     {
         //--- fields ---
         private List<OrderItem> _orderItems;
         private static int _id = 1000;
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
         //--- ctor ---
 
         /// <summary>
@@ -107,5 +112,9 @@ namespace DataModels
             OrderStateId = 2;
         }
 
+        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
