@@ -3,6 +3,9 @@ using System.ComponentModel;
 
 namespace DataModels
 {
+    /// <summary>
+    /// Defines the StockItem object.
+    /// </summary>
     public class StockItem : INotifyPropertyChanged
     {
         private int _inStock;
@@ -27,5 +30,9 @@ namespace DataModels
         public int OnBackOrder { get; set; } = 0;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public override string ToString()
+        {
+            return $"Id: {Id} | Name: {Name} | Price: {Price:C} | InStock: {InStock}";
+        }
     }
 }
