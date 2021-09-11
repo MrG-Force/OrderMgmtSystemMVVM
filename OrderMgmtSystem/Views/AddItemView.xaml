@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="OrderMgmtSystem.Views.AddItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:OrderMgmtSystem.Views"
+             xmlns:controls="clr-namespace:OrderMgmtSystem.Controls"
+             mc:Ignorable="d"
+             Height="350"
+             Width="470">
+  <Grid Style="{StaticResource CommonGrid}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="10" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="30" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="10" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="10" />
+    </Grid.ColumnDefinitions>
+    <!--#endregion-->
+    <!--#region Header-->
+    <controls:ModalHeaderControl Grid.ColumnSpan="3" />
+    <!--#endregion-->
+    <DataGrid ItemsSource="{Binding StockItems}"
+              Style="{DynamicResource DataGridStyle}"
+              Grid.Row="2"
+              Grid.RowSpan="2"
+              Grid.Column="1">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="SKU"
+                            Binding="{Binding Id}"
+                            MinWidth="60" />
+        <DataGridTextColumn Header="Product name"
+                            Binding="{Binding Name}"
+                            MinWidth="130"
+                            Width="*" />
+        <DataGridTextColumn Header="Price"
+                            Binding="{Binding Path=Price, StringFormat=C}"
+                            MinWidth="70" />
+        <DataGridTextColumn Header="In stock"
+                            Binding="{Binding InStock, UpdateSourceTrigger=PropertyChanged}"
+                            MinWidth="60" />
+        <DataGridTemplateColumn Width="*"
+                                MinWidth="70">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <!--TAKE NOTE OF THIS BINDING-->
+              <Button x:Name="AddItemToOrder"
+                      Content="Add to order"
+                      Margin="2, 1, 2, 1"
+                      Command="{Binding DataContext.AddItemCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                      CommandParameter="{Binding}"/>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>
