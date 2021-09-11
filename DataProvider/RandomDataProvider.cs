@@ -17,8 +17,6 @@ namespace DataProvider
         // Stock Items
         private readonly string[] names = new string[] { "Ergonomic chair", "Wooden desk", "Dinning table", "Plain chair", "Chaise lounge", "Leather loveseat", "Night table", "Large Bookcase", "Chinese cupboard", "Acapulco chair" };
         private readonly decimal[] prices = new decimal[] { 56.90m, 34.80m, 124.80m, 69.99m, 78.60m, 210.80m, 78.99m, 46.79m, 67.89m, 54.40m };
-        private readonly bool[] inStock = new bool[] { false, true, true, true, true, };
-        private readonly string[] skuLetters = new string[] { "A", "C", "K", "L", "Y", "U", "S", "X", "O", "P" };
         // for generating random dates in the previous 14 days.
         private DateTime lowEndDate = DateTime.Today.AddDays(-14);
         #endregion
@@ -51,30 +49,7 @@ namespace DataProvider
             Order order = new Order();
             return order;
         }
-
-        /// <summary>
-        /// It provides a new Order with a given date and a given State. It populates 
-        /// the Order's List of OrderItems with random stock item information.
-        /// </summary>
-        /// <param name="stateId">An integer representing the order status</param>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        private Order GetRandomOrder(int stateId, DateTime dateTime)
-        {
-            Order order = new Order(stateId, dateTime);
-            int itemsInOrder = random.Next(1, 11);
-            int[] indxs = GetRandomNumbers(itemsInOrder, 10);
-            for (int i = 0; i < itemsInOrder; i++)
-            {
-                OrderItem item = new OrderItem(order.Id, _stockItems[indxs[i]])
-                {
-                    Quantity = random.Next(1, 20)
-                };
-                order.AddItem(item);
-            }
-            return order;
-        }
-
+       
         /// <summary>
         /// Generates a random list of 10 Orders.
         /// </summary>
@@ -114,22 +89,6 @@ namespace DataProvider
             return stockItems;
         }
 
-        public static List<StockItem> GetStaticLisTStockItems()
-        {
-            return _stockItems;
-        }
-
-        /// <summary>
-        /// Gets a random object T from an array T[]
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        private T GetRandomItem<T>(T[] data)
-        {
-            return data[random.Next(0, data.Length)];
-        }
-
         /// <summary>
         /// Submits the given order by adding it to the List and changing its state to 'Pending'.
         /// </summary>
@@ -161,6 +120,54 @@ namespace DataProvider
         }
 
         /// <summary>
+        /// Gets a random object T from an array T[]
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private T GetRandomItem<T>(T[] data)
+        {
+            return data[random.Next(0, data.Length)];
+        }
+
+        /// <summary>
+        /// It provides a new Order with a given date and a given State. It populates 
+        /// the Order's List of OrderItems with random stock item information.
+        /// </summary>
+        /// <param name="stateId">An integer representing the order status</param>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        private Order GetRandomOrder(int stateId, DateTime dateTime)
+        {
+            Order order = new Order(stateId, dateTime);
+            int itemsInOrder = random.Next(1, 11);
+            int[] indxs = GetRandomNumbers(itemsInOrder, 10);
+            for (int i = 0; i < itemsInOrder; i++)
+            {
+                OrderItem item = new OrderItem(order.Id, _stockItems[indxs[i]])
+                {
+                    Quantity = random.Next(1, 20)
+                };
+                order.AddItem(item);
+            }
+            return order;
+        }
+        /// <summary>
+        /// Gets consecutive dates that differ by roughly one day. It
+        /// is used in conjunction with a for loop where the index 
+        /// is passed as parameter to add one day in minutes to a starting day
+        /// that is set in this class 14 days prior the currrent date.
+        /// </summary>
+        /// <remarks>If more than 14 orders are generated the method will
+        /// provide dates in a future date, so be careful</remarks>
+        /// <param name="dayIndex">Usually the current index of an iteration</param>
+        /// <returns></returns>
+        private DateTime GetSampleDateTime(int dayIndex)
+        {
+            return lowEndDate.AddMinutes((dayIndex * 1440) + random.Next(1440));
+        }
+
+        /// <summary>
         /// Generates and returns an array of non repeating random integers within the range 0 to maxValue.
         /// </summary>
         /// <param name="howMany"></param>
@@ -180,22 +187,59 @@ namespace DataProvider
             }
             return numbers.ToArray();
         }
-
-        /// <summary>
-        /// Gets consecutive dates that differ by roughly one day. It
-        /// is used in conjunction with a for loop where the index 
-        /// is passed as parameter to add one day in minutes to a starting day
-        /// that is set in this class 14 days prior the currrent date.
-        /// </summary>
-        /// <remarks>If more than 14 orders are generated the method will
-        /// provide dates in a future date, so be careful</remarks>
-        /// <param name="dayIndex">Usually the current index of an iteration</param>
-        /// <returns></returns>
-        private DateTime GetSampleDateTime(int dayIndex)
+        #region Not implemented Interface methods
+        public void AddNewOrder()
         {
-            return lowEndDate.AddMinutes((dayIndex * 1440) + random.Next(1440));
+            throw new NotImplementedException();
         }
 
+        public void InsertOrderItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetStatusString()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Order GetOrderById()
+        {
+            throw new NotImplementedException();
+        }
+
+        public StockItem GetStockItembyId()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateOrderState()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateStockItemAmount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateOrderItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteOrder()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteOrderItem()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
+
+        #endregion
+
     }
 }
