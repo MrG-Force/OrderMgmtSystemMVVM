@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModalControl", "ModalContro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLDataProvider", "SQLDataProvider\SQLDataProvider.csproj", "{C16B3D70-3F17-4036-9DF4-7680366D04AA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{CCC9BDD4-E3D6-414D-8A38-7E90E0306A20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderMgmtSystem.Tests", "OrderMgmtSystem.Tests\OrderMgmtSystem.Tests.csproj", "{EC4E2C7C-55DC-4F28-A676-781A48DCFE71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,10 @@ Global
 		{C16B3D70-3F17-4036-9DF4-7680366D04AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C16B3D70-3F17-4036-9DF4-7680366D04AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C16B3D70-3F17-4036-9DF4-7680366D04AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC4E2C7C-55DC-4F28-A676-781A48DCFE71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC4E2C7C-55DC-4F28-A676-781A48DCFE71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC4E2C7C-55DC-4F28-A676-781A48DCFE71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC4E2C7C-55DC-4F28-A676-781A48DCFE71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +64,7 @@ Global
 		{3F152BC4-22A0-4C7F-B92F-4D23187D2DE0} = {59194F20-1C01-4566-BDCB-95419F12C6CC}
 		{94FA27E6-9B92-4CBA-8B97-C2CE1D908CBE} = {59194F20-1C01-4566-BDCB-95419F12C6CC}
 		{C16B3D70-3F17-4036-9DF4-7680366D04AA} = {59194F20-1C01-4566-BDCB-95419F12C6CC}
+		{EC4E2C7C-55DC-4F28-A676-781A48DCFE71} = {CCC9BDD4-E3D6-414D-8A38-7E90E0306A20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D9EFA2EE-90F3-43A3-A1DC-B52A087A6B7E}
