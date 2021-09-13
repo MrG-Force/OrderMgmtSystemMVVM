@@ -14,7 +14,7 @@ namespace OrderMgmtSystem.ViewModels
         #region Fields
         private readonly IOrdersDataProvider _Data;
 
-        private ViewModelBase _CurrentViewModel;
+        private ViewModelBase _currentViewModel;
 
         private AddItemViewModel _addItemViewModel;
         private readonly AddOrderViewModel _addOrderViewModel = new AddOrderViewModel();
@@ -34,8 +34,8 @@ namespace OrderMgmtSystem.ViewModels
             _Data = ordersData;
             _IsModalOpen = false;
             // ViewModels
-            _CurrentViewModel = new OrdersViewModel(ordersData);
-            _ordersViewModel = (OrdersViewModel)_CurrentViewModel;
+            _currentViewModel = new OrdersViewModel(ordersData);
+            _ordersViewModel = (OrdersViewModel)_currentViewModel;
             _orderDetailsViewModel = new OrderDetailsViewModel();
             _addItemViewModel = new AddItemViewModel(ordersData.StockItems);
             // Event handlers
@@ -53,8 +53,8 @@ namespace OrderMgmtSystem.ViewModels
 
         public ViewModelBase CurrentViewModel
         {
-            get => _CurrentViewModel;
-            set => SetProperty(ref _CurrentViewModel, value);
+            get => _currentViewModel;
+            set => SetProperty(ref _currentViewModel, value);
         }
 
         public AddItemViewModel ModalViewModel
