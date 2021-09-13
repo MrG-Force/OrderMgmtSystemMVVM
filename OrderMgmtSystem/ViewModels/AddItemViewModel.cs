@@ -12,12 +12,26 @@ namespace OrderMgmtSystem.ViewModels
     public class AddItemViewModel : ViewModelBase
     {
         private readonly IDialogService _dialogService;
+        private readonly DialogViewModelBase<int> _dialogViewModel;
         public AddItemViewModel(List<StockItem> stockItems)
         {
             _dialogService = new DialogService();
-            StockItems = new List<StockItem>(stockItems);
+            _dialogViewModel = new QuantityViewModel("Quantity", "Please enter a quantity:");
+            StockItems = new List<StockItem>(stockItems);// ????
             AddItemCommand = new DelegateCommand<StockItem>(AddItem);
+
         }
+
+        //For now let's just overload constructor for testing
+        public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
+        {
+            _dialogService = dialogService;
+            _dialogViewModel = dialogViewModelBase;
+            StockItems = stockItems;
+            AddItemCommand = new DelegateCommand<StockItem>(AddItem);
+
+        }
+
 
         /// <summary>
         /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
@@ -30,7 +44,8 @@ namespace OrderMgmtSystem.ViewModels
         public List<StockItem> StockItems { get; set; }
 
         /// <summary>
-        /// This method provides the functionality to the AddItemCommand which 
+        /// This method creates a new OrderItem and updates the corresponding InStock property 
+        /// in the StockItems list. Provides the functionality to the AddItemCommand that 
         /// is bound to the "Add to order" button in the view. 
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
@@ -38,8 +53,9 @@ namespace OrderMgmtSystem.ViewModels
         public void AddItem(StockItem selectedItem)
         {
             int availableStock = selectedItem.InStock;
+            _dialogViewModel.AvailableStock = availableStock;
             // Fetch a quantity from the user
-            int qty = GetQuantity(availableStock);
+            int qty = GetQuantity(_dialogViewModel);
             if (qty == 0)
             {
                 return;
@@ -70,12 +86,11 @@ namespace OrderMgmtSystem.ViewModels
         /// Shows a dialog to allow the user to select the quantity of the selected item.
         /// </summary>
         /// <returns></returns>
-        private int GetQuantity(int stock)
+        private int GetQuantity(DialogViewModelBase<int> quantityViewModel)
         {
             // Call a Dialog service
-            var qtyDialogModel = new QuantityViewModel("Quantity", "Please enter a quantity:", stock);
             // Get Valid quantity from the user
-            int result = _dialogService.OpenDialog(qtyDialogModel);
+            int result = _dialogService.OpenDialog(quantityViewModel);
             return result;
         }
 
