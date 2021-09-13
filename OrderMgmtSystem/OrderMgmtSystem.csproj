@@ -70,6 +70,8 @@
     </Compile>
     <Compile Include="Services\Dialogs\IDialogWindow.cs" />
     <Compile Include="Services\Dialogs\IDialogService.cs" />
+    <Compile Include="Services\Dialogs\TestDialogs\MockDialogService.cs" />
+    <Compile Include="Services\Dialogs\TestDialogs\MockDialogViewModel.cs" />
     <Compile Include="ViewModels\AddItemViewModel.cs" />
     <Compile Include="ViewModels\AddOrderViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModels\CancelOrderDialogViewModel.cs" />
