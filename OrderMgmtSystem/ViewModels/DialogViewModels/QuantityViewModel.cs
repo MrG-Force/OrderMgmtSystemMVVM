@@ -12,10 +12,10 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
             "order is processed.";
         private int _numValue;
 
-        public QuantityViewModel(string title, string message, int stock) : base(title, message)
+        public QuantityViewModel(string title, string message) : base(title, message)
         {
             _numValue = 1;
-            AvailableStock = stock;
+           
             DecreaseQuantityCommand = new DelegateCommand(DecreaseQuantity, () => CanDecrease);
             IncreaseQuantityCommand = new DelegateCommand(IncreaseQuantity, () => CanIncrease);
             AddToOrderCommand = new RelayCommandT<IDialogWindow>(SelectQuantity, () => IsValidQuantity);
@@ -37,7 +37,6 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
                 AddToOrderCommand.RaiseCanExecuteChanged();
             }
         }
-        public int AvailableStock { get; }
         public bool CanDecrease => NumValue >= 2;
         public bool CanIncrease => NumValue < 99;
         public bool IsValidQuantity => NumValue < 100 && NumValue > 0;
