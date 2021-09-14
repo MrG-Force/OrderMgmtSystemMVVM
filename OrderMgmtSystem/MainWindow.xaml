@@ -18,7 +18,7 @@
     <modalcontrol:Modal IsOpen="{Binding IsModalOpen }"
                         Panel.ZIndex="1"
                         Background="#66808080">
-      <ContentControl Content="{Binding ModalViewModel}">
+      <ContentControl Content="{Binding AddItemViewModel}">
         <ContentControl.Resources>
           <DataTemplate DataType="{x:Type viewmodels:AddItemViewModel}">
             <views:AddItemView />
