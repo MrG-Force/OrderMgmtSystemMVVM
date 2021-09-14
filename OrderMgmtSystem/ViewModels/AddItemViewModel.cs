@@ -32,7 +32,6 @@ namespace OrderMgmtSystem.ViewModels
 
         }
 
-
         /// <summary>
         /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
         /// </summary>
