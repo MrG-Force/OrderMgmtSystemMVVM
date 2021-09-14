@@ -64,8 +64,8 @@ namespace SQLDataProvider
         {
             List<StockItem> stockItems = new List<StockItem>();
 
-            SQLServerDataAccess.OpenConnection();
-            SqlCommand command = SQLServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
+            SqlServerDataAccess.OpenConnection();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
             SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
@@ -78,7 +78,7 @@ namespace SQLDataProvider
                 };
                 stockItems.Add(item);
             }
-            SQLServerDataAccess.CloseConnection();
+            SqlServerDataAccess.CloseConnection();
             return stockItems;
         }
 

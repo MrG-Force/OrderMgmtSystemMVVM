@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SqlDataProvider.cs" />
-    <Compile Include="SQLServerDataAccess.cs" />
+    <Compile Include="SqlServerDataAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

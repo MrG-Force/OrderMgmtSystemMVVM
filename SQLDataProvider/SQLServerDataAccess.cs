@@ -12,7 +12,7 @@ namespace SQLDataProvider
     /// <summary>
     /// This class establish communication with the DataBase.
     /// </summary>
-    internal static class SQLServerDataAccess
+    internal static class SqlServerDataAccess
     {
         static ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];
         static SqlConnection conn = new SqlConnection(settings.ConnectionString);
