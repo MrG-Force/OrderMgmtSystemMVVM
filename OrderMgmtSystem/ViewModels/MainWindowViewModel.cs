@@ -1,7 +1,6 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
-using System;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -13,56 +12,26 @@ namespace OrderMgmtSystem.ViewModels
     {
         #region Fields
         private readonly IOrdersDataProvider _Data;
-
         private ViewModelBase _currentViewModel;
-
         private AddItemViewModel _addItemViewModel;
-        private readonly AddOrderViewModel _addOrderViewModel = new AddOrderViewModel();
-        private readonly OrdersViewModel _ordersViewModel;
-        private OrderDetailsViewModel _orderDetailsViewModel;
-
         private bool _IsModalOpen;
         #endregion
 
-        #region Constructor
-        /// <summary>
-        /// Initialize the MainWindowViewModel.
-        /// </summary>
-        /// <param name="ordersData"></param>
-        public MainWindowViewModel(IOrdersDataProvider ordersData)
-        {
-            _Data = ordersData;
-            _IsModalOpen = false;
-            // ViewModels
-            _currentViewModel = new OrdersViewModel(ordersData);
-            _ordersViewModel = (OrdersViewModel)_currentViewModel;
-            _orderDetailsViewModel = new OrderDetailsViewModel();
-            _addItemViewModel = new AddItemViewModel(ordersData.StockItems);
-            // Event handlers
-            _addOrderViewModel.OrderSubmitted += SubmitOrderToDB;
-            _addOrderViewModel.OrderCancelled += OnOrderCancelled;
-            _addItemViewModel.OrderItemSelected += AddItemToNewOrder;
-            _addOrderViewModel.OrderItemRemoved += UpdateItemStock;
-            // Commands
-            NavigateCommand = new DelegateCommand<string>(Navigate);
-        }
-        #endregion
-
         #region Properties
+        public AddItemViewModel AddItemViewModel
+        {
+            get => _addItemViewModel;
+            set => SetProperty(ref _addItemViewModel, value);
+        }
+        internal AddOrderViewModel AddOrderViewModel { get; set; }
+        internal OrdersViewModel OrdersViewModel { get; set; }
+        internal OrderDetailsViewModel OrderDetailsViewModel { get; set; }
         public DelegateCommand<string> NavigateCommand { get; private set; }
-
         public ViewModelBase CurrentViewModel
         {
             get => _currentViewModel;
             set => SetProperty(ref _currentViewModel, value);
         }
-
-        public AddItemViewModel ModalViewModel
-        {
-            get => _addItemViewModel;
-            set => SetProperty(ref _addItemViewModel, value);
-        }
-
         public bool IsModalOpen
         {
             get => _IsModalOpen;
@@ -70,7 +39,36 @@ namespace OrderMgmtSystem.ViewModels
         }
         #endregion
 
+        #region Constructor
+        /// <summary>
+        /// Initializes the MainWindowModel object using dependency injection.
+        /// </summary>
+        /// <param name="ordersData"></param>
+        /// <param name="currentViewModel"></param>
+        /// <param name="addItemViewModel"></param>
+        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase currentViewModel, AddItemViewModel addItemViewModel)
+        {
+            _Data = ordersData;
+            _IsModalOpen = false;
+            _currentViewModel = currentViewModel;
+            _addItemViewModel = addItemViewModel;
+            NavigateCommand = new DelegateCommand<string>(Navigate);
+        }
+        #endregion
+
         #region Methods
+        /// <summary>
+        /// Subscribes event handlers to events raised by the view models.
+        /// </summary>
+        /// <remarks>This function is called OnStartup in App.xaml.cs</remarks>
+        public void SubscribeHandlersToEvents()
+        {
+            AddOrderViewModel.OrderSubmitted += SubmitOrderToDB;
+            AddOrderViewModel.OrderCancelled += OnOrderCancelled;
+            AddItemViewModel.OrderItemSelected += AddItemToNewOrder;
+            AddOrderViewModel.OrderItemRemoved += UpdateItemStock;
+        }
+
         /// <summary>
         /// Handles the OrderSubmitted event by adding new orders to the 
         /// orders list and navigating back to the ordersView.
@@ -79,7 +77,7 @@ namespace OrderMgmtSystem.ViewModels
         private void SubmitOrderToDB(Order order)
         {
             // Submit order to DB logic goes here
-            _ordersViewModel.Orders.Add(order);
+            OrdersViewModel.Orders.Add(order);
             Navigate("OrdersView");
         }
 
@@ -99,7 +97,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem">The item to add</param>
         private void AddItemToNewOrder(OrderItem newItem)
         {
-            _addOrderViewModel.AddOrderItem(newItem);
+            AddOrderViewModel.AddOrderItem(newItem);
             Navigate("CloseAddItem");
         }
 
@@ -111,7 +109,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="onBackOrder">The number of items that were unavailable when the order was placed.</param>
         private void UpdateItemStock(int stockItemId, int quantity, int onBackOrder)
         {
-            _addItemViewModel.ReturnItemToStockList(stockItemId, quantity, onBackOrder);
+            AddItemViewModel.ReturnItemToStockList(stockItemId, quantity, onBackOrder);
         }
 
         /// <summary>
@@ -124,11 +122,11 @@ namespace OrderMgmtSystem.ViewModels
             switch (destination)
             {
                 case "AddOrderView":
-                    if (_addOrderViewModel.Order == null)
+                    if (AddOrderViewModel.Order == null)
                     {
-                        _addOrderViewModel.LoadNewOrder(GetNewOrder());
+                        AddOrderViewModel.LoadNewOrder(GetNewOrder());
                     }
-                    CurrentViewModel = _addOrderViewModel;
+                    CurrentViewModel = AddOrderViewModel;
                     break;
                 case "AddItemView":
                     IsModalOpen = true;
@@ -137,12 +135,12 @@ namespace OrderMgmtSystem.ViewModels
                     IsModalOpen = false;
                     break;
                 case "CancelAndBackToOrders":
-                    CurrentViewModel = _ordersViewModel;
-                    _addOrderViewModel.CancelCurrentOrder();
+                    CurrentViewModel = OrdersViewModel;
+                    AddOrderViewModel.CancelCurrentOrder();
                     break;
                 case "OrdersView":
                 default:
-                    CurrentViewModel = _ordersViewModel;
+                    CurrentViewModel = OrdersViewModel;
                     break;
             }
         }

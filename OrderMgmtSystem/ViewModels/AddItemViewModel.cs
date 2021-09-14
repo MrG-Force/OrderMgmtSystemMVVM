@@ -1,8 +1,6 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Dialogs;
-using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +11,7 @@ namespace OrderMgmtSystem.ViewModels
     {
         private readonly IDialogService _dialogService;
         private readonly DialogViewModelBase<int> _dialogViewModel;
-        public AddItemViewModel(List<StockItem> stockItems)
-        {
-            _dialogService = new DialogService();
-            _dialogViewModel = new QuantityViewModel("Quantity", "Please enter a quantity:");
-            StockItems = new List<StockItem>(stockItems);// ????
-            AddItemCommand = new DelegateCommand<StockItem>(AddItem);
 
-        }
-
-        //For now let's just overload constructor for testing
         public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
         {
             _dialogService = dialogService;
@@ -31,7 +20,6 @@ namespace OrderMgmtSystem.ViewModels
             AddItemCommand = new DelegateCommand<StockItem>(AddItem);
 
         }
-
 
         /// <summary>
         /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
