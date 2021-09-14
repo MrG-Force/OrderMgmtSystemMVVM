@@ -66,6 +66,7 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         public void SelectQuantity(IDialogWindow window)
         {
             CloseDialogWithResult(window, NumValue);
+            NumValue = 1;
         }
     }
 }
