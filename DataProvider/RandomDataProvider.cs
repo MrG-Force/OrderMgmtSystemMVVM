@@ -13,10 +13,21 @@ namespace DataProvider
         readonly Random random = new Random();
         private static List<StockItem> _stockItems;
         private static List<Order> _orders;
+        private static List<StockItem> _dBStockItems;
+        private static List<OrderItem> _dbOrderItems;
 
-        // Stock Items
-        private readonly string[] names = new string[] { "Ergonomic chair", "Wooden desk", "Dinning table", "Plain chair", "Chaise lounge", "Leather loveseat", "Night table", "Large Bookcase", "Chinese cupboard", "Acapulco chair" };
+        private readonly string[] names = new string[] { "Ergonomic chair",
+            "Wooden desk", "Dinning table", "Plain chair", "Chaise lounge",
+            "Leather loveseat", "Night table", "Large Bookcase",
+            "Chinese cupboard", "Acapulco chair" };
         private readonly decimal[] prices = new decimal[] { 56.90m, 34.80m, 124.80m, 69.99m, 78.60m, 210.80m, 78.99m, 46.79m, 67.89m, 54.40m };
+
+        private readonly string[] badNames = new string[] { "Table",
+            "Chair", "Sofa", "Wardrobe", "Cupboard",
+            "Single Bed", "Double Bed", "Queen Bed",
+            "King Bed" };
+        private readonly decimal[] booringPrices = new decimal[] { 100, 25, 250, 180, 65, 120, 180, 220, 320 };
+
         // for generating random dates in the previous 14 days.
         private DateTime lowEndDate = DateTime.Today.AddDays(-14);
         #endregion
@@ -25,6 +36,8 @@ namespace DataProvider
         public RandomDataProvider()
         {
             _stockItems = GetStockItems();
+            _dBStockItems = GetDBTestStockItems();
+            _dbOrderItems = GetDbOrderItems(5);
             if (_orders == null)
             {
                 _orders = GetOrders();
@@ -35,9 +48,28 @@ namespace DataProvider
         #region Properties
         public List<Order> Orders => _orders;
         public List<StockItem> StockItems => _stockItems;
+        public List<StockItem> DbStockItems => _dBStockItems;
+        public List<OrderItem> DbOrderItems => _dbOrderItems;
         #endregion
 
         #region Methods
+
+        public List<StockItem> GetDBTestStockItems()
+        {
+            List<StockItem> dBstockItems = new List<StockItem>();
+            for (int i = 0; i < 9; i++)
+            {
+                StockItem stockItem = new StockItem()
+                {
+                    Id = i + 1,
+                    Name = badNames[i],
+                    Price = booringPrices[i],
+                    InStock = i * 2
+                };
+                dBstockItems.Add(stockItem);
+            }
+            return dBstockItems;
+        }
 
         /// <summary>
         /// Gets a new empty order with an autogeneretaed Id, the current
@@ -49,7 +81,7 @@ namespace DataProvider
             Order order = new Order();
             return order;
         }
-       
+
         /// <summary>
         /// Generates a random list of 10 Orders.
         /// </summary>
@@ -110,13 +142,29 @@ namespace DataProvider
             return order.OrderItems;
         }
 
+        private List<OrderItem> GetDbOrderItems(int size)
+        {
+            List<OrderItem> dbOrderItems = new List<OrderItem>();
+            int[] indxs = GetRandomNumbers(size, 9);
+
+            for (int i = 0; i < size; i++)
+            {
+                dbOrderItems.Add(new OrderItem(DbStockItems[indxs[i]])
+                {
+                    Quantity = indxs[i]+1
+                }
+                );
+            }
+            return dbOrderItems;
+        }
+
         /// <summary>
         /// Gets a random order item without the OrderHeaderId
         /// </summary>
         /// <returns></returns>
-        public OrderItem GetRndmOrderItem()
+        public OrderItem GetRndmDbOrderItem()
         {
-            return new OrderItem(GetRandomItem(StockItems.ToArray()));
+            return new OrderItem(GetRandomItem(DbStockItems.ToArray()));
         }
 
         /// <summary>
@@ -137,7 +185,7 @@ namespace DataProvider
         /// <param name="stateId">An integer representing the order status</param>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        private Order GetRandomOrder(int stateId, DateTime dateTime)
+        public Order GetRandomOrder(int stateId, DateTime dateTime)
         {
             Order order = new Order(stateId, dateTime);
             int itemsInOrder = random.Next(1, 11);
@@ -188,7 +236,7 @@ namespace DataProvider
             return numbers.ToArray();
         }
         #region Not implemented Interface methods
-        public void AddNewOrder()
+        public void AddNewOrder(Order newOrder)
         {
             throw new NotImplementedException();
         }
@@ -234,6 +282,11 @@ namespace DataProvider
         }
 
         public void DeleteOrderItem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int StartNewOrder()
         {
             throw new NotImplementedException();
         }
