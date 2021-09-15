@@ -15,16 +15,46 @@ namespace SQLDataProvider
     /// </summary>
     public class SqlDataProvider : IOrdersDataProvider
     {
-       
         public List<Order> Orders => throw new NotImplementedException();
 
         public List<StockItem> StockItems => throw new NotImplementedException();
 
-        public void AddNewOrder()
+        public int StartNewOrder()
         {
-            throw new NotImplementedException();
+            SqlServerDataAccess.OpenConnection();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_InsertOrderHeader]");
+            SqlDataReader reader = command.ExecuteReader();
+            int Id = 0;
+            while (reader.Read())
+            {
+                Id = reader.GetInt32(0);
+            }
+            reader.Dispose();
+            SqlServerDataAccess.CloseConnection();
+            return Id;
         }
+        public List<StockItem> GetStockItems()
+        {
+            List<StockItem> stockItems = new List<StockItem>();
 
+            SqlServerDataAccess.OpenConnection();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
+            SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                StockItem item = new StockItem()
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    Price = reader.GetDecimal(2),
+                    InStock = reader.GetInt32(3)
+                };
+                stockItems.Add(item);
+            }
+            SqlServerDataAccess.CloseConnection();
+            return stockItems;
+        }
+        #region Not yet implemented
         public void DeleteOrder()
         {
             throw new NotImplementedException();
@@ -60,28 +90,6 @@ namespace SQLDataProvider
             throw new NotImplementedException();
         }
 
-        public List<StockItem> GetStockItems()
-        {
-            List<StockItem> stockItems = new List<StockItem>();
-
-            SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
-            SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                StockItem item = new StockItem()
-                {
-                    Id = reader.GetInt32(0),
-                    Name = reader.GetString(1),
-                    Price = reader.GetDecimal(2),
-                    InStock = reader.GetInt32(3)
-                };
-                stockItems.Add(item);
-            }
-            SqlServerDataAccess.CloseConnection();
-            return stockItems;
-        }
-
         public void InsertOrderItem()
         {
             throw new NotImplementedException();
@@ -101,5 +109,11 @@ namespace SQLDataProvider
         {
             throw new NotImplementedException();
         }
+
+        public void AddNewOrder(Order newOrder)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }
