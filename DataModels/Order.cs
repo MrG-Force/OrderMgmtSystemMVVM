@@ -30,6 +30,19 @@ namespace DataModels
             Id = _id++;
         }
         /// <summary>
+        /// Production constructor, gets the Id from the database query.
+        /// </summary>
+        /// <param name="id"></param>
+        public Order(int id) // TODO: this ctor needs to pass the date time from db, conflicted with next ctor
+        {
+            _orderItems = new List<OrderItem>();
+            DateTime = DateTime.Now;
+            OrderStateId = 1;
+            Id = id;
+            _id = id++; // This line to be deleted when dummy data is no longer needed.
+        }
+
+        /// <summary>
         /// This constructor is used to create a dummy order with a passed random
         /// date and a random state.
         /// </summary>
@@ -45,7 +58,7 @@ namespace DataModels
         #endregion
 
         #region Props
-        public int Id { get; }
+        public int Id { get; set; }
         public DateTime DateTime { get; set; }
         public int OrderStateId { get; set; }
 
