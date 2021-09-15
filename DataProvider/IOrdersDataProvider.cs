@@ -11,7 +11,8 @@ namespace DataProvider
         List<Order> Orders { get; }
         List<StockItem> StockItems { get; }
         //-- CREATE
-        void AddNewOrder();
+        void AddNewOrder(Order newOrder);
+        int StartNewOrder();
         void InsertOrderItem();
         // -- READ
         List<Order> GetOrders();
