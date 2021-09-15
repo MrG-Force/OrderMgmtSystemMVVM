@@ -10,76 +10,70 @@ namespace DataTester
 {
     internal class DummyDataTester
     {
+        static RandomDataProvider rndmDataProvider = new RandomDataProvider();
+        static SqlDataProvider sqlDataProvider = new SqlDataProvider();
         static void Main(string[] args)
         {
-            #region Random data tester
-            //IOrdersDataProvider dataProvider = new RandomDataProvider();
-            ////List<Order> orders = dataProvider.GetOrders(15);
-            //List<Order> orders = dataProvider.Orders; // using a property that retrieves data from static field
 
-            //foreach (var order in orders)
-            //{
-            //    Console.WriteLine();
-            //    Console.WriteLine($"  ====================" +
-            //        $"\tOrder ID : {order.Id}\t====================\n\t" +
-            //        $"Products in this order: {order.ItemsCount}\n\t" +
-            //        $"Date of order: {order.DateTime.ToLongDateString()}\n\t" +
-            //        $"Order status: {order.OrderStatus}\n\t" +
-            //        $"Total: {order.Total:C}\n\t" +
-            //        $"In this order:\n\t\t");
-            //    List<OrderItem> orderItems = order.OrderItems;
-            //    foreach (var orderItem in orderItems)
-            //    {
-            //        Console.WriteLine($"\tSKU: {orderItem.StockItemId}" +
-            //            $"\t| Product: {orderItem.Description}\n" +
-            //            $"\tPrice: {orderItem.Price:C}\t| Quantity: {orderItem.Quantity}\n" +
-            //            $"\t---------------------------------------------");
-            //    }
-            //    Console.WriteLine("Press any key to see next record...");
-            //    Console.ReadKey(true);
-            //}
-            #endregion
+            // DisplayRandomOrderList(rndmDataProvider);
 
-            //List<StockItem> stockItems = new List<StockItem>();
+            TestGetSTockItems();
 
-            //ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];
-            //SqlConnection connection = new SqlConnection(settings.ConnectionString);
-            //using (connection)
-            //{
-            //    connection.Open();
-            //    SqlCommand command = new SqlCommand("[sp_SelectStockItems]", connection);
-            //    SqlDataReader reader = command.ExecuteReader();
-            //    while (reader.Read())
-            //    {
-            //        StockItem item = new StockItem()
-            //        {
-            //            Id = reader.GetInt32(0),
-            //            Name = reader.GetString(1),
-            //            Price = reader.GetDecimal(2),
-            //            InStock = reader.GetInt32(3)
-            //        };
-            //        stockItems.Add(item);
-            //    }
-            //}
-            //foreach (var item in stockItems)
-            //{
-            //    Console.WriteLine(item);
-            //}
-
-            SqlDataTester.OpenConnection();
-            SqlDataTester.PrintItems();
-            SqlDataTester.CloseConnection();
-
-            SqlDataProvider dataProvider = new SqlDataProvider();
-            List<StockItem> items = dataProvider.GetStockItems();
-            foreach (var item in items)
-            {
-                Console.WriteLine(item);
-            }
+            // Add Order
+            //SqlDataTester.AddNewOrder();
 
             Console.WriteLine("Press any key to finish...");
             Console.ReadKey(true);
 
+        }
+
+        /// <summary>
+        /// Displays a list of orders with details to the console.
+        /// </summary>
+        /// <remarks>This function is for testing the RandomDataProvider class</remarks>
+        /// <param name="rndmDataProvider"></param>
+        private static void DisplayRandomOrderList(RandomDataProvider rndmDataProvider)
+        {
+            //List<Order> orders = rndmDataProvider.GetOrders(15);
+            List<Order> orders = rndmDataProvider.Orders; // using a property that retrieves data from static field
+            foreach (var order in orders)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"  ====================" +
+                    $"\tOrder ID : {order.Id}\t====================\n\t" +
+                    $"Products in this order: {order.ItemsCount}\n\t" +
+                    $"Date of order: {order.DateTime.ToLongDateString()}\n\t" +
+                    $"Order status: {order.OrderStatus}\n\t" +
+                    $"Total: {order.Total:C}\n\t" +
+                    $"In this order:\n\t\t");
+                List<OrderItem> orderItems = order.OrderItems;
+                foreach (var orderItem in orderItems)
+                {
+                    Console.WriteLine($"\tSKU: {orderItem.StockItemId}" +
+                        $"\t| Product: {orderItem.Description}\n" +
+                        $"\tPrice: {orderItem.Price:C}\t| Quantity: {orderItem.Quantity}\n" +
+                        $"\t---------------------------------------------");
+                }
+                Console.WriteLine("Press any key to see next record...");
+                Console.ReadKey(true);
+            }
+        }
+
+        /// <summary>
+        /// A function to test the GetStockItems method in the data provider
+        /// </summary>
+        /// <param name="rndmDataProvider"></param>
+        private static void TestGetSTockItems()
+        {
+            //using SqlDataTester
+            SqlDataTester.GetDBStockItems();
+
+            //using sqlDataProvider
+            List<StockItem> stockItems = sqlDataProvider.GetStockItems();
+            foreach (var item in stockItems)
+            {
+                Console.WriteLine(item);
+            }
         }
     }
 }
