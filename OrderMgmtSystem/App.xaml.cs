@@ -11,7 +11,6 @@ namespace OrderMgmtSystem
     /// </summary>
     public partial class App : Application
     {
-        //private IOrdersDataProvider _Data;
         public static Window CurrentMainWindow => Current.MainWindow; // to easily assign the owner of child windows and popups
         protected override void OnStartup(StartupEventArgs e)
         {
