@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:dialogview="clr-namespace:OrderMgmtSystem.Views.DialogViews"
              xmlns:dialogmodel="clr-namespace:OrderMgmtSystem.ViewModels.DialogViewModels"
+             xmlns:detailswindow="clr-namespace:OrderMgmtSystem.ViewModels"
+             xmlns:views="clr-namespace:OrderMgmtSystem.Views"
              xmlns:local="clr-namespace:OrderMgmtSystem">
   <Application.Resources>
     <!--#region DATA TEMPLATES-->
@@ -12,7 +14,9 @@
     <DataTemplate DataType="{x:Type dialogmodel:CancelOrderDialogViewModel}">
       <dialogview:CancelOrderDialogView />
     </DataTemplate>
-    
+    <DataTemplate DataType="{x:Type detailswindow:OrderDetailsViewModel}">
+      <views:OrderDetailsView />
+    </DataTemplate>
     <!--#endregion-->
     <!--#region STYLES-->
     <!--#region Buttons-->
@@ -87,9 +91,6 @@
       <Setter Property="BorderBrush"
               Value="DarkRed" />
     </Style>
-           
-           
-
     <!--#endregion-->
     <!--#region Grids-->
     <Style TargetType="Grid"
