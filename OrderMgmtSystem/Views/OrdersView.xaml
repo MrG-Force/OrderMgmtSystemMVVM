@@ -74,7 +74,9 @@
             <DataTemplate>
               <Button x:Name="BtnOrderDetails"
                       Content="View"
-                      Margin="1" />
+                      Margin="1" 
+                      Command="{Binding DataContext.SeeOrderDetailsCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                      CommandParameter="{Binding}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
