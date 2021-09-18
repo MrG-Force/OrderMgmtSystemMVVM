@@ -19,8 +19,9 @@
         <Image x:Name="LogoHeader"
                Margin="0,3,0,3"
                Source="/Images/XYZCo_logo.png" />
-        <TextBlock Text="Orders MGMT System"
-                   Grid.Column="1"
+        <TextBlock Text="XYZ &amp; Co Orders Manager"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="30"
