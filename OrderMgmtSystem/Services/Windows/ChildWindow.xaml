@@ -1,0 +1,18 @@
+﻿<Window x:Class="OrderMgmtSystem.Services.Windows.ChildWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:owner="clr-namespace:OrderMgmtSystem"
+        xmlns:local="clr-namespace:OrderMgmtSystem.Services.Windows"
+        mc:Ignorable="d"
+        Owner="{x:Static owner:App.CurrentMainWindow}"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Images/Icon.png"
+        Title="{Binding Title}"
+        SizeToContent="WidthAndHeight"
+        d:DesignHeight="450"
+        d:DesignWidth="600">
+  <ContentControl x:Name="ContentPresenter"
+                  Content="{Binding}" />
+</Window>
