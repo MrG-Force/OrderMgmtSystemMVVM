@@ -8,8 +8,11 @@
         mc:Ignorable="d"
         Owner="{x:Static owner:App.CurrentMainWindow}"
         WindowStartupLocation="CenterOwner"
-        Icon="/Images/Icon.png"  
-        Title="{Binding Title}" SizeToContent="WidthAndHeight" Height="230" Width="300">
+        Icon="/Images/Icon.png"
+        Title="{Binding Title}"
+        SizeToContent="WidthAndHeight"
+        d:DesignHeight="230"
+        d:DesignWidth="300">
   <ContentControl x:Name="ContentPresenter"
                   Content="{Binding}" />
 </Window>
