@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:OrderMgmtSystem.Views"
              xmlns:controls="clr-namespace:OrderMgmtSystem.Controls"
              mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="600">
+             Height="450"
+             Width="600">
   <Grid Style="{StaticResource CommonGrid}">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto" />
