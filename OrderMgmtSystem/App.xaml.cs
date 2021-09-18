@@ -1,5 +1,6 @@
 ﻿using DataProvider;
 using OrderMgmtSystem.Services.Dialogs;
+using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System.Windows;
@@ -29,15 +30,14 @@ namespace OrderMgmtSystem
             var ordersData = new RandomDataProvider();
             var currentViewModel = new OrdersViewModel(ordersData);
             var addOrderViewModel = new AddOrderViewModel();
-            var orderDetailsViewModel = new OrderDetailsViewModel();
+            var windowService = new ChildWindowService();
             var dialogService = new DialogService();
             var dialogViewModel = new QuantityViewModel("Quantity", "Please enter a quantity:");
             var addItemViewModel = new AddItemViewModel(ordersData.StockItems, dialogService, dialogViewModel);
-            var viewModel = new MainWindowViewModel(ordersData, currentViewModel, addItemViewModel)
+            var viewModel = new MainWindowViewModel(ordersData, currentViewModel, addItemViewModel, windowService)
             {
                 AddOrderViewModel = addOrderViewModel,
                 OrdersViewModel = currentViewModel,
-                OrderDetailsViewModel = orderDetailsViewModel
             };
             viewModel.SubscribeHandlersToEvents();
             Application.Current.MainWindow = new MainWindow

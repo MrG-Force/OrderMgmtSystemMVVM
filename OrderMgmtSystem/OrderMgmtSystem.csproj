@@ -72,6 +72,10 @@
     <Compile Include="Services\Dialogs\IDialogService.cs" />
     <Compile Include="Services\Dialogs\TestDialogs\MockDialogService.cs" />
     <Compile Include="Services\Dialogs\TestDialogs\MockDialogViewModel.cs" />
+    <Compile Include="Services\Windows\ChildWindow.xaml.cs">
+      <DependentUpon>ChildWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Windows\ChildWindowService.cs" />
     <Compile Include="ViewModels\AddItemViewModel.cs" />
     <Compile Include="ViewModels\AddOrderViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModels\CancelOrderDialogViewModel.cs" />
@@ -119,6 +123,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Services\Dialogs\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Services\Windows\ChildWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
