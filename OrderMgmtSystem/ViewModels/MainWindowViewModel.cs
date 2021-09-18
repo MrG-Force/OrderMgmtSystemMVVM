@@ -1,6 +1,9 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.Services.Windows;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -15,6 +18,7 @@ namespace OrderMgmtSystem.ViewModels
         private ViewModelBase _currentViewModel;
         private AddItemViewModel _addItemViewModel;
         private bool _IsModalOpen;
+        private List<int> OrderWindowsOpened = new List<int>();
         #endregion
 
         #region Properties
@@ -25,8 +29,9 @@ namespace OrderMgmtSystem.ViewModels
         }
         internal AddOrderViewModel AddOrderViewModel { get; set; }
         internal OrdersViewModel OrdersViewModel { get; set; }
-        internal OrderDetailsViewModel OrderDetailsViewModel { get; set; }
         public DelegateCommand<string> NavigateCommand { get; private set; }
+        public DelegateCommand<Order> SeeOrderDetailsCommand { get; private set; }
+        public DelegateCommand CloseAppCommand { get; private set; }
         public ViewModelBase CurrentViewModel
         {
             get => _currentViewModel;
@@ -37,6 +42,7 @@ namespace OrderMgmtSystem.ViewModels
             get => _IsModalOpen;
             set => SetProperty(ref _IsModalOpen, value);
         }
+        private ChildWindowService WindowService { get; }
         #endregion
 
         #region Constructor
@@ -46,13 +52,15 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="ordersData"></param>
         /// <param name="currentViewModel"></param>
         /// <param name="addItemViewModel"></param>
-        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase currentViewModel, AddItemViewModel addItemViewModel)
+        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase currentViewModel, AddItemViewModel addItemViewModel, ChildWindowService windowService)
         {
             _Data = ordersData;
+            WindowService = windowService;
             _IsModalOpen = false;
             _currentViewModel = currentViewModel;
             _addItemViewModel = addItemViewModel;
             NavigateCommand = new DelegateCommand<string>(Navigate);
+            SeeOrderDetailsCommand = new DelegateCommand<Order>(SeeOrderDetails);
         }
         #endregion
 
@@ -134,15 +142,41 @@ namespace OrderMgmtSystem.ViewModels
                 case "CloseAddItem":
                     IsModalOpen = false;
                     break;
-                case "CancelAndBackToOrders":
-                    CurrentViewModel = OrdersViewModel;
-                    AddOrderViewModel.CancelCurrentOrder();
-                    break;
                 case "OrdersView":
                 default:
                     CurrentViewModel = OrdersViewModel;
                     break;
             }
+        }
+
+        /// <summary>
+        /// Opens a new window displaying the details of the selected Order.
+        /// </summary>
+        /// <remarks>
+        /// Registers the order Id opened in the OrderWindowsOpened list to prevent the
+        /// same order to be opened in more than one window.
+        /// </remarks>
+        /// <param name="order">Sent by View as CommandParameter through Binding</param>
+        private void SeeOrderDetails(Order order)
+        {
+            if (OrderWindowsOpened.Contains(order.Id)) return;
+            OrderWindowsOpened.Add(order.Id);
+            OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel(order);
+            WindowService.OpenWindow(orderDetailsVM);
+            WindowService.ChildWindowClosed += DetailsWindowClosing;
+        }
+
+        /// <summary>
+        /// Handles the OrderDetailsWindow Closing event.
+        /// </summary>
+        /// <remarks>
+        /// Removes the current's order Id from the OrderWindowsOpened list 
+        /// so the order can be opened again in a new window.
+        /// </remarks>
+        /// <param name="Id"></param>
+        private void DetailsWindowClosing(int Id)
+        {
+            _ = OrderWindowsOpened.Remove(Id);
         }
 
         /// <summary>
@@ -153,6 +187,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             return _Data.GetOrder();
         }
+
         #endregion
     }
 }
