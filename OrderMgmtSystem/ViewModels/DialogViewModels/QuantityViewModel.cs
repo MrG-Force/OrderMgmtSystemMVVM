@@ -62,7 +62,7 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         /// Calls the CloseDialogResult method from the base class to get the result and close
         /// the dialog.
         /// </summary>
-        /// <param name="window"></param>
+        /// <param name="window">Passed with binding from the view</param>
         public void SelectQuantity(IDialogWindow window)
         {
             CloseDialogWithResult(window, NumValue);
