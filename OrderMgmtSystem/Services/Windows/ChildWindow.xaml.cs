@@ -10,6 +10,24 @@ namespace OrderMgmtSystem.Services.Windows
         public ChildWindow()
         {
             InitializeComponent();
+            Loaded += ChildWindow_Loaded;
+        }
+
+        /// <summary>
+        /// Assigns this Window.Close() to the viewMode.Close delegate so
+        /// the Window can be closed from the viewModel with a bound command.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ICloseWindows viewModel)
+            {
+                viewModel.Close += () =>
+                {
+                    Close();
+                };
+            };
         }
     }
 }
