@@ -67,7 +67,9 @@
         <DataGridTextColumn Header="Order status"
                             Binding="{Binding OrderStatus}"
                             Width="80"
-                            MinWidth="40" />
+                            MinWidth="40"
+                            CellStyle="{DynamicResource StateGridCell}">
+        </DataGridTextColumn>
         <DataGridTemplateColumn Header="Order details"
                                 Width="*"
                                 MinWidth="75">

@@ -142,7 +142,34 @@
         </Setter.Value>
       </Setter>
     </Style>
-
+    <!--DataGridOrderStateColumn-->
+    <Style TargetType="DataGridCell"
+           x:Key="StateGridCell">
+      <Setter Property="FontWeight"
+              Value="SemiBold" />
+      <Style.Triggers>
+        <Trigger Property="Content"
+                 Value="New">
+          <Setter Property="Foreground"
+                  Value="Blue" />
+        </Trigger>
+        <DataTrigger Binding="{Binding Path=OrderStatus}"
+                     Value="Pending">
+          <Setter Property="Foreground"
+                  Value="Green" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Path=OrderStatus}"
+                     Value="Rejected">
+          <Setter Property="Foreground"
+                  Value="IndianRed" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Path=OrderStatus}"
+                     Value="Complete">
+          <Setter Property="Foreground"
+                  Value="DarkSlateGray" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
     <!--#endregion-->
     <!--#region TextBox Order State-->
     <Style TargetType="TextBox"
@@ -163,7 +190,7 @@
         <Trigger Property="Text"
                  Value="Rejected">
           <Setter Property="Foreground"
-                  Value="DarkRed" />
+                  Value="IndianRed" />
         </Trigger>
         <Trigger Property="Text"
                  Value="Complete">
