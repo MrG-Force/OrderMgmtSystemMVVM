@@ -146,7 +146,8 @@
               Style="{StaticResource GreenGoButton}"
               Content="Close"
               Grid.Row="4"
-              Margin="10,0,0,0" />
+              Margin="10,0,0,0"
+              Command="{Binding CloseWindowCommand}"/>
     </Grid>
   </Grid>
 </UserControl>
