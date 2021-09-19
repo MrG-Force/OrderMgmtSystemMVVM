@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:OrderMgmtSystem.Views"
              xmlns:controls="clr-namespace:OrderMgmtSystem.Controls"
+             xmlns:owner="clr-namespace:OrderMgmtSystem"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="650">
@@ -98,7 +99,8 @@
               Width="80"
               Padding="3"
               Margin="0,15,0,0"
-              FontWeight="Bold" />
+              FontWeight="Bold"
+              Command="{Binding Source={x:Static owner:App.CloseAppCommand}}"/>
     </StackPanel>
 
   </Grid>
