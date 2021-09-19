@@ -1,4 +1,5 @@
 ﻿using DataProvider;
+using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels;
@@ -13,9 +14,11 @@ namespace OrderMgmtSystem
     public partial class App : Application
     {
         public static Window CurrentMainWindow => Current.MainWindow; // to easily assign the owner of child windows and popups
+        public static DelegateCommand CloseAppCommand { get; private set; }
         protected override void OnStartup(StartupEventArgs e)
         {
             ComposeObjects();
+            CloseAppCommand = new DelegateCommand(CloseApp);
             MainWindow.Show();
 
             base.OnStartup(e);
@@ -44,6 +47,10 @@ namespace OrderMgmtSystem
             {
                 DataContext = viewModel
             };
+        }
+        private static void CloseApp()
+        {
+            CurrentMainWindow.Close();
         }
     }
 }
