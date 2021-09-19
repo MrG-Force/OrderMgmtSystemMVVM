@@ -76,6 +76,7 @@
       <DependentUpon>ChildWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\Windows\ChildWindowService.cs" />
+    <Compile Include="Services\Windows\ICloseWindows.cs" />
     <Compile Include="ViewModels\AddItemViewModel.cs" />
     <Compile Include="ViewModels\AddOrderViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModels\CancelOrderDialogViewModel.cs" />
