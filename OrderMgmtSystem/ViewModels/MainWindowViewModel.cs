@@ -18,7 +18,7 @@ namespace OrderMgmtSystem.ViewModels
         private ViewModelBase _currentViewModel;
         private AddItemViewModel _addItemViewModel;
         private bool _IsModalOpen;
-        private List<int> OrderWindowsOpened = new List<int>();
+        private List<int> openOrdersIds = new List<int>();
         #endregion
 
         #region Properties
@@ -159,8 +159,12 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="order">Sent by View as CommandParameter through Binding</param>
         private void SeeOrderDetails(Order order)
         {
-            if (OrderWindowsOpened.Contains(order.Id)) return;
-            OrderWindowsOpened.Add(order.Id);
+            if (openOrdersIds.Contains(order.Id))
+            {
+                return;
+            }
+
+            openOrdersIds.Add(order.Id);
             OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel(order);
             WindowService.OpenWindow(orderDetailsVM);
             WindowService.ChildWindowClosed += DetailsWindowClosing;
@@ -176,7 +180,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="Id"></param>
         private void DetailsWindowClosing(int Id)
         {
-            _ = OrderWindowsOpened.Remove(Id);
+            _ = openOrdersIds.Remove(Id);
         }
 
         /// <summary>
