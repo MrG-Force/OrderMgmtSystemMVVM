@@ -11,13 +11,15 @@ namespace OrderMgmtSystem.ViewModels
     {
         private readonly IDialogService _dialogService;
         private readonly DialogViewModelBase<int> _dialogViewModel;
+        private StockItem _selectedStockItem;
+
 
         public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
         {
             _dialogService = dialogService;
             _dialogViewModel = dialogViewModelBase;
             StockItems = stockItems;
-            AddItemCommand = new DelegateCommand<StockItem>(AddItem);
+            AddItemCommand = new DelegateCommand<ViewModelBase>(AddItem);
 
         }
 
@@ -25,10 +27,17 @@ namespace OrderMgmtSystem.ViewModels
         /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
         /// </summary>
         // delegate trick: assign an empty anonymous method as a subscriber, no need to worry about PropertyChanged being null.
-        public event Action<OrderItem> OrderItemSelected = delegate { };
+        public event Action<OrderItem> NewOrderItemSelected = delegate { };
+        public event Action<OrderItem> EditingOrderItemSelected = delegate { };
 
         // --- props
-        public DelegateCommand<StockItem> AddItemCommand { get; private set; }
+        public StockItem SelectedStockItem
+        {
+            get => _selectedStockItem;
+            set => SetProperty(ref _selectedStockItem, value);
+        }
+
+        public DelegateCommand<ViewModelBase> AddItemCommand { get; private set; }
         public List<StockItem> StockItems { get; set; }
 
         /// <summary>
@@ -38,9 +47,10 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
         /// <param name="selectedItem">(Binding)The stock item corresponding to the row where the button is located</param>
-        public void AddItem(StockItem selectedItem)
+        public void AddItem(ViewModelBase vm)
         {
-            int availableStock = selectedItem.InStock;
+            string vMName = vm.GetType().Name;
+            int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
             // Fetch a quantity from the user
             int qty = GetQuantity(_dialogViewModel);
@@ -50,14 +60,14 @@ namespace OrderMgmtSystem.ViewModels
             }
             // Update the StockItems collection
             StockItem changedItem = StockItems
-                .FirstOrDefault(item => item.Id == selectedItem.Id);
+                .FirstOrDefault(item => item.Id == SelectedStockItem.Id);
 
             // The StockItem class implements INotifyPropertyChanged and raises PropertyChanged on StockItems to notify bindings
             // The StockItem class handles the negative stock if not enoug items available
             if (changedItem != null) changedItem.InStock -= qty;
 
             // Create the new OrderItem
-            OrderItem orderItem = new OrderItem(selectedItem)
+            OrderItem orderItem = new OrderItem(SelectedStockItem)
             {
                 Quantity = qty
             };
@@ -66,8 +76,17 @@ namespace OrderMgmtSystem.ViewModels
                 orderItem.OnBackOrder = qty - availableStock;
             }
 
-            // Pass the new item Raise OrderItemSelected to notify MainWindow and close this Modal View
-            OnOrderItemSelected(orderItem);
+            // TODO, This is a bitch when trying to use the modal in other windows
+            // Pass the new item Raise NewOrderItemSelected to notify MainWindow and close this Modal View
+            if (vm is MainWindowViewModel)
+            {
+                OnNewOrderItemSelected(orderItem);
+            }
+            else if (vm is EditOrderViewModel)
+            {
+                OnEditingOrderItemSelected(orderItem);
+            }
+
         }
 
         /// <summary>
@@ -98,12 +117,16 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Raises OrderItemSelected event and passes the OrderItem to the listeners.
+        /// Raises NewOrderItemSelected event and passes the OrderItem to the listeners.
         /// </summary>
         /// <param name="orderItem"></param>
-        private void OnOrderItemSelected(OrderItem orderItem)
+        private void OnNewOrderItemSelected(OrderItem orderItem)
         {
-            OrderItemSelected(orderItem);
+            NewOrderItemSelected(orderItem);
+        }
+        private void OnEditingOrderItemSelected(OrderItem orderItem)
+        {
+            EditingOrderItemSelected(orderItem);
         }
     }
 }
