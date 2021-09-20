@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="OrderMgmtSystem.ViewModels.OrdersViewModel">
+    <Position X="6.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAIAAAAAAIAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>ViewModels\OrdersViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.MainWindowViewModel">
+    <Position X="10.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAEACQAAAACAUgAQAAAAQBQAAAAAUCIAgAUAAADAgE=</HashCode>
+      <FileName>ViewModels\MainWindowViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.ViewModelBase">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAgAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModels\ViewModelBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.AddItemViewModel">
+    <Position X="4.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAQAAAAAAACAAgAAAAgAAAAgAAAQAQAAAAAAAAAAEA=</HashCode>
+      <FileName>ViewModels\AddItemViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.AddOrderViewModel">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEBAIBCgAECQCCAAAAAAAAAAQAIgCQMABAAABACAAA=</HashCode>
+      <FileName>ViewModels\AddOrderViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.OrderDetailsViewModel">
+    <Position X="2.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAEAAAAAAAEAAEQAAAAAAAAAIAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>ViewModels\OrderDetailsViewModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dialogservice" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.AddItemView">
+    <Position X="4.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\AddItemView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.AddOrderView">
+    <Position X="8.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\AddOrderView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.OrdersView">
+    <Position X="6.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\OrdersView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.MainWindow">
+    <Position X="10.75" Y="10" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.OrderDetailsView">
+    <Position X="2.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\OrderDetailsView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.DialogViewModels.QuantityViewModel">
+    <Position X="12.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAACIAAAAAAEAAAAAEAACAJAAABABYAAAggAAA=</HashCode>
+      <FileName>ViewModels\DialogViewModels\QuantityViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.Services.DialogViewModelBase&lt;T&gt;">
+    <Position X="12.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAABAAAAAAAAAEAAAAAAAAAAAAgAAAAAEAAAIAAAAAA=</HashCode>
+      <FileName>Services\Dialogs\DialogViewModelBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.ViewModels.DialogViewModels.CancelOrderDialogViewModel">
+    <Position X="14.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAQAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>ViewModels\DialogViewModels\CancelOrderDialogViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.DialogViews.CancelOrderDialogView">
+    <Position X="14.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\DialogViews\CancelOrderDialogView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Views.DialogViews.QuantityView">
+    <Position X="12.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Views\DialogViews\QuantityView.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="OrderMgmtSystem.Services.Windows.ChildWindowService">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAACAABAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Windows\ChildWindowService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="OrderMgmtSystem.Services.IDialogService" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Dialogs\IDialogService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
