@@ -27,6 +27,7 @@
     <controls:ModalHeaderControl Grid.ColumnSpan="3" />
     <!--#endregion-->
     <DataGrid ItemsSource="{Binding StockItems}"
+              SelectedItem="{Binding SelectedStockItem, Mode=TwoWay}"
               Style="{DynamicResource DataGridStyle}"
               Grid.Row="2"
               Grid.RowSpan="2"
@@ -54,7 +55,7 @@
                       Content="Add to order"
                       Margin="2, 1, 2, 1"
                       Command="{Binding DataContext.AddItemCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                      CommandParameter="{Binding}"/>
+                      CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
