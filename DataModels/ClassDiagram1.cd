@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DataModels.Order" BaseTypeListCollapsed="true">
+    <Position X="6" Y="0.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="DataModels.Order.OrderState">
+        <TypeIdentifier>
+          <NewMemberFileName>Order.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAACAAACAAECCAgAAABAAAAAgAAAQAQEAAAAAQQAAAA=</HashCode>
+      <FileName>Order.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="_orderItems" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataModels.OrderItem" BaseTypeListCollapsed="true">
+    <Position X="9" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAQAgAAABAAAAAAAAwgAQQAACAAAAgAAAAAA=</HashCode>
+      <FileName>OrderItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DataModels.StockItem" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAACAQAAAIAEAAAAAAQAgAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>StockItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
