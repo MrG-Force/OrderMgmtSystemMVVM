@@ -1,11 +1,7 @@
 ﻿using DataModels;
 using DataProvider;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -28,6 +24,13 @@ namespace OrderMgmtSystem.ViewModels
         {
             get => _SelectedOrder;
             set => _SelectedOrder = value;
+        }
+
+        public void DeleteOrder(int id)
+        {
+            Orders.Remove(Orders
+                .FirstOrDefault(order => order.Id.Equals(id)));
+            // TODO: Add logic to update DB
         }
     }
 }
