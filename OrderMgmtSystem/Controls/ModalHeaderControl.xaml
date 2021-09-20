@@ -22,7 +22,7 @@
         </Grid.ColumnDefinitions>
         <Image x:Name="LogoHeader"
                Margin="0,3,0,0"
-               Source="/Images/LogoFinal.png" />
+               Source="/Images/XYZCo_logo.png" />
         <Border Grid.ColumnSpan="4"
                 Margin="7"
                 CornerRadius="5"
