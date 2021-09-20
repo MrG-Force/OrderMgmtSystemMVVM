@@ -30,9 +30,9 @@ namespace DataModels
         public int OnBackOrder { get; set; } = 0;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        public override string ToString()
-        {
-            return $"Id: {Id} | Name: {Name} | Price: {Price:C} | InStock: {InStock}";
-        }
+        //public override string ToString()
+        //{
+        //    return $"Id: {Id} | Name: {Name} | Price: {Price:C} | InStock: {InStock}";
+        //}
     }
 }

@@ -33,11 +33,10 @@ namespace OrderMgmtSystem
             var ordersData = new RandomDataProvider();
             var currentViewModel = new OrdersViewModel(ordersData);
             var addOrderViewModel = new AddOrderViewModel();
-            var windowService = new ChildWindowService();
             var dialogService = new DialogService();
             var dialogViewModel = new QuantityViewModel("Quantity", "Please enter a quantity:");
             var addItemViewModel = new AddItemViewModel(ordersData.StockItems, dialogService, dialogViewModel);
-            var viewModel = new MainWindowViewModel(ordersData, currentViewModel, addItemViewModel, windowService)
+            var viewModel = new MainWindowViewModel(ordersData, currentViewModel, addItemViewModel)
             {
                 AddOrderViewModel = addOrderViewModel,
                 OrdersViewModel = currentViewModel,
