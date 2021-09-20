@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.ViewModels.DialogViewModels
 {
-    class CancelOrderDialogViewModel: DialogViewModelBase<bool>
+    class CancelOrderDialogViewModel : DialogViewModelBase<bool>
     {
         public ICommand ProceedCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }

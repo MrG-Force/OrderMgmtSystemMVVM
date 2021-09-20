@@ -151,7 +151,7 @@ namespace DataProvider
             {
                 dbOrderItems.Add(new OrderItem(DbStockItems[indxs[i]])
                 {
-                    Quantity = indxs[i]+1
+                    Quantity = indxs[i] + 1
                 }
                 );
             }

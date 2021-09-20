@@ -3,8 +3,6 @@ using DataProvider;
 using SQLDataProvider;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 
 namespace DataTester
 {

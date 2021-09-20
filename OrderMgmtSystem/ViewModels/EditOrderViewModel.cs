@@ -1,7 +1,5 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 

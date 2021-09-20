@@ -15,12 +15,12 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         public QuantityViewModel(string title, string message) : base(title, message)
         {
             _numValue = 1;
-           
+
             DecreaseQuantityCommand = new DelegateCommand(DecreaseQuantity, () => CanDecrease);
             IncreaseQuantityCommand = new DelegateCommand(IncreaseQuantity, () => CanIncrease);
             AddToOrderCommand = new RelayCommandT<IDialogWindow>(SelectQuantity, () => IsValidQuantity);
         }
-        
+
         public DelegateCommand IncreaseQuantityCommand { get; }
         public DelegateCommand DecreaseQuantityCommand { get; }
         public RelayCommandT<IDialogWindow> AddToOrderCommand { get; }

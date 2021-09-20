@@ -24,7 +24,7 @@ namespace OrderMgmtSystem.Services.Windows
                 _addItemVM = odvm.AddItemViewModel;
                 _editOrderVM = edovm;
                 _editOrderVM.OrderUpdated += OnOrderUpdated;
-                
+
             }
         }
 

@@ -1,7 +1,6 @@
 ﻿using DataProvider;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services.Dialogs;
-using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System.Windows;

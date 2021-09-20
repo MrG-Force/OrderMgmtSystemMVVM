@@ -1,0 +1,4 @@
+﻿Implement ViewModel Factory
+Continue working on left side of application: order details, edit order
+Review dependency injection
+Clean and refactor

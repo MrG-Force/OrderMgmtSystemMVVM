@@ -2,9 +2,7 @@
 using DataProvider;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services.Windows;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace OrderMgmtSystem.ViewModels
 {
