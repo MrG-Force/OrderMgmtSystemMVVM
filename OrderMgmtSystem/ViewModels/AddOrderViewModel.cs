@@ -25,14 +25,14 @@ namespace OrderMgmtSystem.ViewModels
         #endregion
 
         #region Constructor
-        public AddOrderViewModel()
+        public AddOrderViewModel(Order order = null)
         {
             OrderItems = new ObservableCollection<OrderItem>();
             RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => _selectedItem != null);
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
             CancelCurrentOrderCommand = new DelegateCommand(CancelCurrentOrder);
             _dialogService = new DialogService();
-            _order = null;
+            _order = order;
         }
         #endregion
 
@@ -83,7 +83,7 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <remarks>It is used in conjunction with the NavigateCommand in the MainWindowModel.</remarks>
         /// <param name="newItem"></param>
-        internal void AddOrderItem(OrderItem newItem)
+        internal virtual void AddOrderItem(OrderItem newItem)
         {
             // TODO: check if an item with the same id is already in the order
             OrderItem repItem = OrderItems
@@ -124,7 +124,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Submits the current order and cleans the form.
         /// </summary>
-        private void SubmitOrder()
+        internal virtual void SubmitOrder()
         {
             // Change order state calling Order.Submit()
             Order.Submit();
@@ -142,7 +142,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <remarks>
         /// Reclaims the generated OrderId, clears the OrderItem Lis and updates the stocks
         /// </remarks>
-        internal void CancelCurrentOrder()
+        internal virtual void CancelCurrentOrder()
         {
             bool result = true;
             // if order has items
