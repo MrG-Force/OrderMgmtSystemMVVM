@@ -14,6 +14,7 @@ namespace DataModels
         #region Fields
         private List<OrderItem> _orderItems;
         private static int _id = 1000;
+        private int _orderStateId;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         #endregion
@@ -60,7 +61,16 @@ namespace DataModels
         #region Props
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
-        public int OrderStateId { get; set; }
+        public int OrderStateId
+        {
+            get => _orderStateId;
+            set
+            {
+                _orderStateId = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(OrderStatus));
+            }
+        }
 
         // --- These props are to translate the Sql tables into this app
         public string OrderStatus => Enum.GetName(typeof(OrderState), OrderStateId);
@@ -91,6 +101,7 @@ namespace DataModels
             }
         }
         public int ItemsCount => _orderItems.Count;
+        public bool HasItemsOnBackOrder { get; set; }
         #endregion
 
         #region Methods
@@ -100,7 +111,12 @@ namespace DataModels
         /// <param name="item">An OrderItem to be added</param>
         public void AddItem(OrderItem item)
         {
-            _orderItems.Add(item);
+            if (item.HasItemsOnBackOrder)
+            {
+                HasItemsOnBackOrder = true;
+            }
+            OrderItems.Add(item);
+            RaisePropertyChanged(nameof(Total));
         }
 
         /// <summary>
@@ -112,6 +128,7 @@ namespace DataModels
         {
             OrderItem item = _orderItems.Find(i => i.StockItemId.Equals(id));
             _orderItems.Remove(item);
+            RaisePropertyChanged(nameof(Total));
         }
 
         /// <summary>
