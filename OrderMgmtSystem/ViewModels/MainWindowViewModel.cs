@@ -65,7 +65,7 @@ namespace OrderMgmtSystem.ViewModels
             _currentViewModel = currentViewModel;
             _addItemViewModel = addItemViewModel;
             NavigateCommand = new RelayCommandT<string>(Navigate, () => OrderDetailsWindowsOpen);
-            SeeOrderDetailsCommand = new DelegateCommand<Order>(SeeOrderDetails);
+            SeeOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);
         }
         #endregion
 
@@ -162,7 +162,7 @@ namespace OrderMgmtSystem.ViewModels
         /// same order to be opened in more than one window.
         /// </remarks>
         /// <param name="order">Sent by View as CommandParameter through Binding</param>
-        private void SeeOrderDetails(Order order)
+        private void ViewOrderDetails(Order order)
         {
             if (openOrdersIds.Contains(order.Id))
             {
@@ -173,7 +173,6 @@ namespace OrderMgmtSystem.ViewModels
             NavigateCommand.RaiseCanExecuteChanged();
             OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel(order, AddItemViewModel);
             orderDetailsVM.DeleteOrderRequested += OnDeleteOrderRequested;
-            //var vm = Activator.CreateInstance(typeof(EditOrderViewModel),order,AddItemViewModel);
             EditOrderViewModel editOrderVM = new EditOrderViewModel(order, AddItemViewModel);
             ChildWindowService windowService = new ChildWindowService(orderDetailsVM, editOrderVM);
             windowService.OpenWindow();
