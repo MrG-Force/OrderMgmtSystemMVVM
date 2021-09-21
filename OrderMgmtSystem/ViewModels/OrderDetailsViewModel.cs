@@ -29,7 +29,7 @@ namespace OrderMgmtSystem.ViewModels
         /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
         /// </summary>
         public event Action<Order> EditOrderRequested = delegate { };
-        public event Action<int> DeleteOrderRequested = delegate { };
+        public event Action DeleteOrderRequested = delegate { };
         public OrderDetailsViewModel(Order order, AddItemViewModel addItemVM)
         {
             Order = order;
@@ -70,15 +70,11 @@ namespace OrderMgmtSystem.ViewModels
 
         private void DeleteOrder()
         {
-            // TODO: Add DIalog to confirm deletion
-            OnDeleteOrderRequested(Order.Id);
+            // TODO: Add Dialog to confirm deletion
+            DeleteOrderRequested();
             CloseWindow();
         }
 
-        private void OnDeleteOrderRequested(int id)
-        {
-            DeleteOrderRequested(id);
-        }
 
         /// <summary>
         /// Invokes the Close delegate. 
