@@ -42,12 +42,10 @@ namespace OrderMgmtSystem
         private static void ComposeObjects(ViewModelFactory vMFactory)
         {
             // Get ViewModels
-            var currentViewModel = vMFactory.CreateViewModel("Orders");
             var addOrderViewModel = vMFactory.CreateViewModel("AddOrder");
             var mainWindowViewModel = (MainWindowViewModel)vMFactory.CreateViewModel("MainWindow");
             // Set up main ViewModel
             mainWindowViewModel.AddOrderViewModel = (AddOrderViewModel)addOrderViewModel;
-            mainWindowViewModel.OrdersViewModel = (OrdersViewModel)currentViewModel;
             mainWindowViewModel.SubscribeHandlersToEvents();
             Application.Current.MainWindow = new MainWindow
             {
