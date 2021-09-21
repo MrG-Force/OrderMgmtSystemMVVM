@@ -61,11 +61,12 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="ordersData"></param>
         /// <param name="currentViewModel"></param>
         /// <param name="addItemViewModel"></param>
-        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase currentViewModel, AddItemViewModel addItemViewModel, ViewModelFactory vMFactory)
+        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase ordersViewModel, AddItemViewModel addItemViewModel, ViewModelFactory vMFactory)
         {
             _Data = ordersData;
             _isModalOpen = false;
-            _currentViewModel = currentViewModel;
+            OrdersViewModel = (OrdersViewModel)ordersViewModel;
+            _currentViewModel = OrdersViewModel;
             _addItemViewModel = addItemViewModel;
             NavigateCommand = new RelayCommandT<string>(Navigate, () => OrderDetailsWindowsOpen);
             SeeOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);
@@ -192,9 +193,9 @@ namespace OrderMgmtSystem.ViewModels
             windowService.ChildWindowClosed += DetailsWindowClosing;
         }
 
-        private void OnDeleteOrderRequested(int id)
+        private void OnDeleteOrderRequested()
         {
-            OrdersViewModel.DeleteOrder(id);
+            OrdersViewModel.DeleteOrder();
         }
 
         /// <summary>
