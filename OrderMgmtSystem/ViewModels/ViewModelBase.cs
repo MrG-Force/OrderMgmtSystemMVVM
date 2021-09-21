@@ -13,7 +13,7 @@ namespace OrderMgmtSystem.ViewModels
         /// to set the value of that property and notify the change if the change actually happened.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="member">The member of the class(field) passed as refference</param>
+        /// <param name="member">The member of the class(field) passed as reference</param>
         /// <param name="val">The value to be set</param>
         /// <param name="propertyName">Name of the caller property</param>
         protected virtual void SetProperty<T>(ref T member, T val,
