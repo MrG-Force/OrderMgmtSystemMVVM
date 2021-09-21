@@ -77,9 +77,9 @@
             <DataTemplate>
               <Button x:Name="BtnOrderDetails"
                       Content="View"
-                      Margin="1" 
+                      Margin="1"
                       Command="{Binding DataContext.SeeOrderDetailsCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                      CommandParameter="{Binding}"/>
+                      CommandParameter="{Binding}" />
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
@@ -93,8 +93,7 @@
               Style="{StaticResource GreenGoButton}"
               Content="New order"
               Margin="0,15"
-              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-              CommandParameter="AddOrderView" />
+              Command="{Binding DataContext.CreateNewOrderCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
       <Button x:Name="ExitApp"
               Content="Exit"
               Height="25"
@@ -102,8 +101,7 @@
               Padding="3"
               Margin="0,15,0,0"
               FontWeight="Bold"
-              Command="{Binding Source={x:Static owner:App.CloseAppCommand}}"/>
+              Command="{Binding Source={x:Static owner:App.CloseAppCommand}}" />
     </StackPanel>
-
   </Grid>
 </UserControl>

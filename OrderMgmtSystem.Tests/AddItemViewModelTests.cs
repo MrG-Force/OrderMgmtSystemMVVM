@@ -1,5 +1,4 @@
-﻿using DataModels;
-using DataProvider;
+﻿using DataProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs.TestDialogs;
@@ -14,21 +13,21 @@ namespace OrderMgmtSystem.Tests
         private static readonly IOrdersDataProvider ordersData = new RandomDataProvider();
         private static readonly IDialogService mockDialogService = new MockDialogService();
         private static readonly DialogViewModelBase<int> mockDialogVM = new MockDialogViewModel();
-        private readonly AddItemViewModel viewModel = new AddItemViewModel(ordersData.StockItems, mockDialogService, mockDialogVM);
+        private readonly AddItemViewModel viewModel = new AddItemViewModel(ordersData.StockItems, mockDialogService, mockDialogVM)
+        {
+            SelectedStockItem = ordersData.StockItems.FirstOrDefault()
+        };
 
         [TestMethod]
         public void OnAddItem_StockItemIsUpdated()
         {
             // Arrange
-            StockItem selectedItem = ordersData.StockItems.FirstOrDefault();
-            int availableStock = selectedItem.InStock;
+            int availableStock = viewModel.SelectedStockItem.InStock;
             // Act
-            viewModel.AddItem(selectedItem);
+            viewModel.AddItem(string.Empty);
             // Assert
-            Assert.IsTrue(selectedItem.InStock == availableStock - 3 || selectedItem.InStock == 0);
+            Assert.IsTrue(viewModel.SelectedStockItem.InStock == availableStock - 3 
+                || viewModel.SelectedStockItem.InStock == 0);
         }
-
-
-
     }
 }

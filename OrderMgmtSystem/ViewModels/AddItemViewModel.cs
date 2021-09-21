@@ -7,49 +7,65 @@ using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
+    /// <summary>
+    /// This class provides the logic and functionality to the AddItemView.
+    /// </summary>
     public class AddItemViewModel : ViewModelBase
     {
+        #region Fields
         private readonly IDialogService _dialogService;
         private readonly DialogViewModelBase<int> _dialogViewModel;
         private StockItem _selectedStockItem;
+        #endregion
 
-
-        public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
+        #region Properties
+        public StockItem SelectedStockItem
         {
-            _dialogService = dialogService;
-            _dialogViewModel = dialogViewModelBase;
-            StockItems = stockItems;
-            AddItemCommand = new DelegateCommand<ViewModelBase>(AddItem);
-
+            get => _selectedStockItem;
+            set
+            {
+                _selectedStockItem = value;
+                RaisePropertyChanged();
+            }
         }
+        public List<StockItem> StockItems { get; set; }
+        public DelegateCommand<ViewModelBase> RequestAddItemCommand { get; private set; }
+        #endregion
 
+        #region Events
         /// <summary>
         /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
         /// </summary>
         // delegate trick: assign an empty anonymous method as a subscriber, no need to worry about PropertyChanged being null.
         public event Action<OrderItem> NewOrderItemSelected = delegate { };
         public event Action<OrderItem> EditingOrderItemSelected = delegate { };
+        #endregion
 
-        // --- props
-        public StockItem SelectedStockItem
+        #region Constructor
+        public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
         {
-            get => _selectedStockItem;
-            set => SetProperty(ref _selectedStockItem, value);
+            _dialogService = dialogService;
+            _dialogViewModel = dialogViewModelBase;
+            StockItems = stockItems;
+            RequestAddItemCommand = new DelegateCommand<ViewModelBase>(RequestAddItem);
+        }
+        #endregion
+
+        #region Methods
+        private void RequestAddItem(ViewModelBase vM)
+        {
+            AddItem(vM.GetType().Name);
         }
 
-        public DelegateCommand<ViewModelBase> AddItemCommand { get; private set; }
-        public List<StockItem> StockItems { get; set; }
-
         /// <summary>
-        /// This method creates a new OrderItem and updates the corresponding InStock property 
+        /// Creates a new OrderItem and updates the corresponding InStock property 
         /// in the StockItems list. Provides the functionality to the AddItemCommand that 
         /// is bound to the "Add to order" button in the view. 
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
-        /// <param name="selectedItem">(Binding)The stock item corresponding to the row where the button is located</param>
-        public void AddItem(ViewModelBase vm)
+        /// <param name="vMName">The name of view model set as datacontext of the container window</param>
+        public void AddItem(string vMName)
         {
-            string vMName = vm.GetType().Name;
             int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
             // Fetch a quantity from the user
@@ -76,17 +92,15 @@ namespace OrderMgmtSystem.ViewModels
                 orderItem.OnBackOrder = qty - availableStock;
             }
 
-            // TODO, This is a bitch when trying to use the modal in other windows
-            // Pass the new item Raise NewOrderItemSelected to notify MainWindow and close this Modal View
-            if (vm is MainWindowViewModel)
+            // Raise the events depending on the ViewModel
+            if (vMName.Equals("MainWindowViewModel"))
             {
                 OnNewOrderItemSelected(orderItem);
             }
-            else if (vm is EditOrderViewModel)
+            else if (vMName.Equals("EditOrderViewModel"))
             {
                 OnEditingOrderItemSelected(orderItem);
             }
-
         }
 
         /// <summary>
@@ -95,8 +109,6 @@ namespace OrderMgmtSystem.ViewModels
         /// <returns></returns>
         private int GetQuantity(DialogViewModelBase<int> quantityViewModel)
         {
-            // Call a Dialog service
-            // Get Valid quantity from the user
             int result = _dialogService.OpenDialog(quantityViewModel);
             return result;
         }
@@ -124,9 +136,15 @@ namespace OrderMgmtSystem.ViewModels
         {
             NewOrderItemSelected(orderItem);
         }
+
+        /// <summary>
+        /// Raises EditingOrderItemSelected event and passes the OrderItem to the listeners.
+        /// </summary>
+        /// <param name="orderItem"></param>
         private void OnEditingOrderItemSelected(OrderItem orderItem)
         {
             EditingOrderItemSelected(orderItem);
         }
+        #endregion
     }
 }
