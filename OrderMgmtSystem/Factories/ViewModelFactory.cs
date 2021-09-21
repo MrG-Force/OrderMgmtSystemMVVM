@@ -10,7 +10,6 @@ namespace OrderMgmtSystem.Factories
 {
     public class ViewModelFactory
     {
-        //Activator.CreateInstance(typeof(EditOrderViewModel),order,AddItemViewModel);
         private IOrdersDataProvider _dataProvider;
 
         public ViewModelFactory(IOrdersDataProvider dataProvider)
@@ -23,9 +22,9 @@ namespace OrderMgmtSystem.Factories
             switch (viewType)
             {
                 case "MainWindow": 
-                    return new MainWindowViewModel(_dataProvider, CreateViewModel("Orders"), (AddItemViewModel)CreateViewModel("AddItem"));
+                    return new MainWindowViewModel(_dataProvider, CreateViewModel("Orders"), (AddItemViewModel)CreateViewModel("AddItem"), this);
                 case "AddItem": 
-                    return new AddItemViewModel(_dataProvider.StockItems, new DialogService(), (DialogViewModelBase<int>)CreateViewModel("Quantity"));
+                    return new AddItemViewModel(_dataProvider.StockItems, new DialogService(), (DialogViewModelBase<int>)CreateDialogViewModel("Quantity", "Quantity", "Please enter a quantity:"));
                 case "AddOrder":
                     return new AddOrderViewModel();
                 case "EditOrder":
