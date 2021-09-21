@@ -63,6 +63,7 @@
     <Compile Include="Controls\ModalHeaderControl.xaml.cs">
       <DependentUpon>ModalHeaderControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Factories\ViewModelFactory.cs" />
     <Compile Include="Services\Dialogs\DialogService.cs" />
     <Compile Include="Services\Dialogs\DialogViewModelBase.cs" />
     <Compile Include="Services\Dialogs\DialogWindow.xaml.cs">
@@ -192,9 +193,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Stores\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\LogoFinal.png" />
   </ItemGroup>
@@ -220,9 +219,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\XYZCo_logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="TODO.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
