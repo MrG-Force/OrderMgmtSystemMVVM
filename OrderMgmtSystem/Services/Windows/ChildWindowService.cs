@@ -1,43 +1,21 @@
-﻿using DataModels;
-using OrderMgmtSystem.ViewModels;
+﻿using OrderMgmtSystem.ViewModels;
 using System;
 
 namespace OrderMgmtSystem.Services.Windows
 {
-    public class ChildWindowService
+    public class ChildWindowService : IChildWindowService
     {
         private ChildWindow _childWindow;
-        private ViewModelBase _orderDetailsviewModel;
-        private AddItemViewModel _addItemVM;
-        private EditOrderViewModel _editOrderVM;
+        //Start delete
+        private ChildWindowViewModel _childWindowVM;
 
-        public event Action<int> ChildWindowClosed = delegate { };
-
-        public ChildWindowService(ViewModelBase OrderDetailsVM, ViewModelBase editOrderVM)
+        public ChildWindowService(ChildWindowViewModel childWindowVM)
         {
             _childWindow = new ChildWindow();
-            _orderDetailsviewModel = OrderDetailsVM;
-            if (_orderDetailsviewModel is OrderDetailsViewModel odvm
-                && editOrderVM is EditOrderViewModel edovm)
-            {
-                odvm.EditOrderRequested += OnEditOrderRequested;
-                _addItemVM = odvm.AddItemViewModel;
-                _editOrderVM = edovm;
-                _editOrderVM.OrderUpdated += OnOrderUpdated;
-
-            }
+            _childWindowVM = childWindowVM;
         }
 
-        private void OnOrderUpdated()
-        {
-            _childWindow.DataContext = _orderDetailsviewModel;
-        }
-
-        private void OnEditOrderRequested(Order order)
-        {
-            EditOrderViewModel editOrderVM = new EditOrderViewModel(order, _addItemVM);
-            _childWindow.DataContext = editOrderVM;
-        }
+        public event Action<int> ChildWindowClosed = delegate { };
 
         /// <summary>
         /// Starts and shows a new Window with the passed viewModel and
@@ -46,11 +24,10 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="viewModel"></param>
         public void OpenWindow()
         {
-            _childWindow.DataContext = _orderDetailsviewModel;
+            _childWindow.DataContext = _childWindowVM;
             _childWindow.Show();
             _childWindow.Closing += OnWindow_Closing;
         }
-
 
         /// <summary>
         /// Raises the ChildWindowClosed event passing the orderId

@@ -21,12 +21,15 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e"></param>
         private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (DataContext is ICloseWindows viewModel)
+            if (DataContext is ChildWindowViewModel viewModel)
             {
-                viewModel.Close += () =>
+                if (viewModel.CurrentViewModel is ICloseWindows winCloserVM)
                 {
-                    Close();
-                };
+                    winCloserVM.Close += () =>
+                    {
+                        Close();
+                    };
+                }
             };
         }
     }

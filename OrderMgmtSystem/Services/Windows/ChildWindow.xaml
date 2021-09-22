@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:OrderMgmtSystem.ViewModels"
         xmlns:modalcontrol="clr-namespace:ModalControl;assembly=ModalControl"
+        xmlns:childwindow="clr-namespace:OrderMgmtSystem.ViewModels"
         xmlns:views="clr-namespace:OrderMgmtSystem.Views"
         xmlns:owner="clr-namespace:OrderMgmtSystem"
         xmlns:local="clr-namespace:OrderMgmtSystem.Services.Windows"
@@ -12,7 +13,7 @@
         Owner="{x:Static owner:App.CurrentMainWindow}"
         WindowStartupLocation="CenterOwner"
         Icon="/Images/Icon.png"
-        Title="{Binding Title}"
+        Title="{Binding Path=CurrentViewModel.Title}"
         SizeToContent="WidthAndHeight"
         d:DesignHeight="450"
         d:DesignWidth="600">
@@ -20,7 +21,7 @@
     <modalcontrol:Modal IsOpen="{Binding IsModalOpen }"
                         Panel.ZIndex="1"
                         Background="#66808080">
-      <ContentControl Content="{Binding AddItemViewModel}">
+      <ContentControl Content="{Binding AddItemVM}">
         <ContentControl.Resources>
           <DataTemplate DataType="{x:Type viewmodels:AddItemViewModel}">
             <views:AddItemView />
@@ -29,6 +30,16 @@
       </ContentControl>
     </modalcontrol:Modal>
     <ContentControl x:Name="ContentPresenter"
-                    Content="{Binding}" />
+                    Content="{Binding CurrentViewModel}">
+      <ContentControl.Resources>
+        <DataTemplate DataType="{x:Type childwindow:OrderDetailsViewModel}">
+          <views:OrderDetailsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type childwindow:EditOrderViewModel}">
+          <views:EditOrderView />
+        </DataTemplate>
+      </ContentControl.Resources>
+    </ContentControl>
+    
   </Grid>
 </Window>
