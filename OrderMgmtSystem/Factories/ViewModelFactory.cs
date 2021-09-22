@@ -2,6 +2,7 @@
 using DataProvider;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
+using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
@@ -21,10 +22,17 @@ namespace OrderMgmtSystem.Factories
         {
             switch (viewType)
             {
-                case "MainWindow": 
-                    return new MainWindowViewModel(_dataProvider, CreateViewModel("Orders"), (AddItemViewModel)CreateViewModel("AddItem"), this);
-                case "AddItem": 
-                    return new AddItemViewModel(_dataProvider.StockItems, new DialogService(), (DialogViewModelBase<int>)CreateDialogViewModel("Quantity", "Quantity", "Please enter a quantity:"));
+                case "MainWindow":
+                    return new MainWindowViewModel
+                        (_dataProvider, 
+                        (OrdersViewModel)CreateViewModel("Orders"), 
+                        (AddOrderViewModel)CreateViewModel("AddOrder"), 
+                        (AddItemViewModel)CreateViewModel("AddItem"), this);
+                case "AddItem":
+                    return new AddItemViewModel
+                        (_dataProvider.StockItems, 
+                        new DialogService(), 
+                        (DialogViewModelBase<int>)CreateDialogViewModel("Quantity", "Quantity", "Please enter a quantity:"));
                 case "AddOrder":
                     return new AddOrderViewModel();
                 case "EditOrder":
@@ -33,6 +41,11 @@ namespace OrderMgmtSystem.Factories
                     return new OrderDetailsViewModel(order, (AddItemViewModel)CreateViewModel("AddItem"));
                 case "Orders":
                     return new OrdersViewModel(_dataProvider);
+                case "ChildWindow":
+                    return new ChildWindowViewModel
+                        ((OrderDetailsViewModel)CreateViewModel("OrderDetails", order), 
+                        (EditOrderViewModel)CreateViewModel("EditOrder", order), 
+                        (AddItemViewModel)CreateViewModel("AddItem"));
                 default:
                     throw new ArgumentException($"Invalid reader type: {viewType}");
             }
