@@ -23,40 +23,22 @@ namespace OrderMgmtSystem.ViewModels
             Order = order;
             Title = $"Editing order number: {order.Id}";
             OrderItems = new ObservableCollection<OrderItem>(order.OrderItems);
+            addItemVM.EditingOrderItemSelected += AddOrderItem;
             AddItemViewModel = addItemVM;
-            AddItemViewModel.EditingOrderItemSelected += AddOrderItem;
             _isModalOpen = false;
-            NavigateCommand = new DelegateCommand<string>(Navigate);
         }
 
         public DelegateCommand<string> NavigateCommand { get; private set; }
         internal override void AddOrderItem(OrderItem newItem)
         {
             base.AddOrderItem(newItem);
-            Navigate("CloseAddItem");
+            //Navigate("CloseAddItem");
         }
         internal override void SubmitOrder()
         {
-            OnOrderUpdated();
-
-        }
-
-        private void OnOrderUpdated()
-        {
             OrderUpdated();
+
         }
 
-        private void Navigate(string destination = null)
-        {
-            switch (destination)
-            {
-                case "CloseAddItem":
-                    IsModalOpen = false;
-                    break;
-                default:
-                    IsModalOpen = true;
-                    break;
-            }
-        }
     }
 }
