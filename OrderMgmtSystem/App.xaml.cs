@@ -41,11 +41,8 @@ namespace OrderMgmtSystem
         /// <param name="vMFactory">An object that knows how to create view models</param>
         private static void ComposeObjects(ViewModelFactory vMFactory)
         {
-            // Get ViewModels
-            var addOrderViewModel = vMFactory.CreateViewModel("AddOrder");
+            // Get MainWindowViewModel from Factory
             var mainWindowViewModel = (MainWindowViewModel)vMFactory.CreateViewModel("MainWindow");
-            // Set up main ViewModel
-            mainWindowViewModel.AddOrderViewModel = (AddOrderViewModel)addOrderViewModel;
             mainWindowViewModel.SubscribeHandlersToEvents();
             Application.Current.MainWindow = new MainWindow
             {
