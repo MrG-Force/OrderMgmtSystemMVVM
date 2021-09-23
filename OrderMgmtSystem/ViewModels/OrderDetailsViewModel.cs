@@ -28,7 +28,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
         /// </summary>
-        public event Action<Order> EditOrderRequested = delegate { };
+        public event Action EditOrderRequested = delegate { };
         public event Action DeleteOrderRequested = delegate { };
         public OrderDetailsViewModel(Order order, AddItemViewModel addItemVM)
         {
@@ -60,12 +60,12 @@ namespace OrderMgmtSystem.ViewModels
 
         private void EditOrder()
         {
-            OnEditOrderRequested(Order);
+            OnEditOrderRequested();
         }
 
-        private void OnEditOrderRequested(Order order)
+        private void OnEditOrderRequested()
         {
-            EditOrderRequested(order);
+            EditOrderRequested();
         }
 
         private void DeleteOrder()
