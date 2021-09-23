@@ -4,7 +4,9 @@ using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services.Windows;
 using System.Collections.Generic;
-
+//TODO: Binding  in addItemView when editing order
+//      Return Items to stock when order is deleted on edit order mode
+//      Reconsider the inheritance of the viewModel for edit order
 namespace OrderMgmtSystem.ViewModels
 {
     /// <summary>
@@ -14,31 +16,30 @@ namespace OrderMgmtSystem.ViewModels
     internal class MainWindowViewModel : ViewModelBase
     {
         #region Fields
-        private readonly IOrdersDataProvider _Data;
+        //-- ViewModels
         private ViewModelBase _currentViewModel;
-        private AddItemViewModel _addItemViewModel;
+        private readonly AddItemViewModel _addItemViewModel;
+        private readonly AddOrderViewModel _addOrderViewModel;
+        private readonly OrdersViewModel _ordersViewModel;
+        private readonly ViewModelFactory _vMFactory;
+        //-- DataProvider
+        private readonly IOrdersDataProvider _data;
+
+        private readonly List<int> _openedOrdersIds = new List<int>();
         private bool _isModalOpen;
-        private List<int> openedOrdersIds = new List<int>();
-        private ViewModelFactory _vMFactory;
         #endregion
 
         #region Properties
-        public AddItemViewModel AddItemViewModel
-        {
-            get => _addItemViewModel;
-            set => SetProperty(ref _addItemViewModel, value);
-        }
-        internal AddOrderViewModel AddOrderViewModel { get; set; }
-        internal OrdersViewModel OrdersViewModel { get; set; }
-        public DelegateCommand CreateNewOrderCommand { get; private set; }
-        public RelayCommandT<string> NavigateCommand { get; private set; }
-        public DelegateCommand<Order> SeeOrderDetailsCommand { get; private set; }
-        public DelegateCommand CloseAppCommand { get; private set; }
         public ViewModelBase CurrentViewModel
         {
             get => _currentViewModel;
             set => SetProperty(ref _currentViewModel, value);
         }
+        public AddItemViewModel AddItemViewModel => _addItemViewModel;
+        public DelegateCommand CreateNewOrderCommand { get; private set; }
+        public RelayCommandT<string> NavigateCommand { get; private set; }
+        public DelegateCommand<Order> SeeOrderDetailsCommand { get; private set; }
+        public DelegateCommand CloseAppCommand { get; private set; }
         public bool IsModalOpen
         {
             get => _isModalOpen;
@@ -48,7 +49,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             get
             {
-                return openedOrdersIds.Count == 0;
+                return _openedOrdersIds.Count == 0;
             }
 
         }
@@ -56,22 +57,25 @@ namespace OrderMgmtSystem.ViewModels
 
         #region Constructor
         /// <summary>
-        /// Initializes the MainWindowModel object using dependency injection.
+        /// Sets up the MainWindowModel.
         /// </summary>
-        /// <param name="ordersData"></param>
-        /// <param name="currentViewModel"></param>
-        /// <param name="addItemViewModel"></param>
-        public MainWindowViewModel(IOrdersDataProvider ordersData, ViewModelBase ordersViewModel, AddItemViewModel addItemViewModel, ViewModelFactory vMFactory)
+        /// <param name="ordersData">An object to comunicate with the data source</param>
+        /// <param name="ordersVM"></param>
+        /// <param name="addOrderVM"></param>
+        /// <param name="addItemVM"></param>
+        /// <param name="vMFactory"></param>
+        public MainWindowViewModel(IOrdersDataProvider ordersData, OrdersViewModel ordersVM, AddOrderViewModel addOrderVM, AddItemViewModel addItemVM, ViewModelFactory vMFactory)
         {
-            _Data = ordersData;
+            _data = ordersData;
+            _ordersViewModel = ordersVM;
+            _addOrderViewModel = addOrderVM;
+            _addItemViewModel = addItemVM;
+            _currentViewModel = _ordersViewModel;
+            _vMFactory = vMFactory;
             _isModalOpen = false;
-            OrdersViewModel = (OrdersViewModel)ordersViewModel;
-            _currentViewModel = OrdersViewModel;
-            _addItemViewModel = addItemViewModel;
             NavigateCommand = new RelayCommandT<string>(Navigate, () => OrderDetailsWindowsOpen);
             SeeOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);
             CreateNewOrderCommand = new DelegateCommand(CreateNewOrder);
-            _vMFactory = vMFactory;
         }
         #endregion
 
@@ -82,17 +86,20 @@ namespace OrderMgmtSystem.ViewModels
         /// <remarks>This function is called OnStartup in App.xaml.cs</remarks>
         public void SubscribeHandlersToEvents()
         {
-            AddOrderViewModel.OrderSubmitted += SubmitOrderToDB;
-            AddOrderViewModel.OrderCancelled += OnOrderCancelled;
-            AddItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
-            AddOrderViewModel.OrderItemRemoved += UpdateItemStock;
+            _addOrderViewModel.OrderSubmitted += SubmitOrderToDB;
+            _addOrderViewModel.OrderCancelled += OnOrderCancelled;
+            _addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
+            _addOrderViewModel.OrderItemRemoved += UpdateItemStock;
         }
 
+        /// <summary>
+        /// Calls a the LoadNewOrder method and navigates to the AddOrderView.
+        /// </summary>
         private void CreateNewOrder()
         {
-            if (AddOrderViewModel.Order == null)
+            if (_addOrderViewModel.Order == null)
             {
-                AddOrderViewModel.LoadNewOrder(GetNewOrder());
+                _addOrderViewModel.LoadNewOrder(GetNewOrder());
             }
             Navigate("AddOrderView");
 
@@ -107,7 +114,7 @@ namespace OrderMgmtSystem.ViewModels
         private void SubmitOrderToDB(Order order)
         {
             // Submit order to DB logic goes here
-            OrdersViewModel.Orders.Add(order);
+            _ordersViewModel.Orders.Add(order);
             Navigate("OrdersView");
         }
 
@@ -127,8 +134,8 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem">The item to add</param>
         private void AddItemToNewOrder(OrderItem newItem)
         {
-            AddOrderViewModel.AddOrderItem(newItem);
-            Navigate("CloseAddItem");
+            _addOrderViewModel.AddOrderItem(newItem);
+            Navigate("CloseAddItemView");
         }
 
         /// <summary>
@@ -139,7 +146,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="onBackOrder">The number of items that were unavailable when the order was placed.</param>
         private void UpdateItemStock(int stockItemId, int quantity, int onBackOrder)
         {
-            AddItemViewModel.ReturnItemToStockList(stockItemId, quantity, onBackOrder);
+            _addItemViewModel.ReturnItemToStockList(stockItemId, quantity, onBackOrder);
         }
 
         /// <summary>
@@ -152,17 +159,17 @@ namespace OrderMgmtSystem.ViewModels
             switch (destination)
             {
                 case "AddOrderView":
-                    CurrentViewModel = AddOrderViewModel;
+                    CurrentViewModel = _addOrderViewModel;
                     break;
                 case "AddItemView":
                     IsModalOpen = true;
                     break;
-                case "CloseAddItem":
+                case "CloseAddItemView":
                     IsModalOpen = false;
                     break;
                 case "OrdersView":
                 default:
-                    CurrentViewModel = OrdersViewModel;
+                    CurrentViewModel = _ordersViewModel;
                     break;
             }
         }
@@ -178,24 +185,25 @@ namespace OrderMgmtSystem.ViewModels
         private void ViewOrderDetails(Order order)
         {
             // Don't open 2 windows with the same order
-            if (openedOrdersIds.Contains(order.Id))
+            if (_openedOrdersIds.Contains(order.Id))
             {
                 return;
             }
-            openedOrdersIds.Add(order.Id);
+            _openedOrdersIds.Add(order.Id);
             NavigateCommand.RaiseCanExecuteChanged();
-            OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel(order, AddItemViewModel);
-            orderDetailsVM.DeleteOrderRequested += OnDeleteOrderRequested;
-            EditOrderViewModel editOrderVM = new EditOrderViewModel(order, AddItemViewModel);
-            ChildWindowService windowService = new ChildWindowService(orderDetailsVM, editOrderVM);
+
+            var childWindowVM = (ChildWindowViewModel)_vMFactory.CreateViewModel("ChildWindow", order);
+            childWindowVM.OrderDetailsVM.DeleteOrderRequested += OnDeleteOrderRequested;
+            IChildWindowService windowService = new ChildWindowService(childWindowVM);
+
             windowService.OpenWindow();
-            AddItemViewModel.NewOrderItemSelected -= AddItemToNewOrder;
+            //_addItemViewModel.NewOrderItemSelected -= AddItemToNewOrder;
             windowService.ChildWindowClosed += DetailsWindowClosing;
         }
 
         private void OnDeleteOrderRequested()
         {
-            OrdersViewModel.DeleteOrder();
+            _ordersViewModel.DeleteOrder();
         }
 
         /// <summary>
@@ -208,9 +216,9 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="Id"></param>
         private void DetailsWindowClosing(int Id)
         {
-            _ = openedOrdersIds.Remove(Id);
+            _ = _openedOrdersIds.Remove(Id);
             NavigateCommand.RaiseCanExecuteChanged();
-            AddItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
+            //_addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
         }
 
         /// <summary>
@@ -219,7 +227,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <returns></returns>
         private Order GetNewOrder()
         {
-            return _Data.GetOrder();
+            return _data.GetOrder();
         }
 
         #endregion
