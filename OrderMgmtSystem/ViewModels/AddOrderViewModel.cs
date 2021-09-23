@@ -18,13 +18,6 @@ namespace OrderMgmtSystem.ViewModels
     /// </remarks>
     public class AddOrderViewModel : ViewModelBase
     {
-        #region Fields
-        private Order _order;
-        private OrderItem _selectedItem = null;
-        private readonly IDialogService _dialogService;
-        #endregion
-
-        #region Constructor
         public AddOrderViewModel(Order order = null)
         {
             OrderItems = new ObservableCollection<OrderItem>();
@@ -34,6 +27,13 @@ namespace OrderMgmtSystem.ViewModels
             _dialogService = new DialogService();
             _order = order;
         }
+        #region Fields
+        private Order _order;
+        private OrderItem _selectedItem = null;
+        private readonly IDialogService _dialogService;
+        #endregion
+
+        #region Constructor
         #endregion
 
         #region Properties
@@ -52,7 +52,9 @@ namespace OrderMgmtSystem.ViewModels
         public DelegateCommand SubmitOrderCommand { get; private set; }
         public DelegateCommand CancelCurrentOrderCommand { get; private set; }
         public bool CanSubmit => OrderItems.Count > 0;
+        #endregion
 
+        #region Events
         /// <summary>
         /// Happens when an item is removed from the order
         /// </summary>
@@ -64,7 +66,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Happens when the current order is cancelled.
         /// </summary>
-        public event Action OrderCancelled = delegate { };
+        public event Action OrderCancelled;
         #endregion
 
         #region Methods
@@ -79,13 +81,12 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Adds the passed Item to the order.
+        /// Adds an OrderItem to the order.
         /// </summary>
         /// <remarks>It is used in conjunction with the NavigateCommand in the MainWindowModel.</remarks>
         /// <param name="newItem"></param>
         internal virtual void AddOrderItem(OrderItem newItem)
         {
-            // TODO: check if an item with the same id is already in the order
             OrderItem repItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
             if (repItem == null)
@@ -103,7 +104,6 @@ namespace OrderMgmtSystem.ViewModels
                 // Sincronize items on back order
                 repItem.OnBackOrder += newItem.OnBackOrder;
                 RaisePropertyChanged(nameof(Order));
-                //Order.RaisePropertyChanged(nameof(Order.Total));
             }
         }
 
@@ -188,7 +188,7 @@ namespace OrderMgmtSystem.ViewModels
 
         private void OnOrderCancelled()
         {
-            OrderCancelled();
+            OrderCancelled?.Invoke();
         }
         #endregion
     }
