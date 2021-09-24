@@ -22,6 +22,11 @@ namespace OrderMgmtSystem.ViewModels
             _dialogservice = new DialogService();
             AddItemViewModel = addItemVM;
         }
+        ~OrderDetailsViewModel()
+        {
+
+        }
+
         private readonly IDialogService _dialogservice;
 
         public AddItemViewModel AddItemViewModel { get; private set; }
