@@ -28,8 +28,10 @@ namespace OrderMgmtSystem.Services.Windows
                     winCloserVM.Close += () =>
                     {
                         Close();
+                        viewModel.Dispose();
                     };
                 }
+                
             };
         }
     }
