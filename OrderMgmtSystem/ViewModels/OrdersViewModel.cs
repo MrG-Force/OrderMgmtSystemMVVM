@@ -29,7 +29,6 @@ namespace OrderMgmtSystem.ViewModels
         public void DeleteOrder()
         {
             Orders.Remove(SelectedOrder);
-            // Remove Order from DB
         }
     }
 }
