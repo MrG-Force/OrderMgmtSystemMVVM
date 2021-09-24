@@ -59,6 +59,8 @@ namespace OrderMgmtSystem.ViewModels
                 repItem.OnBackOrder += newItem.OnBackOrder;
                 RaisePropertyChanged(nameof(TempOrder));
                 SubmitOrderCommand.RaiseCanExecuteChanged();
+                // BUG to chase, add check to enable the button when an existing item is added
+                // doesn't update
             }
         }
 
