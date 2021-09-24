@@ -56,6 +56,15 @@ namespace DataModels
             OrderStateId = StateId;
             Id = _id++;
         }
+
+        public Order(Order order)
+        {
+            Id = order.Id;
+            DateTime = DateTime.Now;
+            OrderStateId = order.OrderStateId;
+            OrderItems = new List<OrderItem>(order.OrderItems);
+            HasItemsOnBackOrder = order.HasItemsOnBackOrder;
+        }
         #endregion
 
         #region Props
@@ -114,6 +123,7 @@ namespace DataModels
             if (item.HasItemsOnBackOrder)
             {
                 HasItemsOnBackOrder = true;
+                RaisePropertyChanged(nameof(HasItemsOnBackOrder));
             }
             OrderItems.Add(item);
             RaisePropertyChanged(nameof(Total));
@@ -129,6 +139,7 @@ namespace DataModels
             OrderItem item = _orderItems.Find(i => i.StockItemId.Equals(id));
             _orderItems.Remove(item);
             RaisePropertyChanged(nameof(Total));
+            RaisePropertyChanged(nameof(HasItemsOnBackOrder));
         }
 
         /// <summary>

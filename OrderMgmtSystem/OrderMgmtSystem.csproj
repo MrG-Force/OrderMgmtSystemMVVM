@@ -81,17 +81,17 @@
     <Compile Include="Services\Windows\ChildWindowViewModel.cs" />
     <Compile Include="Services\Windows\IChildWindowService.cs" />
     <Compile Include="Services\Windows\ICloseWindows.cs" />
-    <Compile Include="ViewModels\SingleOrderViewModelBase.cs" />
+    <Compile Include="ViewModels\BaseViewModels\SingleOrderViewModelBase.cs" />
     <Compile Include="ViewModels\AddItemViewModel.cs" />
     <Compile Include="ViewModels\AddOrderViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModels\CancelOrderDialogViewModel.cs" />
     <Compile Include="ViewModels\DialogViewModels\QuantityViewModel.cs" />
     <Compile Include="ViewModels\EditOrderViewModel.cs" />
-    <Compile Include="ViewModels\IHandleOneOrder.cs" />
+    <Compile Include="ViewModels\BaseViewModels\IHandleOneOrder.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\OrdersViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailsViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\BaseViewModels\ViewModelBase.cs" />
     <Compile Include="Views\AddItemView.xaml.cs">
       <DependentUpon>AddItemView.xaml</DependentUpon>
     </Compile>

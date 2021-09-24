@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace OrderMgmtSystem.ViewModels
+namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
     /// <summary>
     /// This class implements INotifyPropertyChanged to support one-way and two-way bindings

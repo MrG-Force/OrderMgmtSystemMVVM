@@ -1,6 +1,6 @@
 ﻿using DataModels;
 
-namespace OrderMgmtSystem.ViewModels
+namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
     /// <summary>
     /// An interface for ViewModels that deal with a single order.

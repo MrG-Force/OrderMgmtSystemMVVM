@@ -1,4 +1,5 @@
 ﻿using OrderMgmtSystem.ViewModels;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 
 namespace OrderMgmtSystem.Services
 {

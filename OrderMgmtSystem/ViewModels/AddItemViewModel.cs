@@ -1,6 +1,7 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,7 +98,7 @@ namespace OrderMgmtSystem.ViewModels
             {
                 OnNewOrderItemSelected(orderItem);
             }
-            else if (vMName.Equals("EditOrderViewModel"))
+            else if (vMName.Equals("ChildWindowViewModel"))
             {
                 OnEditingOrderItemSelected(orderItem);
             }

@@ -2,27 +2,38 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Services;
+using OrderMgmtSystem.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OrderMgmtSystem.ViewModels
+namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
     public abstract class SingleOrderViewModelBase : ViewModelBase, IHandleOneOrder
     {
         public SingleOrderViewModelBase()
         {
             RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => _selectedItem != null);
-            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
             CancelOperationCommand = new DelegateCommand(CancelOperation);
+            _dialogService = new DialogService();
         }
 
-        private readonly IDialogService _dialogService;
+        protected readonly IDialogService _dialogService;
 
-        private Order _order;
+        protected Order _order;
         private OrderItem _selectedItem;
+        // Get a VMFactory field to create dialog view models
 
-        public Order Order { get => _order; set => SetProperty(ref _order, value); }
+        public Order Order
+        {
+            get => _order;
+            set
+            {
+                _order = value;
+                RaisePropertyChanged();
+            }
+
+        }
         public ObservableCollection<OrderItem> OrderItems { get; set; }
         public OrderItem SelectedItem
         {
@@ -34,36 +45,36 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
         public DelegateCommand<OrderItem> RemoveItemCommand { get; private set; }
-        public DelegateCommand SubmitOrderCommand { get; private set; }
+        public DelegateCommand SubmitOrderCommand { get; protected set; }
         public DelegateCommand CancelOperationCommand { get; private set; }
-        public bool CanSubmit => OrderItems.Count > 0;
+        public abstract bool CanSubmit { get; }
 
+        /// <summary>
+        /// Happens when an item is removed from the order
+        /// </summary>
         public event EventHandler<OrderItemRemovedEventArgs> OrderItemRemoved;
+        /// <summary>
+        /// Happens when the order is submitted.
+        /// </summary>
         public event EventHandler<Order> OrderSubmitted;
+        /// <summary>
+        /// Happens when the current order is cancelled.
+        /// </summary>
         public event EventHandler OrderCancelled;
 
-        internal void AddOrderItem(OrderItem newItem)
-        {
-            OrderItem repItem = OrderItems
-                .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
-            if (repItem == null)
-            {
-                newItem.OrderHeaderId = Order.Id;
-                OrderItems.Add(newItem);
-                Order.AddItem(newItem);
-                RaisePropertyChanged(nameof(Order));
-                SubmitOrderCommand.RaiseCanExecuteChanged();
-            }
-            else
-            {
-                // Notify bindings
-                repItem.Quantity += newItem.Quantity;
-                // Sincronize items on back order
-                repItem.OnBackOrder += newItem.OnBackOrder;
-                RaisePropertyChanged(nameof(Order));
-            }
-        }
-        protected abstract void RemoveItem(OrderItem item);
+        /// <summary>
+        /// Adds an OrderItem to the order.
+        /// </summary>
+        /// <remarks>It is used in conjunction with the NavigateCommand in the MainWindowModel.</remarks>
+        /// <param name="newItem"></param>
+        internal abstract void AddOrderItem(OrderItem newItem);
+
+        /// <summary>
+        /// Removes the passed item from the Order and calls an event handler
+        /// to update the quantity of the items in the StockItems list.
+        /// </summary>
+        /// <param name="item"></param>
+        internal abstract void RemoveItem(OrderItem item);
         protected abstract void SubmitOrder();
         protected abstract void CancelOperation();
         protected virtual void OnOrderItemRemoved(OrderItemRemovedEventArgs e)

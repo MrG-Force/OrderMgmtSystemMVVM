@@ -4,6 +4,7 @@ using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 
@@ -18,7 +19,7 @@ namespace OrderMgmtSystem.Factories
             _dataProvider = dataProvider;
         }
 
-        public ViewModelBase CreateViewModel(string viewType, Order order = null)
+        public ViewModelBase CreateViewModel(string viewType, Order order = null, AddItemViewModel addItemViewModel = null)
         {
             switch (viewType)
             {
@@ -36,7 +37,7 @@ namespace OrderMgmtSystem.Factories
                 case "AddOrder":
                     return new AddOrderViewModel();
                 case "EditOrder":
-                    return new EditOrderViewModel(order, (AddItemViewModel)CreateViewModel("AddItem"));
+                    return new EditOrderViewModel(order);
                 case "OrderDetails":
                     return new OrderDetailsViewModel(order, (AddItemViewModel)CreateViewModel("AddItem"));
                 case "Orders":
@@ -44,10 +45,10 @@ namespace OrderMgmtSystem.Factories
                 case "ChildWindow":
                     return new ChildWindowViewModel
                         ((OrderDetailsViewModel)CreateViewModel("OrderDetails", order), 
-                        (EditOrderViewModel)CreateViewModel("EditOrder", order), 
-                        (AddItemViewModel)CreateViewModel("AddItem"));
+                        (EditOrderViewModel)CreateViewModel("EditOrder", order),
+                        addItemViewModel);
                 default:
-                    throw new ArgumentException($"Invalid reader type: {viewType}");
+                    throw new ArgumentException($"Invalid ViewModel type: {viewType}");
             }
         }
 
@@ -60,7 +61,7 @@ namespace OrderMgmtSystem.Factories
                 case "Quantity":
                     return new QuantityViewModel(title, message);
                 default:
-                    throw new ArgumentException($"Invalid reader type: {viewType}");
+                    throw new ArgumentException($"Invalid ViewModel type: {viewType}");
             }
         }
     }

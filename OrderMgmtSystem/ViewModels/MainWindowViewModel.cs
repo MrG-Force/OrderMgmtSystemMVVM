@@ -1,9 +1,13 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services.Windows;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 //TODO: Binding  in addItemView when editing order
 //      Return Items to stock when order is deleted on edit order mode
 //      Reconsider the inheritance of the viewModel for edit order
@@ -88,8 +92,8 @@ namespace OrderMgmtSystem.ViewModels
         {
             _addOrderViewModel.OrderSubmitted += SubmitOrderToDB;
             _addOrderViewModel.OrderCancelled += OnOrderCancelled;
-            _addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
             _addOrderViewModel.OrderItemRemoved += UpdateItemStock;
+            _addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
         }
 
         /// <summary>
@@ -102,8 +106,6 @@ namespace OrderMgmtSystem.ViewModels
                 _addOrderViewModel.LoadNewOrder(GetNewOrder());
             }
             Navigate("AddOrderView");
-
-
         }
 
         /// <summary>
@@ -111,7 +113,7 @@ namespace OrderMgmtSystem.ViewModels
         /// orders list and navigating back to the ordersView.
         /// </summary>
         /// <param name="order">The new order to add</param>
-        private void SubmitOrderToDB(Order order)
+        private void SubmitOrderToDB(object sender, Order order)
         {
             // Submit order to DB logic goes here
             _ordersViewModel.Orders.Add(order);
@@ -121,8 +123,9 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Handles the OrderCancelled event by navigating back to the OrdersView.
         /// </summary>
-        private void OnOrderCancelled()
+        private void OnOrderCancelled(object sender, EventArgs e)
         {
+            Debug.WriteLine(sender.ToString());
             Navigate("OrdersView");
         }
 
@@ -144,34 +147,9 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="stockItemId"></param>
         /// <param name="quantity">The number of items(Quantity) removed from the order.</param>
         /// <param name="onBackOrder">The number of items that were unavailable when the order was placed.</param>
-        private void UpdateItemStock(int stockItemId, int quantity, int onBackOrder)
+        private void UpdateItemStock(object sender, OrderItemRemovedEventArgs e)
         {
-            _addItemViewModel.ReturnItemToStockList(stockItemId, quantity, onBackOrder);
-        }
-
-        /// <summary>
-        /// Handles all the navigation between views.
-        /// </summary>
-        /// <remarks>When needed the function also helps to call functions to initialize views</remarks>
-        /// <param name="destination"></param>
-        private void Navigate(string destination)
-        {
-            switch (destination)
-            {
-                case "AddOrderView":
-                    CurrentViewModel = _addOrderViewModel;
-                    break;
-                case "AddItemView":
-                    IsModalOpen = true;
-                    break;
-                case "CloseAddItemView":
-                    IsModalOpen = false;
-                    break;
-                case "OrdersView":
-                default:
-                    CurrentViewModel = _ordersViewModel;
-                    break;
-            }
+            _addItemViewModel.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
         }
 
         /// <summary>
@@ -192,12 +170,11 @@ namespace OrderMgmtSystem.ViewModels
             _openedOrdersIds.Add(order.Id);
             NavigateCommand.RaiseCanExecuteChanged();
 
-            var childWindowVM = (ChildWindowViewModel)_vMFactory.CreateViewModel("ChildWindow", order);
+            var childWindowVM = (ChildWindowViewModel)_vMFactory.CreateViewModel("ChildWindow", order, AddItemViewModel);
             childWindowVM.OrderDetailsVM.DeleteOrderRequested += OnDeleteOrderRequested;
             IChildWindowService windowService = new ChildWindowService(childWindowVM);
 
             windowService.OpenWindow();
-            //_addItemViewModel.NewOrderItemSelected -= AddItemToNewOrder;
             windowService.ChildWindowClosed += DetailsWindowClosing;
         }
 
@@ -228,6 +205,31 @@ namespace OrderMgmtSystem.ViewModels
         private Order GetNewOrder()
         {
             return _data.GetOrder();
+        }
+
+        /// <summary>
+        /// Handles all the navigation between views.
+        /// </summary>
+        /// <remarks>When needed the function also helps to call functions to initialize views</remarks>
+        /// <param name="destination"></param>
+        private void Navigate(string destination)
+        {
+            switch (destination)
+            {
+                case "AddOrderView":
+                    CurrentViewModel = _addOrderViewModel;
+                    break;
+                case "AddItemView":
+                    IsModalOpen = true;
+                    break;
+                case "CloseAddItemView":
+                    IsModalOpen = false;
+                    break;
+                case "OrdersView":
+                default:
+                    CurrentViewModel = _ordersViewModel;
+                    break;
+            }
         }
 
         #endregion

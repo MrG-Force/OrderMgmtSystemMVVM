@@ -1,44 +1,82 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.CommonEventArgs;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
-    public class EditOrderViewModel : AddOrderViewModel, IHandleOneOrder
+    public class EditOrderViewModel : SingleOrderViewModelBase
     {
-        private bool _isModalOpen;
+        public EditOrderViewModel(Order order) : base()
+        {
+            Title = $"Editing order number: {order.Id}";
+            Order = order;
+            _tempOrder = new Order(order);
+            TempOrderItems = new ObservableCollection<OrderItem>(_tempOrder.OrderItems);
+            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
+        }
+        private Order _tempOrder;
 
         public string Title { get; }
-        public bool IsModalOpen
-        {
-            get => _isModalOpen;
-            set => SetProperty(ref _isModalOpen, value);
-        }
-        public AddItemViewModel AddItemViewModel { get; private set; }
+        public Order TempOrder { get => _tempOrder; set => SetProperty(ref _tempOrder, value); }
+        public ObservableCollection<OrderItem> TempOrderItems { get; set; }
+        public override bool CanSubmit => !Enumerable.SequenceEqual(Order.OrderItems, TempOrder.OrderItems);
 
         public event Action OrderUpdated = delegate { };
-        public EditOrderViewModel(Order order, AddItemViewModel addItemVM) : base(order)
+
+        protected override void SubmitOrder()
         {
-            Order = order;
-            Title = $"Editing order number: {order.Id}";
-            OrderItems = new ObservableCollection<OrderItem>(order.OrderItems);
-            addItemVM.EditingOrderItemSelected += AddOrderItem;
-            AddItemViewModel = addItemVM;
-            _isModalOpen = false;
+            Order = TempOrder;
+            OrderUpdated();
         }
 
-        public DelegateCommand<string> NavigateCommand { get; private set; }
+        protected override void CancelOperation()
+        {
+            throw new NotImplementedException();
+        }
+
         internal override void AddOrderItem(OrderItem newItem)
         {
-            base.AddOrderItem(newItem);
-            //Navigate("CloseAddItem");
+            OrderItem repItem = TempOrderItems
+                .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
+            if (repItem == null)
+            {
+                newItem.OrderHeaderId = TempOrder.Id;
+                TempOrderItems.Add(newItem);
+                TempOrder.AddItem(newItem);
+                RaisePropertyChanged(nameof(TempOrder));
+                SubmitOrderCommand.RaiseCanExecuteChanged();
+            }
+            else
+            {
+                // Notify bindings
+                repItem.Quantity += newItem.Quantity;
+                // Sincronize items on back order
+                repItem.OnBackOrder += newItem.OnBackOrder;
+                RaisePropertyChanged(nameof(TempOrder));
+                SubmitOrderCommand.RaiseCanExecuteChanged();
+                // BUG to chase, add check to enable the button when an existing item is added
+                // doesn't update
+            }
         }
-        internal override void SubmitOrder()
+
+        internal override void RemoveItem(OrderItem item)
         {
-            OrderUpdated();
-
+            TempOrderItems.Remove(item);
+            TempOrder.RemoveItem(item.StockItemId);
+            RaisePropertyChanged(nameof(TempOrder));
+            var itemData = new OrderItemRemovedEventArgs()
+            {
+                StockItemId = item.StockItemId,
+                Quantity = item.Quantity,
+                OnBackOrder = item.OnBackOrder
+            };
+            base.OnOrderItemRemoved(itemData);
+            SubmitOrderCommand.RaiseCanExecuteChanged();
         }
-
     }
 }

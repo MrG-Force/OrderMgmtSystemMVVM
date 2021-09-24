@@ -1,5 +1,6 @@
 ﻿using DataModels;
 using DataProvider;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System.Collections.ObjectModel;
 
 namespace OrderMgmtSystem.ViewModels

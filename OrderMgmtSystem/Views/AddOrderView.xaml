@@ -167,7 +167,7 @@
               Content="Cancel"
               Grid.Row="4"
               Margin="10,0,0,0"
-              Command="{Binding CancelCurrentOrderCommand}" />
+              Command="{Binding CancelOperationCommand}" />
     </Grid>
   </Grid>
 </UserControl>
