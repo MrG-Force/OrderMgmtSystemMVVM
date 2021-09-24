@@ -53,6 +53,7 @@ namespace OrderMgmtSystem.Services.Windows
         public DelegateCommand<string> NavigateCommand { get; private set; }
         private void EditOrderVM_OrderUpdated()
         {
+            OrderDetailsVM.Order = EditOrderVM.Order;
             EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
             EditOrderVM.TempOrderItems = new ObservableCollection<OrderItem>(OrderDetailsVM.Order.OrderItems);
             Navigate("OrderDetailsView");
