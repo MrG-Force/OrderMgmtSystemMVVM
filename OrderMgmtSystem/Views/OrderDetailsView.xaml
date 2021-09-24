@@ -97,6 +97,9 @@
               Grid.Row="4"
               Grid.Column="1"
               Grid.ColumnSpan="2">
+      <DataGrid.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolConverter" />
+      </DataGrid.Resources>
       <DataGrid.Columns>
         <DataGridTextColumn Header="SKU"
                             Binding="{Binding StockItemId}"
@@ -107,9 +110,23 @@
         <DataGridTextColumn Header="Price"
                             Binding="{Binding Price, StringFormat=C}"
                             MinWidth="80" />
-        <DataGridTextColumn Header="Quantity"
-                            Binding="{Binding Quantity}"
-                            MinWidth="60" />
+        <DataGridTemplateColumn Header="Quantity"
+                                MinWidth="60">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Grid>
+                <Image Source="/Images/WarningIcon.png"
+                       Width="15"
+                       Height="18"
+                       HorizontalAlignment="Left"
+                       Visibility="{Binding HasItemsOnBackOrder, Converter={StaticResource BoolConverter}}"
+                       Opacity="0.7" />
+                <TextBlock Text="{Binding Quantity, Mode=OneWay}"
+                           HorizontalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTextColumn Header="Total"
                             Binding="{Binding Total, StringFormat=C}"
                             Width="*" />
