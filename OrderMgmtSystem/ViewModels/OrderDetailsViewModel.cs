@@ -3,6 +3,7 @@ using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
+using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
 
@@ -10,26 +11,6 @@ namespace OrderMgmtSystem.ViewModels
 {
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
-        private readonly IDialogService _dialogservice;
-
-        public AddItemViewModel AddItemViewModel { get; private set; }
-        public Order Order { get; set; }
-        public List<OrderItem> OrderItems { get; private set; }
-        public string Title { get; }
-        public DelegateCommand CloseWindowCommand { get; private set; }
-        public DelegateCommand ProcessOrderCommand { get; private set; }
-        public DelegateCommand EditOrderCommand { get; private set; }
-        public DelegateCommand DeleteOrderCommand { get; private set; }
-        public bool CanProcessOrEdit { get => Order.OrderStateId == 2; }
-        public bool CanDelete { get => Order.OrderStateId == 2 || Order.OrderStateId == 3; }
-        public bool IsModalOpen { get => false; }
-        public Action Close { get; set; }
-
-        /// <summary>
-        /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
-        /// </summary>
-        public event Action EditOrderRequested = delegate { };
-        public event Action DeleteOrderRequested = delegate { };
         public OrderDetailsViewModel(Order order, AddItemViewModel addItemVM)
         {
             Order = order;
@@ -41,6 +22,24 @@ namespace OrderMgmtSystem.ViewModels
             _dialogservice = new DialogService();
             AddItemViewModel = addItemVM;
         }
+        private readonly IDialogService _dialogservice;
+
+        public AddItemViewModel AddItemViewModel { get; private set; }
+        public Order Order { get; set; }
+        public string Title { get; }
+        public DelegateCommand CloseWindowCommand { get; private set; }
+        public DelegateCommand ProcessOrderCommand { get; private set; }
+        public DelegateCommand EditOrderCommand { get; private set; }
+        public DelegateCommand DeleteOrderCommand { get; private set; }
+        public bool CanProcessOrEdit { get => Order.OrderStateId == 2; }
+        public bool CanDelete { get => Order.OrderStateId == 2 || Order.OrderStateId == 3; }
+        public Action Close { get; set; }
+
+        /// <summary>
+        /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
+        /// </summary>
+        public event Action EditOrderRequested = delegate { };
+        public event Action DeleteOrderRequested = delegate { };
 
         private void ProcessOrder()
         {
