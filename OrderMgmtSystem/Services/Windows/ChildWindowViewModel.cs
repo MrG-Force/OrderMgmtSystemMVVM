@@ -89,5 +89,14 @@ namespace OrderMgmtSystem.Services.Windows
                     break;
             }
         }
+
+        public override void Dispose()
+        {
+            _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
+            _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
+            _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
+            _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
+            base.Dispose();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace OrderMgmtSystem.ViewModels.BaseViewModels
@@ -6,7 +7,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
     /// <summary>
     /// This class implements INotifyPropertyChanged to support one-way and two-way bindings
     /// </summary>
-    public abstract class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// This method is intended to be called from the 'set' block of each bindable property
@@ -32,6 +33,9 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public virtual void Dispose() { }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }
