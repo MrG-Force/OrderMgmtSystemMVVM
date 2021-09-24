@@ -195,7 +195,6 @@ namespace OrderMgmtSystem.ViewModels
         {
             _ = _openedOrdersIds.Remove(Id);
             NavigateCommand.RaiseCanExecuteChanged();
-            //_addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
         }
 
         /// <summary>
