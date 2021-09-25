@@ -10,6 +10,7 @@ namespace OrderMgmtSystem.ViewModels
 {
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
+        #region Constructor
         public OrderDetailsViewModel(Order order)
         {
             Order = order;
@@ -20,8 +21,13 @@ namespace OrderMgmtSystem.ViewModels
             DeleteOrderCommand = new DelegateCommand(DeleteOrder, () => CanDelete);
             _dialogservice = new DialogService();
         }
-        private readonly IDialogService _dialogservice;
+        #endregion
 
+        #region Fields
+        private readonly IDialogService _dialogservice;
+        #endregion
+
+        #region Properties
         public Order Order { get; set; }
         public string Title { get; }
         public DelegateCommand CloseWindowCommand { get; private set; }
@@ -31,7 +37,9 @@ namespace OrderMgmtSystem.ViewModels
         public bool CanProcessOrEdit { get => Order.OrderStateId == 2; }
         public bool CanDelete { get => Order.OrderStateId == 2 || Order.OrderStateId == 3; }
         public Action Close { get; set; }
+        #endregion
 
+        #region Events
         /// <summary>
         /// Occurs when an order is set to be edited.
         /// </summary>
@@ -43,7 +51,9 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <subscribers>MainWindowViewMoedl</subscribers>
         public event EventHandler DeleteOrderRequested;
+        #endregion
 
+        #region Methods
         private void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
@@ -91,5 +101,6 @@ namespace OrderMgmtSystem.ViewModels
         {
             Close?.Invoke();
         }
+        #endregion
     }
 }
