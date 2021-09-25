@@ -25,7 +25,7 @@ namespace OrderMgmtSystem.Factories
             {
                 case "MainWindow":
                     return new MainWindowViewModel
-                        (_dataProvider, 
+                        (_dataProvider,
                         (OrdersViewModel)CreateViewModel("Orders"), 
                         (AddOrderViewModel)CreateViewModel("AddOrder"), 
                         (AddItemViewModel)CreateViewModel("AddItem"), this);
