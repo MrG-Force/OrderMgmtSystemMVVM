@@ -69,7 +69,7 @@ namespace OrderMgmtSystem.Services.Windows
             OrderDetailsVM.Order = EditOrderVM.Order;
             EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
             EditOrderVM.TempOrderItems = new ObservableCollection<OrderItem>(OrderDetailsVM.Order.OrderItems);
-            EditOrderVM.StartTotal = OrderDetailsVM.Order.Total;
+            EditOrderVM.InitialTotal = OrderDetailsVM.Order.Total;
             EditOrderVM.RefreshCanSubmit();
             
             Navigate("OrderDetailsView");
