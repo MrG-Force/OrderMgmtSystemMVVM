@@ -8,8 +8,7 @@ using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-//TODO: Binding  in addItemView when editing order
-//      Return Items to stock when order is deleted on edit order mode
+//TODO: Return Items to stock when order is deleted on edit order mode
 //      Reconsider the inheritance of the viewModel for edit order
 namespace OrderMgmtSystem.ViewModels
 {
@@ -42,7 +41,7 @@ namespace OrderMgmtSystem.ViewModels
         public AddItemViewModel AddItemViewModel => _addItemViewModel;
         public DelegateCommand CreateNewOrderCommand { get; private set; }
         public RelayCommandT<string> NavigateCommand { get; private set; }
-        public DelegateCommand<Order> SeeOrderDetailsCommand { get; private set; }
+        public DelegateCommand<Order> ViewOrderDetailsCommand { get; private set; }
         public DelegateCommand CloseAppCommand { get; private set; }
         public bool IsModalOpen
         {
@@ -77,9 +76,9 @@ namespace OrderMgmtSystem.ViewModels
             _currentViewModel = _ordersViewModel;
             _vMFactory = vMFactory;
             _isModalOpen = false;
-            NavigateCommand = new RelayCommandT<string>(Navigate, () => OrderDetailsWindowsOpen);
-            SeeOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);
-            CreateNewOrderCommand = new DelegateCommand(CreateNewOrder);
+            NavigateCommand = new RelayCommandT<string>(Navigate);
+            ViewOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);
+            CreateNewOrderCommand = new DelegateCommand(CreateNewOrder, () => OrderDetailsWindowsOpen);
         }
         #endregion
 
@@ -168,7 +167,7 @@ namespace OrderMgmtSystem.ViewModels
                 return;
             }
             _openedOrdersIds.Add(order.Id);
-            NavigateCommand.RaiseCanExecuteChanged();
+            CreateNewOrderCommand.RaiseCanExecuteChanged();
 
             var childWindowVM = (ChildWindowViewModel)_vMFactory.CreateViewModel("ChildWindow", order, AddItemViewModel);
             childWindowVM.OrderDetailsVM.DeleteOrderRequested += OnDeleteOrderRequested;
@@ -194,7 +193,7 @@ namespace OrderMgmtSystem.ViewModels
         private void DetailsWindowClosing(int Id)
         {
             _ = _openedOrdersIds.Remove(Id);
-            NavigateCommand.RaiseCanExecuteChanged();
+            CreateNewOrderCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
