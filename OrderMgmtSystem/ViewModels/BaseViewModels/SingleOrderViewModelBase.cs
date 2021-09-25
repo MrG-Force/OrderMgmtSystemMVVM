@@ -32,7 +32,6 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
                 _order = value;
                 RaisePropertyChanged();
             }
-
         }
         public ObservableCollection<OrderItem> OrderItems { get; set; }
         public OrderItem SelectedItem
