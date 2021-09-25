@@ -2,6 +2,9 @@
 
 namespace OrderMgmtSystem.CommonEventArgs
 {
+    /// <summary>
+    /// This class provides the relevant even information to handle an ItemRemovedEvent
+    /// </summary>
     public class OrderItemRemovedEventArgs : EventArgs
     {
         public int StockItemId { get; set; }
