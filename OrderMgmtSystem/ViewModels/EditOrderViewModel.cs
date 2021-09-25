@@ -4,7 +4,6 @@ using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels

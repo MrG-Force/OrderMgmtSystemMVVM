@@ -53,7 +53,7 @@
         <DataGridTextColumn Header="Order No."
                             Binding="{Binding Id}"
                             MinWidth="60" />
-        <DataGridTextColumn Header="Date-time created"
+        <DataGridTextColumn Header="Date modified"
                             Binding="{Binding DateTime}"
                             Width="auto"
                             MinWidth="150" />
