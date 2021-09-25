@@ -5,7 +5,6 @@ using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
-using System.Collections.Generic;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -34,10 +33,16 @@ namespace OrderMgmtSystem.ViewModels
         public Action Close { get; set; }
 
         /// <summary>
-        /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
+        /// Occurs when an order is set to be edited.
         /// </summary>
-        public event Action EditOrderRequested = delegate { };
-        public event Action DeleteOrderRequested = delegate { };
+        /// <subscribers>ChildWindowViewModel</subscribers>
+        public event EventHandler EditOrderRequested;
+
+        /// <summary>
+        /// Occurs when an order is deleted.
+        /// </summary>
+        /// <subscribers>MainWindowViewMoedl</subscribers>
+        public event EventHandler DeleteOrderRequested;
 
         private void ProcessOrder()
         {
@@ -57,19 +62,24 @@ namespace OrderMgmtSystem.ViewModels
 
         private void EditOrder()
         {
-            OnEditOrderRequested();
+            OnEditOrderRequested(EventArgs.Empty);
         }
 
-        private void OnEditOrderRequested()
+        private void OnEditOrderRequested(EventArgs e)
         {
-            EditOrderRequested();
+            EditOrderRequested?.Invoke(this, e);
         }
 
         private void DeleteOrder()
         {
             // TODO: Add Dialog to confirm deletion
-            DeleteOrderRequested();
+            OnDeleteOrderRequested(EventArgs.Empty);
             CloseWindow();
+        }
+
+        private void OnDeleteOrderRequested(EventArgs e)
+        {
+            DeleteOrderRequested?.Invoke(this, e);
         }
 
 

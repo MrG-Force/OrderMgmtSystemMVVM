@@ -92,7 +92,7 @@ namespace OrderMgmtSystem.ViewModels
             _addOrderViewModel.OrderSubmitted += SubmitOrderToDB;
             _addOrderViewModel.OrderCancelled += OnOrderCancelled;
             _addOrderViewModel.OrderItemRemoved += UpdateItemStock;
-            _addItemViewModel.NewOrderItemSelected += AddItemToNewOrder;
+            _addItemViewModel.NewOrderItemSelected += AddItemVM_NewOrderItemSelected;
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace OrderMgmtSystem.ViewModels
         /// (modal) AddItemView.
         /// </summary>
         /// <param name="newItem">The item to add</param>
-        private void AddItemToNewOrder(OrderItem newItem)
+        private void AddItemVM_NewOrderItemSelected(object sender, OrderItem newItem)
         {
             _addOrderViewModel.AddOrderItem(newItem);
             Navigate("CloseAddItemView");
@@ -177,7 +177,12 @@ namespace OrderMgmtSystem.ViewModels
             windowService.ChildWindowClosed += DetailsWindowClosing;
         }
 
-        private void OnDeleteOrderRequested()
+        /// <summary>
+        /// This event handler deletes the SelectedOrder in the OrdersView.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnDeleteOrderRequested(object sender, EventArgs e)
         {
             _ordersViewModel.DeleteOrder();
         }
