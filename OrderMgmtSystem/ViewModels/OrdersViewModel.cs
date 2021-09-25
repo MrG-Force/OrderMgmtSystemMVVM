@@ -12,19 +12,19 @@ namespace OrderMgmtSystem.ViewModels
     /// </summary>
     public class OrdersViewModel : ViewModelBase
     {
-        private readonly IOrdersDataProvider _OrdersData;
-        private Order _SelectedOrder;
+        private readonly IOrdersDataProvider _ordersData;
+        private Order _selectedOrder;
 
         public OrdersViewModel(IOrdersDataProvider ordersData)
         {
-            _OrdersData = ordersData;
-            Orders = new ObservableCollection<Order>(_OrdersData.Orders);
+            _ordersData = ordersData;
+            Orders = new ObservableCollection<Order>(_ordersData.Orders);
         }
         public ObservableCollection<Order> Orders { get; }
         public Order SelectedOrder
         {
-            get => _SelectedOrder;
-            set => _SelectedOrder = value;
+            get => _selectedOrder;
+            set => _selectedOrder = value;
         }
 
         public void DeleteOrder()
