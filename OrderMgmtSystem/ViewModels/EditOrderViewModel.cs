@@ -18,13 +18,23 @@ namespace OrderMgmtSystem.ViewModels
             _tempOrder = new Order(order);
             TempOrderItems = new ObservableCollection<OrderItem>(_tempOrder.OrderItems);
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
+            InitialTotal = Order.Total;
         }
         private Order _tempOrder;
 
+        public decimal InitialTotal { get; set; }
         public string Title { get; }
-        public Order TempOrder { get => _tempOrder; set => SetProperty(ref _tempOrder, value); }
+        public Order TempOrder
+        {
+            get => _tempOrder;
+            set
+            {
+                _tempOrder = value;
+                RaisePropertyChanged();
+            }
+        }
         public ObservableCollection<OrderItem> TempOrderItems { get; set; }
-        public override bool CanSubmit => !Enumerable.SequenceEqual(Order.OrderItems, TempOrder.OrderItems);
+        public override bool CanSubmit => InitialTotal != TempOrder.Total;
 
         public event Action OrderUpdated = delegate { };
 
@@ -76,6 +86,11 @@ namespace OrderMgmtSystem.ViewModels
                 OnBackOrder = item.OnBackOrder
             };
             base.OnOrderItemRemoved(itemData);
+            SubmitOrderCommand.RaiseCanExecuteChanged();
+        }
+
+        public void RefreshCanSubmit()
+        {
             SubmitOrderCommand.RaiseCanExecuteChanged();
         }
     }
