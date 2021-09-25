@@ -53,7 +53,7 @@
                  IsReadOnly="True"
                  VerticalContentAlignment="Center"
                  Text="{Binding Path=Order.Id, Mode=OneWay}" />
-        <Label Content="Date &amp; Time created:"
+        <Label Content="Date modified"
                Grid.Row="0"
                Grid.Column="2"
                Margin="10,0,0,0" />

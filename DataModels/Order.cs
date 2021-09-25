@@ -15,6 +15,7 @@ namespace DataModels
         private List<OrderItem> _orderItems;
         private static int _id = 1000;
         private int _orderStateId;
+        private DateTime _dateTime;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         #endregion
@@ -26,7 +27,7 @@ namespace DataModels
         public Order()
         {
             _orderItems = new List<OrderItem>();
-            DateTime = DateTime.Now;
+            _dateTime = DateTime.Now;
             OrderStateId = 1;
             Id = _id++;
         }
@@ -37,7 +38,7 @@ namespace DataModels
         public Order(int id) // TODO: this ctor needs to pass the date time from db, conflicted with next ctor
         {
             _orderItems = new List<OrderItem>();
-            DateTime = DateTime.Now;
+            _dateTime = DateTime.Now;
             OrderStateId = 1;
             Id = id;
             _id = id++; // This line to be deleted when dummy data is no longer needed.
@@ -52,7 +53,7 @@ namespace DataModels
         public Order(int StateId, DateTime randomDate)
         {
             _orderItems = new List<OrderItem>();
-            DateTime = randomDate;
+            _dateTime = randomDate;
             OrderStateId = StateId;
             Id = _id++;
         }
@@ -60,7 +61,7 @@ namespace DataModels
         public Order(Order order)
         {
             Id = order.Id;
-            DateTime = DateTime.Now;
+            _dateTime = DateTime.Now;
             OrderStateId = order.OrderStateId;
             OrderItems = new List<OrderItem>(order.OrderItems);
             HasItemsOnBackOrder = order.HasItemsOnBackOrder;
@@ -69,7 +70,16 @@ namespace DataModels
 
         #region Props
         public int Id { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime DateTime
+        {
+            get => _dateTime;
+            set
+            {
+                _dateTime = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public int OrderStateId
         {
             get => _orderStateId;
@@ -107,6 +117,9 @@ namespace DataModels
             set
             {
                 _orderItems = value;
+                RaisePropertyChanged(nameof(Total));
+                RaisePropertyChanged(nameof(ItemsCount));
+                RaisePropertyChanged(nameof(DateTime));
             }
         }
         public int ItemsCount => _orderItems.Count;
