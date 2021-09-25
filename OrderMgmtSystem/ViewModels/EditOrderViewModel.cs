@@ -40,7 +40,8 @@ namespace OrderMgmtSystem.ViewModels
 
         protected override void SubmitOrder()
         {
-            Order = TempOrder;
+            Order.OrderItems = TempOrder.OrderItems;
+            Order.DateTime = TempOrder.DateTime;
             OrderUpdated();
         }
 
