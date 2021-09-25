@@ -11,7 +11,7 @@ namespace OrderMgmtSystem.ViewModels
 {
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
-        public OrderDetailsViewModel(Order order, AddItemViewModel addItemVM)
+        public OrderDetailsViewModel(Order order)
         {
             Order = order;
             Title = $"Order number: {order.Id}";
@@ -20,11 +20,9 @@ namespace OrderMgmtSystem.ViewModels
             EditOrderCommand = new DelegateCommand(EditOrder, () => CanProcessOrEdit);
             DeleteOrderCommand = new DelegateCommand(DeleteOrder, () => CanDelete);
             _dialogservice = new DialogService();
-            AddItemViewModel = addItemVM;
         }
         private readonly IDialogService _dialogservice;
 
-        public AddItemViewModel AddItemViewModel { get; private set; }
         public Order Order { get; set; }
         public string Title { get; }
         public DelegateCommand CloseWindowCommand { get; private set; }
