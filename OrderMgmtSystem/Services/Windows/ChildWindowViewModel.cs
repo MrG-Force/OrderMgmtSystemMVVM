@@ -18,16 +18,29 @@ namespace OrderMgmtSystem.Services.Windows
         public ChildWindowViewModel(OrderDetailsViewModel orderDetailsVM, EditOrderViewModel editOrderVM, AddItemViewModel addItemVM)
         {
             _orderDetailsVM = orderDetailsVM;
+            _editOrderVM = editOrderVM;;
+            _addItemVM = addItemVM;
+            _currentViewModel = orderDetailsVM;
+
+            _isModalOpen = false;
+            NavigateCommand = new DelegateCommand<string>(Navigate);
+            SubscribeToEvents();
+        }
+
+        private void SubscribeToEvents()
+        {
             _orderDetailsVM.EditOrderRequested += OrderDetailsVM_EditOrderRequested;
-            _editOrderVM = editOrderVM;
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved += EditOrderVM_OrderItemRemoved;
-            _addItemVM = addItemVM;
             _addItemVM.EditingOrderItemSelected += AddItemVM_EditingOrderItemSelected;
-            _currentViewModel = orderDetailsVM;
-            _isModalOpen = false;
+        }
 
-            NavigateCommand = new DelegateCommand<string>(Navigate);
+        private void UnsubscribeToEvents()
+        {
+            _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
+            _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
+            _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
+            _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
         }
 
         private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
@@ -56,6 +69,9 @@ namespace OrderMgmtSystem.Services.Windows
             OrderDetailsVM.Order = EditOrderVM.Order;
             EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
             EditOrderVM.TempOrderItems = new ObservableCollection<OrderItem>(OrderDetailsVM.Order.OrderItems);
+            EditOrderVM.StartTotal = OrderDetailsVM.Order.Total;
+            EditOrderVM.RefreshCanSubmit();
+            
             Navigate("OrderDetailsView");
         }
 
@@ -92,10 +108,7 @@ namespace OrderMgmtSystem.Services.Windows
 
         public override void Dispose()
         {
-            _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
-            _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
-            _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
-            _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
+            UnsubscribeToEvents();
             base.Dispose();
         }
     }
