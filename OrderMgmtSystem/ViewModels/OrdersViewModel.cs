@@ -2,6 +2,7 @@
 using DataProvider;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -29,6 +30,15 @@ namespace OrderMgmtSystem.ViewModels
         public void DeleteOrder()
         {
             Orders.Remove(SelectedOrder);
+            // Call RemoveFromDB
+        }
+
+        public void UpdateOrder(Order updatedOrder)
+        {
+            Order order = Orders.FirstOrDefault(o => o.Id == updatedOrder.Id);
+            Orders.Remove(order);
+            Orders.Add(updatedOrder);
         }
     }
 }
+//TODO Notify when an order gets updated
