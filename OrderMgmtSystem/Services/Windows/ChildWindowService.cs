@@ -7,7 +7,6 @@ namespace OrderMgmtSystem.Services.Windows
     public class ChildWindowService : IChildWindowService
     {
         private ChildWindow _childWindow;
-        //Start delete
         private ChildWindowViewModel _childWindowVM;
 
         public ChildWindowService(ChildWindowViewModel childWindowVM)
