@@ -25,7 +25,10 @@ namespace OrderMgmtSystem.ViewModels
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
         }
         #endregion
+
+        #region Properties
         public override bool CanSubmit => OrderItems.Count > 0;
+        #endregion
 
         #region Methods
         /// <summary>
@@ -38,6 +41,10 @@ namespace OrderMgmtSystem.ViewModels
             _order = newOrder;
         }
 
+        /// <summary>
+        /// Adds the passed OrderItem to the new Order.
+        /// </summary>
+        /// <param name="newItem"></param>
         internal override void AddOrderItem(OrderItem newItem)
         {
             OrderItem repItem = OrderItems
@@ -60,6 +67,10 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
 
+        /// <summary>
+        /// Removes the passed OrderItem from the new Order.
+        /// </summary>
+        /// <param name="newItem"></param>
         internal override void RemoveItem(OrderItem item)
         {
             OrderItems.Remove(item);
@@ -76,7 +87,7 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Submits the current order and cleans the form.
+        /// Submits the current order and resets the form.
         /// </summary>
         protected override void SubmitOrder()
         {
@@ -109,7 +120,7 @@ namespace OrderMgmtSystem.ViewModels
             }
             if (result)
             {
-                Order.CancelLastOrder();
+                Order.CancelLastOrder(); //---Remove if not useing random data
                 // Return Items to stock
                 foreach (OrderItem item in OrderItems)
                 {
