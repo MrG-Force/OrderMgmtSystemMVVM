@@ -59,16 +59,21 @@ namespace OrderMgmtSystem.Services.Windows
         private void SubscribeToEvents()
         {
             _orderDetailsVM.EditOrderRequested += OrderDetailsVM_EditOrderRequested;
+            _orderDetailsVM.DeleteOrderRequested += OrderDetailsVM_OrderDeletedOrRejected;
+            _orderDetailsVM.OrderRejected += OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved += EditOrderVM_OrderItemRemoved;
             _addItemVM.EditingOrderItemSelected += AddItemVM_EditingOrderItemSelected;
         }
+
         /// <summary>
         /// Unsubscribes the class from the events so it can be properly disposed.
         /// </summary>
         private void UnsubscribeToEvents()
         {
             _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
+            _orderDetailsVM.DeleteOrderRequested -= OrderDetailsVM_OrderDeletedOrRejected;
+            _orderDetailsVM.OrderRejected -= OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
             _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
@@ -87,16 +92,7 @@ namespace OrderMgmtSystem.Services.Windows
             EditOrderVM.RefreshCanSubmit();
         }
 
-        /// <summary>
-        /// This event handler returns items removed from an order back to the Stock items list.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e">Contain relevant information to return the item</param>
-        private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
-        {
-            _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
-        }
-
+        #region EventHandling
         /// <summary>
         /// This event handler takes the application back to the OrderDetailsView and calls the UpdateViewModels method. 
         /// </summary>
@@ -106,6 +102,16 @@ namespace OrderMgmtSystem.Services.Windows
         {
             UpdateViewModels();
             Navigate("OrderDetailsView");
+        }
+
+        /// <summary>
+        /// This event handler returns items removed from an order back to the Stock items list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">Contain relevant information to return the item</param>
+        private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
+        {
+            _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
         }
 
         /// <summary>
@@ -119,6 +125,19 @@ namespace OrderMgmtSystem.Services.Windows
         }
 
         /// <summary>
+        /// This event hanlder returns the Stock items to the inventory when the order is deleted or rejected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OrderDetailsVM_OrderDeletedOrRejected(object sender, EventArgs e)
+        {
+            foreach (var item in _orderDetailsVM.Order.OrderItems)
+            {
+                _addItemVM.ReturnItemToStockList(item.StockItemId, item.Quantity, item.OnBackOrder);
+            };
+        }
+
+        /// <summary>
         /// This event handler adds a selected OrderItem to the Order and closes the modal.
         /// </summary>
         /// <param name="sender"></param>
@@ -128,6 +147,7 @@ namespace OrderMgmtSystem.Services.Windows
             EditOrderVM.AddOrderItem(item);
             Navigate("CloseAddItemView");
         }
+        #endregion
 
         /// <summary>
         /// Handles the navigation in the ChildWindow.
