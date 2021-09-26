@@ -5,25 +5,29 @@ using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
     public abstract class SingleOrderViewModelBase : ViewModelBase, IHandleOneOrder
     {
+        #region Constructor
         public SingleOrderViewModelBase()
         {
             RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => _selectedItem != null);
             CancelOperationCommand = new DelegateCommand(CancelOperation);
             _dialogService = new DialogService();
         }
+        #endregion
 
+        #region Fields
         protected readonly IDialogService _dialogService;
 
         protected Order _order;
         private OrderItem _selectedItem;
         // Get a VMFactory field to create dialog view models
+        #endregion
 
+        #region Properties
         public Order Order
         {
             get => _order;
@@ -47,7 +51,9 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         public DelegateCommand SubmitOrderCommand { get; protected set; }
         public DelegateCommand CancelOperationCommand { get; private set; }
         public abstract bool CanSubmit { get; }
+        #endregion
 
+        #region Events
         /// <summary>
         /// Happens when an item is removed from the order
         /// </summary>
@@ -60,7 +66,9 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         /// Happens when the current order is cancelled.
         /// </summary>
         public event EventHandler OrderCancelled;
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Adds an OrderItem to the order.
         /// </summary>
@@ -88,5 +96,6 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             OrderCancelled?.Invoke(this, e);
         }
+        #endregion
     }
 }
