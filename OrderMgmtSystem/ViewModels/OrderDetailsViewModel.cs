@@ -49,8 +49,10 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Occurs when an order is deleted.
         /// </summary>
-        /// <subscribers>MainWindowViewMoedl</subscribers>
+        /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
         public event EventHandler DeleteOrderRequested;
+
+        public event EventHandler OrderRejected;
         #endregion
 
         #region Methods
@@ -59,6 +61,7 @@ namespace OrderMgmtSystem.ViewModels
             if (Order.HasItemsOnBackOrder)
             {
                 Order.OrderStateId = 3;
+                OnOrderRejected(EventArgs.Empty);
                 // TODO: Inform that the order has been rejected
                 CloseWindow();
             }
@@ -75,11 +78,6 @@ namespace OrderMgmtSystem.ViewModels
             OnEditOrderRequested(EventArgs.Empty);
         }
 
-        private void OnEditOrderRequested(EventArgs e)
-        {
-            EditOrderRequested?.Invoke(this, e);
-        }
-
         private void DeleteOrder()
         {
             // TODO: Add Dialog to confirm deletion
@@ -87,12 +85,20 @@ namespace OrderMgmtSystem.ViewModels
             CloseWindow();
         }
 
+        private void OnEditOrderRequested(EventArgs e)
+        {
+            EditOrderRequested?.Invoke(this, e);
+        }
+
         private void OnDeleteOrderRequested(EventArgs e)
         {
             DeleteOrderRequested?.Invoke(this, e);
         }
 
-
+        private void OnOrderRejected(EventArgs e)
+        {
+            OrderRejected?.Invoke(this, e);
+        }
         /// <summary>
         /// Invokes the Close delegate. 
         /// </summary>
