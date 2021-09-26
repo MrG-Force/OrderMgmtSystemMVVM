@@ -2,7 +2,6 @@
 using DataProvider;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -12,33 +11,37 @@ namespace OrderMgmtSystem.ViewModels
     /// </summary>
     public class OrdersViewModel : ViewModelBase
     {
-        private readonly IOrdersDataProvider _ordersData;
-        private Order _selectedOrder;
-
+        #region Constructor
         public OrdersViewModel(IOrdersDataProvider ordersData)
         {
             _ordersData = ordersData;
             Orders = new ObservableCollection<Order>(_ordersData.Orders);
         }
+        #endregion
+
+        #region Fields
+        private readonly IOrdersDataProvider _ordersData;
+        private Order _selectedOrder;
+        #endregion
+
+        #region Properties
         public ObservableCollection<Order> Orders { get; }
         public Order SelectedOrder
         {
             get => _selectedOrder;
             set => _selectedOrder = value;
         }
+        #endregion
 
+        #region Methods
+        /// <summary>
+        /// Deletes the selected order.
+        /// </summary>
         public void DeleteOrder()
         {
             Orders.Remove(SelectedOrder);
             // Call RemoveFromDB
         }
-
-        public void UpdateOrder(Order updatedOrder)
-        {
-            Order order = Orders.FirstOrDefault(o => o.Id == updatedOrder.Id);
-            Orders.Remove(order);
-            Orders.Add(updatedOrder);
-        }
+        #endregion
     }
 }
-//TODO Notify when an order gets updated
