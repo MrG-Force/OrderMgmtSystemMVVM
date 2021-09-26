@@ -4,7 +4,7 @@ namespace OrderMgmtSystem.Services.Windows
 {
     public interface IChildWindowService
     {
-        event Action<int> ChildWindowClosed;
+        event EventHandler<int> ChildWindowClosed;
 
         void OpenWindow();
     }

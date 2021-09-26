@@ -39,7 +39,7 @@ namespace DataModels
             Price = stockItem.Price;
             Description = stockItem.Name;
             Quantity = 0;
-            _onBackOrder = 0;
+            _onBackOrder = stockItem.OnBackOrder;
         }
         #endregion
 

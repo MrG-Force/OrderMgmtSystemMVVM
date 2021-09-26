@@ -1,6 +1,7 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
+using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,16 @@ namespace OrderMgmtSystem.ViewModels
     /// </summary>
     public class AddItemViewModel : ViewModelBase
     {
+        #region Constructor
+        public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
+        {
+            _dialogService = dialogService;
+            _dialogViewModel = dialogViewModelBase;
+            StockItems = stockItems;
+            RequestAddItemCommand = new DelegateCommand<ViewModelBase>(RequestAddItem);
+        }
+        #endregion
+
         #region Fields
         private readonly IDialogService _dialogService;
         private readonly DialogViewModelBase<int> _dialogViewModel;
@@ -35,37 +46,26 @@ namespace OrderMgmtSystem.ViewModels
 
         #region Events
         /// <summary>
-        /// Happens when an item is selected and added to the order to trigger Closing the (modal)View.
+        /// Occurs when an item is selected and added to a new order.
         /// </summary>
-        // delegate trick: assign an empty anonymous method as a subscriber, no need to worry about PropertyChanged being null.
-        public event Action<OrderItem> NewOrderItemSelected = delegate { };
-        public event Action<OrderItem> EditingOrderItemSelected = delegate { };
-        #endregion
+        /// <subscribers>MainWindowViewModel</subscribers>
+        public event EventHandler<OrderItem> NewOrderItemSelected;
 
-        #region Constructor
-        public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
-        {
-            _dialogService = dialogService;
-            _dialogViewModel = dialogViewModelBase;
-            StockItems = stockItems;
-            RequestAddItemCommand = new DelegateCommand<ViewModelBase>(RequestAddItem);
-        }
+        /// <summary>
+        /// Occurs when an OrderItem is ready to be added to the Order in the EditOrder View.
+        /// </summary>
+        /// <subscribers>ChildWindowViewModel</subscribers>
+        public event EventHandler<OrderItem> EditingOrderItemSelected;
         #endregion
 
         #region Methods
-        private void RequestAddItem(ViewModelBase vM)
-        {
-            AddItem(vM.GetType().Name);
-        }
-
         /// <summary>
         /// Creates a new OrderItem and updates the corresponding InStock property 
-        /// in the StockItems list. Provides the functionality to the AddItemCommand that 
-        /// is bound to the "Add to order" button in the view. 
+        /// in the StockItems list. 
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
-        /// <param name="vMName">The name of view model set as datacontext of the container window</param>
-        public void AddItem(string vMName)
+        /// <param name="vM">The DataContext of the calling Window</param>
+        public void RequestAddItem(ViewModelBase vM)
         {
             int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
@@ -79,7 +79,6 @@ namespace OrderMgmtSystem.ViewModels
             StockItem changedItem = StockItems
                 .FirstOrDefault(item => item.Id == SelectedStockItem.Id);
 
-            // The StockItem class implements INotifyPropertyChanged and raises PropertyChanged on StockItems to notify bindings
             // The StockItem class handles the negative stock if not enough items available
             if (changedItem != null) changedItem.InStock -= qty;
 
@@ -94,11 +93,11 @@ namespace OrderMgmtSystem.ViewModels
             }
 
             // Raise the events depending on the ViewModel
-            if (vMName.Equals("MainWindowViewModel"))
+            if (vM is MainWindowViewModel)
             {
                 OnNewOrderItemSelected(orderItem);
             }
-            else if (vMName.Equals("ChildWindowViewModel"))
+            else if (vM is ChildWindowViewModel)
             {
                 OnEditingOrderItemSelected(orderItem);
             }
@@ -135,7 +134,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="orderItem"></param>
         private void OnNewOrderItemSelected(OrderItem orderItem)
         {
-            NewOrderItemSelected(orderItem);
+            NewOrderItemSelected?.Invoke(this, orderItem);
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="orderItem"></param>
         private void OnEditingOrderItemSelected(OrderItem orderItem)
         {
-            EditingOrderItemSelected(orderItem);
+            EditingOrderItemSelected?.Invoke(this, orderItem);
         }
         #endregion
     }

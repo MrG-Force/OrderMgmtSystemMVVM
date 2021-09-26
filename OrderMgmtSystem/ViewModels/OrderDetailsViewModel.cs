@@ -5,12 +5,12 @@ using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
-using System.Collections.Generic;
 
 namespace OrderMgmtSystem.ViewModels
 {
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
+        #region Constructor
         public OrderDetailsViewModel(Order order)
         {
             Order = order;
@@ -21,8 +21,13 @@ namespace OrderMgmtSystem.ViewModels
             DeleteOrderCommand = new DelegateCommand(DeleteOrder, () => CanDelete);
             _dialogservice = new DialogService();
         }
-        private readonly IDialogService _dialogservice;
+        #endregion
 
+        #region Fields
+        private readonly IDialogService _dialogservice;
+        #endregion
+
+        #region Properties
         public Order Order { get; set; }
         public string Title { get; }
         public DelegateCommand CloseWindowCommand { get; private set; }
@@ -32,18 +37,31 @@ namespace OrderMgmtSystem.ViewModels
         public bool CanProcessOrEdit { get => Order.OrderStateId == 2; }
         public bool CanDelete { get => Order.OrderStateId == 2 || Order.OrderStateId == 3; }
         public Action Close { get; set; }
+        #endregion
+
+        #region Events
+        /// <summary>
+        /// Occurs when an order is set to be edited.
+        /// </summary>
+        /// <subscribers>ChildWindowViewModel</subscribers>
+        public event EventHandler EditOrderRequested;
 
         /// <summary>
-        /// ChildWindowService subscribes to this event to switch data context in ChildWindow.
+        /// Occurs when an order is deleted.
         /// </summary>
-        public event Action EditOrderRequested = delegate { };
-        public event Action DeleteOrderRequested = delegate { };
+        /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
+        public event EventHandler DeleteOrderRequested;
 
+        public event EventHandler OrderRejected;
+        #endregion
+
+        #region Methods
         private void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
             {
                 Order.OrderStateId = 3;
+                OnOrderRejected(EventArgs.Empty);
                 // TODO: Inform that the order has been rejected
                 CloseWindow();
             }
@@ -57,22 +75,30 @@ namespace OrderMgmtSystem.ViewModels
 
         private void EditOrder()
         {
-            OnEditOrderRequested();
-        }
-
-        private void OnEditOrderRequested()
-        {
-            EditOrderRequested();
+            OnEditOrderRequested(EventArgs.Empty);
         }
 
         private void DeleteOrder()
         {
             // TODO: Add Dialog to confirm deletion
-            DeleteOrderRequested();
+            OnDeleteOrderRequested(EventArgs.Empty);
             CloseWindow();
         }
 
+        private void OnEditOrderRequested(EventArgs e)
+        {
+            EditOrderRequested?.Invoke(this, e);
+        }
 
+        private void OnDeleteOrderRequested(EventArgs e)
+        {
+            DeleteOrderRequested?.Invoke(this, e);
+        }
+
+        private void OnOrderRejected(EventArgs e)
+        {
+            OrderRejected?.Invoke(this, e);
+        }
         /// <summary>
         /// Invokes the Close delegate. 
         /// </summary>
@@ -81,5 +107,6 @@ namespace OrderMgmtSystem.ViewModels
         {
             Close?.Invoke();
         }
+        #endregion
     }
 }
