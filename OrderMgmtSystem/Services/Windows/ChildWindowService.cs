@@ -1,22 +1,29 @@
-﻿using OrderMgmtSystem.ViewModels;
-using OrderMgmtSystem.ViewModels.BaseViewModels;
+﻿using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
+using System.ComponentModel;
 
 namespace OrderMgmtSystem.Services.Windows
 {
     public class ChildWindowService : IChildWindowService
     {
-        private ChildWindow _childWindow;
-        private ChildWindowViewModel _childWindowVM;
-
+        #region Constructor
         public ChildWindowService(ChildWindowViewModel childWindowVM)
         {
             _childWindow = new ChildWindow();
             _childWindowVM = childWindowVM;
         }
+        #endregion
 
-        public event Action<int> ChildWindowClosed = delegate { };
+        #region Fields
+        private ChildWindow _childWindow;
+        private ChildWindowViewModel _childWindowVM;
+        #endregion
 
+        #region Events
+        public event EventHandler<int> ChildWindowClosed;
+        #endregion
+
+        #region Methods
         /// <summary>
         /// Starts and shows a new Window with the passed viewModel and
         /// wires up the window.Closing event.
@@ -26,7 +33,7 @@ namespace OrderMgmtSystem.Services.Windows
         {
             _childWindow.DataContext = _childWindowVM;
             _childWindow.Show();
-            _childWindow.Closing += OnWindow_Closing;
+            _childWindow.Closed += OnWindow_Closed; // Consider Closing event for preventing window to close
         }
 
         /// <summary>
@@ -36,7 +43,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="orderId"></param>
         private void OnChildWindowClosed(int orderId)
         {
-            ChildWindowClosed(orderId);
+            ChildWindowClosed?.Invoke(this, orderId);
         }
 
         /// <summary>
@@ -45,11 +52,12 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OnWindow_Closed(object sender, EventArgs e)
         {
             ChildWindow obj = (ChildWindow)sender;
             IHandleOneOrder vm = (IHandleOneOrder)obj.DataContext;
             OnChildWindowClosed(vm.Order.Id);
         }
+        #endregion
     }
 }
