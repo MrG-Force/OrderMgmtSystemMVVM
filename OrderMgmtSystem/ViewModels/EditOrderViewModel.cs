@@ -67,6 +67,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             Order.OrderItems = TempOrder.OrderItems;
             Order.DateTime = TempOrder.DateTime;
+            Order.HasItemsOnBackOrder = TempOrder.HasItemsOnBackOrder;
             OnOrderUpdated(EventArgs.Empty);
         }
 
@@ -93,6 +94,7 @@ namespace OrderMgmtSystem.ViewModels
                 repItem.Quantity += newItem.Quantity;
                 // Sincronize items on back order
                 repItem.OnBackOrder += newItem.OnBackOrder;
+                TempOrder.HasItemsOnBackOrder = repItem.HasItemsOnBackOrder;
                 RaisePropertyChanged(nameof(TempOrder));
                 SubmitOrderCommand.RaiseCanExecuteChanged();
             }
