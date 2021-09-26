@@ -79,7 +79,6 @@ namespace OrderMgmtSystem.ViewModels
             StockItem changedItem = StockItems
                 .FirstOrDefault(item => item.Id == SelectedStockItem.Id);
 
-            // The StockItem class implements INotifyPropertyChanged and raises PropertyChanged on StockItems to notify bindings
             // The StockItem class handles the negative stock if not enough items available
             if (changedItem != null) changedItem.InStock -= qty;
 
