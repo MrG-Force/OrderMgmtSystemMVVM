@@ -1,8 +1,11 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
+using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
+using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -15,8 +18,9 @@ namespace OrderMgmtSystem.ViewModels
         {
             Title = $"Editing order number: {order.Id}";
             Order = order;
+            OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
             _tempOrder = new Order(order);
-            TempOrderItems = new ObservableCollection<OrderItem>(_tempOrder.OrderItems);
+            TempOrderItems = new List<OrderItem>();
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
             InitialTotal = Order.Total;
         }
@@ -38,7 +42,7 @@ namespace OrderMgmtSystem.ViewModels
                 RaisePropertyChanged();
             }
         }
-        public ObservableCollection<OrderItem> TempOrderItems { get; set; }
+        public List<OrderItem> TempOrderItems { get; set; }
         public override bool CanSubmit => InitialTotal != TempOrder.Total;
         #endregion
 
@@ -65,7 +69,7 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         protected override void SubmitOrder()
         {
-            Order.OrderItems = TempOrder.OrderItems;
+            Order.OrderItems = this.OrderItems.ToList();
             Order.DateTime = TempOrder.DateTime;
             Order.HasItemsOnBackOrder = TempOrder.HasItemsOnBackOrder;
             OnOrderUpdated(EventArgs.Empty);
@@ -75,14 +79,16 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Adds the the passed OrderItem to the temporary order.
         /// </summary>
+        /// <remarks>It is called in ChildWindowViewModel</remarks>
         /// <param name="newItem"></param>
         internal override void AddOrderItem(OrderItem newItem)
         {
-            OrderItem repItem = TempOrderItems
+            OrderItem repItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
             if (repItem == null)
             {
                 newItem.OrderHeaderId = TempOrder.Id;
+                OrderItems.Add(newItem);
                 TempOrderItems.Add(newItem);
                 TempOrder.AddItem(newItem);
                 RaisePropertyChanged(nameof(TempOrder));
@@ -90,11 +96,17 @@ namespace OrderMgmtSystem.ViewModels
             }
             else
             {
-                // Notify bindings
-                repItem.Quantity += newItem.Quantity;
-                // Sincronize items on back order
-                repItem.OnBackOrder += newItem.OnBackOrder;
-                TempOrder.HasItemsOnBackOrder = repItem.HasItemsOnBackOrder;
+                TempOrderItems.Add(new OrderItem(newItem));
+                newItem.Quantity += repItem.Quantity;
+                newItem.OnBackOrder += repItem.OnBackOrder;
+                int indx = OrderItems.IndexOf(repItem);
+                _= OrderItems.Remove(repItem);
+                OrderItems.Insert(indx, newItem);
+                TempOrder.OrderItems = new List<OrderItem>(OrderItems);
+                if (newItem.HasItemsOnBackOrder)
+                {
+                    TempOrder.HasItemsOnBackOrder = true;
+                }
                 RaisePropertyChanged(nameof(TempOrder));
                 SubmitOrderCommand.RaiseCanExecuteChanged();
             }
@@ -106,7 +118,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
-            TempOrderItems.Remove(item);
+            OrderItems.Remove(item);
             TempOrder.RemoveItem(item.StockItemId);
             RaisePropertyChanged(nameof(TempOrder));
             var itemData = new OrderItemRemovedEventArgs()
@@ -120,11 +132,41 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// TODO
+        /// Cancel the changes made in the EditOrder view and return the corresponding stockItems
+        /// to the inventory.
         /// </summary>
         protected override void CancelOperation()
         {
-            throw new NotImplementedException();
+            bool result = false;
+            // if order has changed
+            if (CanSubmit)
+            {
+                string message = "All the changes will be reverted!";
+                string title = $"Cancel changes in order: {Order.Id}";
+                var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                    .CreateDialogViewModel("CancelOrderDialog", title, message);
+                result = _dialogService.OpenDialog(dialogVM);
+            }
+            if (result)
+            {
+                // Return Items to stock
+                foreach (OrderItem item in TempOrderItems)
+                {
+                    var itemData = new OrderItemRemovedEventArgs()
+                    {
+                        StockItemId = item.StockItemId,
+                        Quantity = item.Quantity,
+                        OnBackOrder = item.OnBackOrder
+                    };
+                    // Use the eventhandler to updates the stock quantities
+                    base.OnOrderItemRemoved(itemData);
+                }
+                OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
+                TempOrder = new Order(Order);
+                TempOrderItems.Clear();
+                SubmitOrderCommand.RaiseCanExecuteChanged();
+            }
+            base.OnOperationCancelled(EventArgs.Empty);
         }
 
         /// <summary>
