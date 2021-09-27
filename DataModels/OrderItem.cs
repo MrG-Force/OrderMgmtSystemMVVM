@@ -41,6 +41,20 @@ namespace DataModels
             Quantity = 0;
             _onBackOrder = stockItem.OnBackOrder;
         }
+
+        /// <summary>
+        /// To create a temporary orderItem while editing an existing order.
+        /// </summary>
+        /// <param name="item"></param>
+        public OrderItem(OrderItem item)
+        {
+            OrderHeaderId = 0;
+            StockItemId = item.StockItemId;
+            Description = item.Description;
+            Price = item.Price;
+            Quantity = item.Quantity;
+            OnBackOrder = item.OnBackOrder;
+        }
         #endregion
 
         #region Props
