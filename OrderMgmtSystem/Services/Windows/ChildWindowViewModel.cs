@@ -4,7 +4,6 @@ using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
-using System.Collections.ObjectModel;
 
 namespace OrderMgmtSystem.Services.Windows
 {
@@ -63,6 +62,7 @@ namespace OrderMgmtSystem.Services.Windows
             _orderDetailsVM.OrderRejected += OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved += EditOrderVM_OrderItemRemoved;
+            _editOrderVM.OperationCancelled += EditOrderVM_OperationCancelled;
             _addItemVM.EditingOrderItemSelected += AddItemVM_EditingOrderItemSelected;
         }
 
@@ -76,6 +76,7 @@ namespace OrderMgmtSystem.Services.Windows
             _orderDetailsVM.OrderRejected -= OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
+            _editOrderVM.OperationCancelled -= EditOrderVM_OperationCancelled;
             _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
         }
 
@@ -87,7 +88,7 @@ namespace OrderMgmtSystem.Services.Windows
         {
             OrderDetailsVM.Order = EditOrderVM.Order;
             EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
-            EditOrderVM.TempOrderItems = new ObservableCollection<OrderItem>(OrderDetailsVM.Order.OrderItems);
+            EditOrderVM.TempOrderItems.Clear();
             EditOrderVM.InitialTotal = OrderDetailsVM.Order.Total;
             EditOrderVM.RefreshCanSubmit();
         }
@@ -112,6 +113,16 @@ namespace OrderMgmtSystem.Services.Windows
         private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
         {
             _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
+        }
+
+        /// <summary>
+        /// This event handler takes the user to the OrderDetailsView.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EditOrderVM_OperationCancelled(object sender, EventArgs e)
+        {
+            Navigate("OrderDetailsView");
         }
 
         /// <summary>
