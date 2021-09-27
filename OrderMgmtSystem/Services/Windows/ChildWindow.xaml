@@ -16,7 +16,8 @@
         Title="{Binding Path=CurrentViewModel.Title}"
         SizeToContent="WidthAndHeight"
         d:DesignHeight="450"
-        d:DesignWidth="600">
+        d:DesignWidth="600"
+        Tag="ChildWindow">
   <Grid>
     <modalcontrol:Modal IsOpen="{Binding IsModalOpen }"
                         Panel.ZIndex="1"
