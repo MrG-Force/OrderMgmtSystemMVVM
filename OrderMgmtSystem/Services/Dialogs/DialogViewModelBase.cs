@@ -13,7 +13,6 @@ namespace OrderMgmtSystem.Services
 
         public string Title { get; set; }
         public string Message { get => _message; set => SetProperty(ref _message, value); }
-        public int AvailableStock { get; set; }
         public T DialogResult { get; set; }
 
         // This is cool:

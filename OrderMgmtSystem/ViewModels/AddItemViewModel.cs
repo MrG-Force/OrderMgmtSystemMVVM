@@ -2,6 +2,7 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
+using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace OrderMgmtSystem.ViewModels
         public AddItemViewModel(List<StockItem> stockItems, IDialogService dialogService, DialogViewModelBase<int> dialogViewModelBase)
         {
             _dialogService = dialogService;
-            _dialogViewModel = dialogViewModelBase;
+            _dialogViewModel = (QuantityViewModel)dialogViewModelBase;
             StockItems = stockItems;
             RequestAddItemCommand = new DelegateCommand<string>(RequestAddItem);
         }
@@ -25,7 +26,7 @@ namespace OrderMgmtSystem.ViewModels
 
         #region Fields
         private readonly IDialogService _dialogService;
-        private readonly DialogViewModelBase<int> _dialogViewModel;
+        private readonly QuantityViewModel _dialogViewModel;
         private StockItem _selectedStockItem;
         #endregion
 
