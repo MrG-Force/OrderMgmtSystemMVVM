@@ -1,13 +1,19 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
+using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 
 namespace OrderMgmtSystem.ViewModels
 {
+    /// <summary>
+    /// A class that provides the logic and functionality to the OrderDetailsView that allows the 
+    /// user to see the details of an order, delete it, process it or modify it.
+    /// </summary>
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
         #region Constructor
@@ -19,12 +25,12 @@ namespace OrderMgmtSystem.ViewModels
             ProcessOrderCommand = new DelegateCommand(ProcessOrder, () => CanProcessOrEdit);
             EditOrderCommand = new DelegateCommand(EditOrder, () => CanProcessOrEdit);
             DeleteOrderCommand = new DelegateCommand(DeleteOrder, () => CanDelete);
-            _dialogservice = new DialogService();
+            _dialogService = new DialogService();
         }
         #endregion
 
         #region Fields
-        private readonly IDialogService _dialogservice;
+        private readonly IDialogService _dialogService;
         #endregion
 
         #region Properties
@@ -52,18 +58,37 @@ namespace OrderMgmtSystem.ViewModels
         /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
         public event EventHandler DeleteOrderRequested;
 
+        /// <summary>
+        /// Occurs when an order is rejected due to srock limitations.
+        /// </summary>
+        /// <subscribers>ChildWindowViewModel</subscribers>
         public event EventHandler OrderRejected;
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Process the current order by changing its state to Complete or Rejected depending
+        /// on wether the order has items on back order, will be mark as rejected if true or complete otherwise.
+        /// </summary>
+        /// <remarks>If the order is rejects all its stock items will be returned to the inventory</remarks>
         private void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
             {
-                Order.OrderStateId = 3;
-                OnOrderRejected(EventArgs.Empty);
-                // TODO: Inform that the order has been rejected
-                CloseWindow();
+                string title = $"Reject order: {Order.Id}";
+                string warning = "Not enough items in stock:";
+                string message = "This order will be rejected!";
+                var dialogVM = (RejectOrderDialogViewModel)ViewModelFactory
+                    .CreateDialogViewModel("RejectOrderDialog",
+                    title, message, warning);
+                bool result = _dialogService.OpenDialog(dialogVM);
+
+                if (result)
+                {
+                    Order.OrderStateId = 3;
+                    OnOrderRejected(EventArgs.Empty);
+                    CloseWindow();
+                }
             }
             else
             {
@@ -73,32 +98,60 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
 
+        /// <summary>
+        /// Takes the user to the EditOrder view where the current order can be modified.
+        /// </summary>
         private void EditOrder()
         {
             OnEditOrderRequested(EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Deletes the current order.
+        /// </summary>
+        /// <remarks>Prompts user to confirm the action</remarks>
         private void DeleteOrder()
         {
             // TODO: Add Dialog to confirm deletion
-            OnDeleteOrderRequested(EventArgs.Empty);
-            CloseWindow();
+            string message = "This order and all its data will be permanently deleted. Are you sure?";
+            string title = $"Delete order: {Order.Id}?";
+            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                    .CreateDialogViewModel("CancelOrderDialog", title, message);
+            
+            if (_dialogService.OpenDialog(dialogVM))
+            {
+                OnDeleteOrderRequested(EventArgs.Empty);
+                CloseWindow();
+            }
         }
 
+        /// <summary>
+        /// Raises the EditOrderRequested event.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnEditOrderRequested(EventArgs e)
         {
             EditOrderRequested?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raises the DeleteOrderRequested event.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnDeleteOrderRequested(EventArgs e)
         {
             DeleteOrderRequested?.Invoke(this, e);
         }
 
+        /// <summary>
+        /// Raises the OrderRejected event.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnOrderRejected(EventArgs e)
         {
             OrderRejected?.Invoke(this, e);
         }
+
         /// <summary>
         /// Invokes the Close delegate. 
         /// </summary>
@@ -108,5 +161,8 @@ namespace OrderMgmtSystem.ViewModels
             Close?.Invoke();
         }
         #endregion
+
+
+
     }
 }
