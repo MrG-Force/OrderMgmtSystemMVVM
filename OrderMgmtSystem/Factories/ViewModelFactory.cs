@@ -52,12 +52,14 @@ namespace OrderMgmtSystem.Factories
             }
         }
 
-        public static ViewModelBase CreateDialogViewModel(string viewType, string title, string message)
+        public static ViewModelBase CreateDialogViewModel(string viewType, string title, string message, string warning = null)
         {
             switch (viewType)
             {
                 case "CancelOrderDialog":
                     return new CancelOrderDialogViewModel(title, message);
+                case "RejectOrderDialog":
+                    return new RejectOrderDialogViewModel(title, message, warning);
                 case "Quantity":
                     return new QuantityViewModel(title, message);
                 default:
