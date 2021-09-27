@@ -55,7 +55,7 @@
                       Content="Add to order"
                       Margin="2, 1, 2, 1"
                       Command="{Binding DataContext.RequestAddItemCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                      CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=DataContext}"/>
+                      CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Path=Tag}"/>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
