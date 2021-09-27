@@ -1,7 +1,6 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ namespace OrderMgmtSystem.ViewModels
             _dialogService = dialogService;
             _dialogViewModel = dialogViewModelBase;
             StockItems = stockItems;
-            RequestAddItemCommand = new DelegateCommand<ViewModelBase>(RequestAddItem);
+            RequestAddItemCommand = new DelegateCommand<string>(RequestAddItem);
         }
         #endregion
 
@@ -41,7 +40,7 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
         public List<StockItem> StockItems { get; set; }
-        public DelegateCommand<ViewModelBase> RequestAddItemCommand { get; private set; }
+        public DelegateCommand<string> RequestAddItemCommand { get; private set; }
         #endregion
 
         #region Events
@@ -64,8 +63,8 @@ namespace OrderMgmtSystem.ViewModels
         /// in the StockItems list. 
         /// </summary>
         /// <remarks>Calls the GetQuantity method that opens a dialog</remarks>
-        /// <param name="vM">The DataContext of the calling Window</param>
-        public void RequestAddItem(ViewModelBase vM)
+        /// <param name="viewModel">The name of the calling Window</param>
+        public void RequestAddItem(string viewModel)
         {
             int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
@@ -93,11 +92,11 @@ namespace OrderMgmtSystem.ViewModels
             }
 
             // Raise the events depending on the ViewModel
-            if (vM is MainWindowViewModel)
+            if (viewModel == "MainWindow")
             {
                 OnNewOrderItemSelected(orderItem);
             }
-            else if (vM is ChildWindowViewModel)
+            else if (viewModel is "ChildWindow")
             {
                 OnEditingOrderItemSelected(orderItem);
             }
