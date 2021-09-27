@@ -1,6 +1,7 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
+using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
@@ -115,12 +116,13 @@ namespace OrderMgmtSystem.ViewModels
             {
                 string message = "This order and all its data will be permanently deleted!";
                 string title = $"Cancel order: {Order.Id}";
-                var dialogViewModel = new CancelOrderDialogViewModel(title, message); // VMFactory should do
-                result = base._dialogService.OpenDialog(dialogViewModel);
+                var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                    .CreateDialogViewModel("CancelOrderDialog", title, message);
+                result = _dialogService.OpenDialog(dialogVM);
             }
             if (result)
             {
-                Order.CancelLastOrder(); //---Remove if not useing random data
+                Order.CancelLastOrder(); //---Remove if not using random data
                 // Return Items to stock
                 foreach (OrderItem item in OrderItems)
                 {
@@ -136,7 +138,7 @@ namespace OrderMgmtSystem.ViewModels
                 OrderItems.Clear();
                 SubmitOrderCommand.RaiseCanExecuteChanged();
                 Order = null;
-                base.OnOrderCancelled(EventArgs.Empty);
+                base.OnOperationCancelled(EventArgs.Empty);
             }
         }
         #endregion

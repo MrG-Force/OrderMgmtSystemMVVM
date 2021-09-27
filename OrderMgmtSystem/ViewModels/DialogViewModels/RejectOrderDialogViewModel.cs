@@ -4,16 +4,19 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.ViewModels.DialogViewModels
 {
-    internal class CancelOrderDialogViewModel : DialogViewModelBase<bool>
+    internal class RejectOrderDialogViewModel : DialogViewModelBase<bool>
     {
-        public ICommand ProceedCommand { get; private set; }
-        public ICommand CancelCommand { get; private set; }
-
-        public CancelOrderDialogViewModel(string title, string message) : base(title, message)
+        public RejectOrderDialogViewModel(string title, string message, string warning) : base(title, message)
         {
             ProceedCommand = new DelegateCommand<IDialogWindow>(Proceed);
             CancelCommand = new DelegateCommand<IDialogWindow>(Cancel);
+            Warning = warning;
         }
+
+        public string Warning { get; set; }
+
+        public ICommand ProceedCommand { get; private set; }
+        public ICommand CancelCommand { get; private set; }
 
         private void Proceed(IDialogWindow window)
         {

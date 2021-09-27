@@ -37,6 +37,7 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
                 AddToOrderCommand.RaiseCanExecuteChanged();
             }
         }
+        public int AvailableStock { get; set; }
         public bool CanDecrease => NumValue >= 2;
         public bool CanIncrease => NumValue < 99;
         public bool IsValidQuantity => NumValue < 100 && NumValue > 0;

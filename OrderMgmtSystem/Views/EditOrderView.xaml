@@ -109,7 +109,7 @@
            FontSize="15"
            Margin="0" />
     <DataGrid x:Name="OrderItemsDataGrid"
-              ItemsSource="{Binding Path=TempOrderItems}"
+              ItemsSource="{Binding Path=OrderItems}"
               SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
               Style="{DynamicResource DataGridStyle}"
               Grid.Row="4"

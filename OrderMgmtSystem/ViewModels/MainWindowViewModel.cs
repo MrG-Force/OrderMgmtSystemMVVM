@@ -91,7 +91,7 @@ namespace OrderMgmtSystem.ViewModels
         public void SubscribeHandlersToEvents()
         {
             _addOrderViewModel.OrderSubmitted += AddOrderVM_OrderSubmitted;
-            _addOrderViewModel.OrderCancelled += AddOrderVM_OrderCancelled;
+            _addOrderViewModel.OperationCancelled += AddOrderVM_OperationCancelled;
             _addOrderViewModel.OrderItemRemoved += AddOrder_OrderItemRemoved;
             _addItemViewModel.NewOrderItemSelected += AddItemVM_NewOrderItemSelected;
         }
@@ -109,9 +109,9 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Handles the OrderCancelled event by navigating back to the OrdersView.
+        /// Handles the OperationCancelled event by navigating back to the OrdersView.
         /// </summary>
-        private void AddOrderVM_OrderCancelled(object sender, EventArgs e)
+        private void AddOrderVM_OperationCancelled(object sender, EventArgs e)
         {
             Navigate("OrdersView");
         }

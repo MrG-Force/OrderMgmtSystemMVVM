@@ -120,6 +120,7 @@ namespace DataModels
                 RaisePropertyChanged(nameof(Total));
                 RaisePropertyChanged(nameof(ItemsCount));
                 RaisePropertyChanged(nameof(DateTime));
+                RaisePropertyChanged(nameof(HasItemsOnBackOrder));
             }
         }
         public int ItemsCount => _orderItems.Count;

@@ -24,9 +24,9 @@ namespace OrderMgmtSystem.Tests
             // Arrange
             int availableStock = viewModel.SelectedStockItem.InStock;
             // Act
-            viewModel.AddItem(string.Empty);
+            viewModel.RequestAddItem(string.Empty);
             // Assert
-            Assert.IsTrue(viewModel.SelectedStockItem.InStock == availableStock - 3 
+            Assert.IsTrue(viewModel.SelectedStockItem.InStock == availableStock - 3
                 || viewModel.SelectedStockItem.InStock == 0);
         }
     }

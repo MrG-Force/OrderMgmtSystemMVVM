@@ -58,6 +58,7 @@
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\RelayCommandT.cs" />
     <Compile Include="CommonEventArgs\OrderItemRemovedEventArgs.cs" />
+    <Compile Include="ViewModels\DialogViewModels\RejectOrderDialogViewModel.cs" />
     <Compile Include="Views\Controls\HeaderControl.xaml.cs">
       <DependentUpon>HeaderControl.xaml</DependentUpon>
     </Compile>
@@ -103,6 +104,9 @@
     </Compile>
     <Compile Include="Views\DialogViews\QuantityView.xaml.cs">
       <DependentUpon>QuantityView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DialogViews\RejectOrderDialogView.xaml.cs">
+      <DependentUpon>RejectOrderDialogView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EditOrderView.xaml.cs">
       <DependentUpon>EditOrderView.xaml</DependentUpon>
@@ -154,6 +158,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DialogViews\QuantityView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DialogViews\RejectOrderDialogView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
