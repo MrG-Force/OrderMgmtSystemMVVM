@@ -161,8 +161,5 @@ namespace OrderMgmtSystem.ViewModels
             Close?.Invoke();
         }
         #endregion
-
-
-
     }
 }

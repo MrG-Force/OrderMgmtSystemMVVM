@@ -221,9 +221,17 @@
       <Project>{3F152BC4-22A0-4C7F-B92F-4D23187D2DE0}</Project>
       <Name>DataProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataTester\DataTester.csproj">
+      <Project>{94fa27e6-9b92-4cba-8b97-c2ce1d908cbe}</Project>
+      <Name>DataTester</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ModalControl\ModalControl.csproj">
       <Project>{fdd1ae36-039e-4054-b171-783ebbc13cc0}</Project>
       <Name>ModalControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLDataProvider\SQLDataProvider.csproj">
+      <Project>{C16B3D70-3F17-4036-9DF4-7680366D04AA}</Project>
+      <Name>SQLDataProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
