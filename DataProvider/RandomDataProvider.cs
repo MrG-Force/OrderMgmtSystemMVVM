@@ -9,6 +9,19 @@ namespace DataProvider
     /// </summary>
     public class RandomDataProvider : IOrdersDataProvider
     {
+        #region Constructor
+        public RandomDataProvider()
+        {
+            _stockItems = GetStockItems();
+            _dBStockItems = GetDBTestStockItems();
+            _dbOrderItems = GetDbOrderItems(5);
+            if (_orders == null)
+            {
+                _orders = GetOrders();
+            }
+        }
+        #endregion
+
         #region Fields
         readonly Random random = new Random();
         private static List<StockItem> _stockItems;
@@ -32,19 +45,6 @@ namespace DataProvider
         private DateTime lowEndDate = DateTime.Today.AddDays(-14);
         #endregion
 
-        #region Constructor
-        public RandomDataProvider()
-        {
-            _stockItems = GetStockItems();
-            _dBStockItems = GetDBTestStockItems();
-            _dbOrderItems = GetDbOrderItems(5);
-            if (_orders == null)
-            {
-                _orders = GetOrders();
-            }
-        }
-        #endregion
-
         #region Properties
         public List<Order> Orders => _orders;
         public List<StockItem> StockItems => _stockItems;
@@ -53,7 +53,6 @@ namespace DataProvider
         #endregion
 
         #region Methods
-
         public List<StockItem> GetDBTestStockItems()
         {
             List<StockItem> dBstockItems = new List<StockItem>();
@@ -276,7 +275,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder()
+        public void DeleteOrder(int id)
         {
             throw new NotImplementedException();
         }
