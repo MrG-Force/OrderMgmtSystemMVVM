@@ -47,6 +47,7 @@
     <Compile Include="DummyDataTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlDataTester.cs" />
+    <Compile Include="TestDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -60,7 +60,6 @@ namespace DataTester
         /// <summary>
         /// A function to test the GetStockItems method in the data provider
         /// </summary>
-        /// <param name="rndmDataProvider"></param>
         private static void TestGetSTockItems()
         {
             //using SqlDataTester
