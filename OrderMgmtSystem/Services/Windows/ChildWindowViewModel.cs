@@ -1,4 +1,5 @@
 ﻿using DataModels;
+using DataProvider;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels;
@@ -10,8 +11,9 @@ namespace OrderMgmtSystem.Services.Windows
     public class ChildWindowViewModel : ViewModelBase, IHandleOneOrder
     {
         #region Constructor
-        public ChildWindowViewModel(OrderDetailsViewModel orderDetailsVM, EditOrderViewModel editOrderVM, AddItemViewModel addItemVM)
+        public ChildWindowViewModel(IOrdersDataProvider data, OrderDetailsViewModel orderDetailsVM, EditOrderViewModel editOrderVM, AddItemViewModel addItemVM)
         {
+            _data = data;
             _orderDetailsVM = orderDetailsVM;
             _editOrderVM = editOrderVM;;
             _addItemVM = addItemVM;
@@ -25,6 +27,7 @@ namespace OrderMgmtSystem.Services.Windows
         #endregion
 
         #region Fields
+        IOrdersDataProvider _data;
         private ViewModelBase _currentViewModel;
         private readonly OrderDetailsViewModel _orderDetailsVM;
         private readonly EditOrderViewModel _editOrderVM;
@@ -120,8 +123,9 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void EditOrderVM_OperationCancelled(object sender, EventArgs e)
+        private void EditOrderVM_OperationCancelled(object sender, int orderId)
         {
+            _data.DeleteOrder(orderId);
             Navigate("OrderDetailsView");
         }
 
