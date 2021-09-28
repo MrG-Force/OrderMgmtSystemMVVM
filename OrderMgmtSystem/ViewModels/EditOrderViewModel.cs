@@ -166,7 +166,7 @@ namespace OrderMgmtSystem.ViewModels
                 TempOrderItems.Clear();
                 SubmitOrderCommand.RaiseCanExecuteChanged();
             }
-            base.OnOperationCancelled(EventArgs.Empty);
+            base.OnOperationCancelled(Order.Id);
         }
 
         /// <summary>

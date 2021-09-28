@@ -65,7 +65,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         /// <summary>
         /// Happens when the current order is cancelled.
         /// </summary>
-        public event EventHandler OperationCancelled;
+        public event EventHandler<int> OperationCancelled;
         #endregion
 
         #region Methods
@@ -92,9 +92,9 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             OrderSubmitted?.Invoke(this, order);
         }
-        protected virtual void OnOperationCancelled(EventArgs e)
+        protected virtual void OnOperationCancelled(int orderId)
         {
-            OperationCancelled?.Invoke(this, e);
+            OperationCancelled?.Invoke(this, Order.Id);
         }
         #endregion
     }

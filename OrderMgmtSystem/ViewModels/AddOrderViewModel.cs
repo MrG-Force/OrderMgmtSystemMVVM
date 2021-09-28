@@ -122,7 +122,7 @@ namespace OrderMgmtSystem.ViewModels
             }
             if (result)
             {
-                Order.CancelLastOrder(); //---Remove if not using random data
+                //Order.CancelLastOrder(); //---Remove if not using random data
                 // Return Items to stock
                 foreach (OrderItem item in OrderItems)
                 {
@@ -137,8 +137,8 @@ namespace OrderMgmtSystem.ViewModels
                 }
                 OrderItems.Clear();
                 SubmitOrderCommand.RaiseCanExecuteChanged();
+                base.OnOperationCancelled(Order.Id);
                 Order = null;
-                base.OnOperationCancelled(EventArgs.Empty);
             }
         }
         #endregion

@@ -111,8 +111,9 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Handles the OperationCancelled event by navigating back to the OrdersView.
         /// </summary>
-        private void AddOrderVM_OperationCancelled(object sender, EventArgs e)
+        private void AddOrderVM_OperationCancelled(object sender, int orderId)
         {
+            _data.DeleteOrder(orderId);
             Navigate("OrdersView");
         }
 
