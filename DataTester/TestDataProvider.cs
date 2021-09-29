@@ -102,12 +102,12 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void DeleteOrder(int orderId)
+        public void DeleteOrder(Order order)
         {
             throw new System.NotImplementedException();
         }
 
-        public void DeleteOrderItem()
+        public void RemoveOrderItem(OrderItem item)
         {
             throw new System.NotImplementedException();
         }
@@ -145,12 +145,12 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void UpdateOrderItem()
+        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateOrderState()
+        public void UpdateOrderState(int orderId, int stateId)
         {
             throw new System.NotImplementedException();
         }

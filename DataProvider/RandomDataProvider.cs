@@ -260,7 +260,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderState()
+        public void UpdateOrderState(int orderId, int stateId)
         {
             throw new NotImplementedException();
         }
@@ -270,17 +270,17 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderItem()
+        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder(int id)
+        public void DeleteOrder(Order order)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteOrderItem()
+        public void RemoveOrderItem(OrderItem item)
         {
             throw new NotImplementedException();
         }

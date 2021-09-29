@@ -22,12 +22,12 @@ namespace DataProvider
         Order GetOrderById();
         StockItem GetStockItembyId();
         // -- UPDATE
-        void UpdateOrderState();
+        void UpdateOrderState(int orderId, int stateId);
         void UpdateStockItemAmount();
-        void UpdateOrderItem();
+        void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists);
         // -- DELETE
-        void DeleteOrder();
-        void DeleteOrderItem();
+        void DeleteOrder(Order order);
+        void RemoveOrderItem(OrderItem item);
 
     }
 }
