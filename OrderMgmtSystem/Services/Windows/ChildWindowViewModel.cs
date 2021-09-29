@@ -1,7 +1,6 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
@@ -113,9 +112,10 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Contain relevant information to return the item</param>
-        private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
+        private void EditOrderVM_OrderItemRemoved(object sender, OrderItem item)
         {
-            _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
+            //_data.RemoveOrderItem();
+            _addItemVM.ReturnItemToStockList(item.StockItemId, item.Quantity, item.OnBackOrder);
         }
 
         /// <summary>
