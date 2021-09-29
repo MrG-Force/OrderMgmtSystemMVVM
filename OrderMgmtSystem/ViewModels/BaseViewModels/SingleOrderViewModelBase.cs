@@ -55,22 +55,33 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
 
         #region Events
         /// <summary>
-        /// Happens when an item is removed from the order
+        /// Occurs when an OrderItem is added to the current order.
         /// </summary>
-        public event EventHandler<OrderItemRemovedEventArgs> OrderItemRemoved;
+        /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
+        public event EventHandler<OrderItemAddedEventArgs> OrderItemAdded;
+
         /// <summary>
-        /// Happens when the order is submitted.
+        /// Occurs when an OrderItem is removed from the order
         /// </summary>
+        /// /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
+        public event EventHandler<OrderItem> OrderItemRemoved;
+
+        /// <summary>
+        /// Occurs when the Order is submitted.
+        /// </summary>
+        /// /// <subscribers>MainWindowViewModel</subscribers>
         public event EventHandler<Order> OrderSubmitted;
+
         /// <summary>
-        /// Happens when the current order is cancelled.
+        /// Occurs when the current Order is cancelled.
         /// </summary>
+        /// /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
         public event EventHandler<int> OperationCancelled;
         #endregion
 
         #region Methods
         /// <summary>
-        /// Adds an OrderItem to the order.
+        /// Adds an OrderItem to the Order.
         /// </summary>
         /// <remarks>It is used in conjunction with the NavigateCommand in the MainWindowModel.</remarks>
         /// <param name="newItem"></param>
@@ -84,17 +95,40 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         internal abstract void RemoveItem(OrderItem item);
         protected abstract void SubmitOrder();
         protected abstract void CancelOperation();
-        protected virtual void OnOrderItemRemoved(OrderItemRemovedEventArgs e)
+
+        /// <summary>
+        /// Raises the OrderItemAdded event.
+        /// </summary>
+        /// <param name="e">An eventArgs obj that contains the OrderItem and a bool</param>
+        protected virtual void OnOrderItemAdded(OrderItemAddedEventArgs e)
         {
-            OrderItemRemoved?.Invoke(this, e);
+            OrderItemAdded?.Invoke(this, e);
         }
+
+        /// <summary>
+        /// Raises the OrderItemRemoved event.
+        /// </summary>
+        /// <param name="e">An eventArgs obj that contains data to update the StockItems</param>
+        protected virtual void OnOrderItemRemoved(OrderItem orderItem)
+        {
+            OrderItemRemoved?.Invoke(this, orderItem);
+        }
+        /// <summary>
+        /// Raises the OrderSubmitted event.
+        /// </summary>
+        /// <param name="order">The submitted Order</param>
         protected virtual void OnOrderSubmitted(Order order)
         {
             OrderSubmitted?.Invoke(this, order);
         }
+        /// <summary>
+        /// Raises the OperationCancelled event passing the Order id so the unfinished order
+        /// can be deleted.
+        /// </summary>
+        /// <param name="orderId"></param>
         protected virtual void OnOperationCancelled(int orderId)
         {
-            OperationCancelled?.Invoke(this, Order.Id);
+            OperationCancelled?.Invoke(this, orderId);
         }
         #endregion
     }
