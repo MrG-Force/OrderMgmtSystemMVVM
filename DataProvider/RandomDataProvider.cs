@@ -275,7 +275,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder(Order order)
+        public void DeleteOrder(int orderId)
         {
             throw new NotImplementedException();
         }

@@ -102,7 +102,7 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void DeleteOrder(Order order)
+        public void DeleteOrder(int orderId)
         {
             throw new System.NotImplementedException();
         }
