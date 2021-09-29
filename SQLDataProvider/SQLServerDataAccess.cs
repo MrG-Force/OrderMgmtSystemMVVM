@@ -12,14 +12,21 @@ namespace SQLDataProvider
     {
         static ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];
         static SqlConnection conn = new SqlConnection(settings.ConnectionString);
-        static SqlCommand cmnd = new SqlCommand();
+        static SqlCommand command = new SqlCommand();
 
-        public static SqlCommand GetSqlCommand(string sql)
+        public static SqlCommand GetSqlCommand(string sql = null)
         {
-            cmnd.CommandText = sql;
-            cmnd.Connection = conn;
-            return cmnd;
+            command.CommandText = sql;
+            command.Connection = conn;
+            command.CommandType = CommandType.StoredProcedure;
+            return command;
         }
+
+        public static void ClearCommandParams()
+        {
+            command.Parameters.Clear();
+        }
+
         public static void OpenConnection()
         {
             try
