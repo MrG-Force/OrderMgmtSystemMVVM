@@ -1,6 +1,5 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
@@ -121,14 +120,8 @@ namespace OrderMgmtSystem.ViewModels
             OrderItems.Remove(item);
             TempOrder.RemoveItem(item.StockItemId);
             RaisePropertyChanged(nameof(TempOrder));
-            var itemData = new OrderItemRemovedEventArgs()
-            {
-                StockItemId = item.StockItemId,
-                Quantity = item.Quantity,
-                OnBackOrder = item.OnBackOrder
-            };
-            base.OnOrderItemRemoved(itemData);
             SubmitOrderCommand.RaiseCanExecuteChanged();
+            base.OnOrderItemRemoved(item);
         }
 
         /// <summary>
@@ -152,14 +145,7 @@ namespace OrderMgmtSystem.ViewModels
                 // Return Items to stock
                 foreach (OrderItem item in TempOrderItems)
                 {
-                    var itemData = new OrderItemRemovedEventArgs()
-                    {
-                        StockItemId = item.StockItemId,
-                        Quantity = item.Quantity,
-                        OnBackOrder = item.OnBackOrder
-                    };
-                    // Use the eventhandler to updates the stock quantities
-                    base.OnOrderItemRemoved(itemData);
+                    base.OnOrderItemRemoved(item);
                 }
                 OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
                 TempOrder = new Order(Order);

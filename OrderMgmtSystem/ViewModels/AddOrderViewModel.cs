@@ -48,42 +48,46 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal override void AddOrderItem(OrderItem newItem)
         {
-            OrderItem repItem = OrderItems
+            // prepare event data that includes the orderItem and bool orderItemExists
+            newItem.OrderHeaderId = Order.Id;
+            var eventData = new OrderItemAddedEventArgs() { Item = newItem };
+
+            OrderItem existingItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
-            if (repItem == null)
+
+            if (existingItem == null)
             {
-                newItem.OrderHeaderId = Order.Id;
                 OrderItems.Add(newItem);
                 Order.AddItem(newItem);
                 RaisePropertyChanged(nameof(Order));
                 SubmitOrderCommand.RaiseCanExecuteChanged();
+
+                eventData.OrderItemExists = false;
             }
             else
             {
-                // Notify bindings
-                repItem.Quantity += newItem.Quantity;
+                existingItem.Quantity += newItem.Quantity;
                 // Sincronize items on back order
-                repItem.OnBackOrder += newItem.OnBackOrder;
+                existingItem.OnBackOrder += newItem.OnBackOrder;
                 RaisePropertyChanged(nameof(Order));
+
+                eventData.OrderItemExists = true;
             }
+            base.OnOrderItemAdded(eventData);
         }
 
         /// <summary>
         /// Removes the passed OrderItem from the new Order.
         /// </summary>
-        /// <param name="newItem"></param>
+        /// <remarks>The item is passed through binding from DataGrid as SelectedItem</remarks>
+        /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
             OrderItems.Remove(item);
             Order.RemoveItem(item.StockItemId);
             RaisePropertyChanged(nameof(Order));
-            var itemData = new OrderItemRemovedEventArgs()
-            {
-                StockItemId = item.StockItemId,
-                Quantity = item.Quantity,
-                OnBackOrder = item.OnBackOrder
-            };
-            base.OnOrderItemRemoved(itemData);
+            
+            base.OnOrderItemRemoved(item);
             SubmitOrderCommand.RaiseCanExecuteChanged();
         }
 
@@ -126,14 +130,7 @@ namespace OrderMgmtSystem.ViewModels
                 // Return Items to stock
                 foreach (OrderItem item in OrderItems)
                 {
-                    var itemData = new OrderItemRemovedEventArgs()
-                    {
-                        StockItemId = item.StockItemId,
-                        Quantity = item.Quantity,
-                        OnBackOrder = item.OnBackOrder
-                    };
-                    // Use the eventhandler to updates the stock quantities
-                    base.OnOrderItemRemoved(itemData);
+                    base.OnOrderItemRemoved(item);
                 }
                 OrderItems.Clear();
                 SubmitOrderCommand.RaiseCanExecuteChanged();
