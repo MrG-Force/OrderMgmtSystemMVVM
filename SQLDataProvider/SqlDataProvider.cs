@@ -8,40 +8,25 @@ using System.Diagnostics;
 namespace SQLDataProvider
 {
     /// <summary>
-    /// Defines a class to perform CRUD operations on the database and expose the
+    /// Defines a class to perform CRUD operations on the database and provide the
     /// required data for the application.
     /// </summary>
     public class SqlDataProvider : IOrdersDataProvider
     {
         public SqlDataProvider()
         {
-            _stockItems = GetStockItems();
-            _orders = GetOrders();
+            StockItems = GetStockItems();
+            Orders = GetOrders();
         }
 
-        private List<StockItem> _stockItems;
-        private List<Order> _orders;
+        public List<Order> Orders { get; }
+        public List<StockItem> StockItems { get; }
 
 
-        public List<Order> Orders => _orders;
-        public List<StockItem> StockItems => _stockItems;
-
-        public int StartNewOrder()
-        {
-            SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_InsertOrderHeader]");
-            int Id = 0;
-
-            using (SqlDataReader reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    Id = reader.GetInt32(0);
-                }
-            }
-            SqlServerDataAccess.CloseConnection();
-            return Id;
-        }
+        /// <summary>
+        /// Gets the list of StockItems from the database.
+        /// </summary>
+        /// <returns>The list with the current inventory of StockItems</returns>
         public List<StockItem> GetStockItems()
         {
             SqlServerDataAccess.OpenConnection();
@@ -67,13 +52,18 @@ namespace SQLDataProvider
             return stockItems;
         }
 
+        /// <summary>
+        /// Gets all the submitted orders currently in the database.
+        /// </summary>
+        /// <remarks>Only orders with OrderItems can be submitted</remarks>
+        /// <returns></returns>
         public List<Order> GetOrders()
         {
             List<Order> orders = new List<Order>();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_SelectOrderHeaderIdDateState");
 
             SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_SelectOrderHeaderIdDateState");
-            // Create empty orders and add them to the orders list
+            
             using(SqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
@@ -85,10 +75,9 @@ namespace SQLDataProvider
                     orders.Add(order);
                 }
             }
-            // Confgure command for a diferent sp that takes params
-            command = SqlServerDataAccess.GetSqlCommand("sp_SelectOrderHeaderById");
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.Add("@id", System.Data.SqlDbType.Int);
+            // Change StorePocedure
+            command.CommandText = "sp_SelectOrderHeaderById";
+            _ = command.Parameters.Add("@id", System.Data.SqlDbType.Int);
             // Populate the orderItems list in each order.
             foreach (Order o in orders)
             {
@@ -109,15 +98,19 @@ namespace SQLDataProvider
                     }
                 }
             }
-            command.Parameters.Clear();
             SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
             return orders;
         }
+
+        /// <summary>
+        /// Starts a new order in the database and returns it with the corresponding Id and dateTime.
+        /// </summary>
+        /// <returns></returns>
         public Order GetOrder()
         {
             SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_InsertOrderHeader_V3]");
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_InsertOrderHeader_V3");
             Order newOrder = null;
             using (SqlDataReader reader = command.ExecuteReader())
             {
@@ -129,34 +122,107 @@ namespace SQLDataProvider
             SqlServerDataAccess.CloseConnection();
             return newOrder;
         }
-        public void DeleteOrder(int id) // May need the Order as parameter to return Items to stock
+
+        /// <summary>
+        /// Deletes the order with the passed Id from the database.
+        /// </summary>
+        /// <param name="id"></param>
+        public void DeleteOrder(int orderId)
         {
-            // and maybe here add a check if order hast items
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_DeleteOrderHeaderAndOrderItems");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", orderId);
+
             SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_DeleteOrderHeaderAndOrderItems]");
-            _ = command.Parameters.AddWithValue("@orderHeaderId", id);
+
             int rowsAffected = command.ExecuteNonQuery();
-            Debug.WriteLine(rowsAffected);
-            command.Parameters.Clear();
+            Debug.WriteLine($"Rows affected:{rowsAffected}");
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
         }
 
+        /// <summary>
+        /// Removes the passed OrderItem from the Database and updates the corresponding StockItem.
+        /// </summary>
+        /// <param name="item"></param>
+        public void RemoveOrderItem(OrderItem item)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrderItemAndUpdateStock");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", item.OrderHeaderId);
+            _ = command.Parameters.AddWithValue("@quantity", item.Quantity);
+            _ = command.Parameters.AddWithValue("@stockItemId", item.StockItemId);
+
+            SqlServerDataAccess.OpenConnection();
+
+            int rowsAffected = command.ExecuteNonQuery();
+            Debug.WriteLine($"Records updated:{rowsAffected}");
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
+        }
+
+
+        /// <summary>
+        /// Updates the quantity of an OrderItem if the item already exists in the Order,
+        /// otherwise adds the new OrderItem to the Order.
+        /// </summary>
+        /// <param name="orderItem"></param>
+        /// <param name="orderItemExists"></param>
+        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
+            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
+            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+
+            SqlServerDataAccess.OpenConnection();
+            if (orderItemExists)
+            {
+                command.CommandText = "UpdateOrderItemAndUpdateStock";
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.WriteLine($"Records updated:{rowsAffected}");
+            }
+            else
+            {
+                command.CommandText = "InsertOrderItemAndUpdateStock";
+                _ = command.Parameters.AddWithValue("@description", orderItem.Description);
+                _ = command.Parameters.AddWithValue("@price", orderItem.Price);
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.WriteLine($"Records updated:{rowsAffected}");
+            }
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
+        }
+
+        /// <summary>
+        /// Updates the state of the order with the passed Id to the passed StateId.
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="stateId"></param>
+        public void UpdateOrderState(int orderId, int stateId)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_UpdateOrderState");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", orderId);
+            _ = command.Parameters.AddWithValue("@stateId", stateId);
+
+            SqlServerDataAccess.OpenConnection();
+
+            _ = command.ExecuteNonQuery();
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
+        }
 
 
         #region Not yet implemented
 
-        public void DeleteOrderItem()
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public Order GetOrderById()
-        {
-            throw new NotImplementedException();
-        }
-
 
         public string GetStatusString()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Order GetOrderById()
         {
             throw new NotImplementedException();
         }
@@ -171,16 +237,6 @@ namespace SQLDataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderItem()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateOrderState()
-        {
-            throw new NotImplementedException();
-        }
-
         public void UpdateStockItemAmount()
         {
             throw new NotImplementedException();
@@ -189,6 +245,50 @@ namespace SQLDataProvider
         public void AddNewOrder(Order newOrder)
         {
             throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// MAY NOT BE NEEDED
+        /// </summary>
+        /// <returns></returns>
+        public int StartNewOrder()
+        {
+            SqlServerDataAccess.OpenConnection();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_InsertOrderHeader]");
+            int Id = 0;
+
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Id = reader.GetInt32(0);
+                }
+            }
+            SqlServerDataAccess.CloseConnection();
+            return Id;
+        }
+        /// <summary>
+        /// PROBABLY NOT USED
+        /// </summary>
+        /// <param name="orderItems"></param>
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            SqlServerDataAccess.OpenConnection();
+
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_UpdateStockItemAmount");
+            _ = command.Parameters.Add("@id", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@amount", System.Data.SqlDbType.Int);
+
+            foreach (var item in orderItems)
+            {
+                command.Parameters["@id"].Value = item.StockItemId;
+                command.Parameters["@amount"].Value = item.Quantity;
+                _ = command.ExecuteNonQuery();
+            }
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
         }
         #endregion
     }
