@@ -58,6 +58,7 @@
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Commands\RelayCommandT.cs" />
     <Compile Include="CommonEventArgs\OrderItemAddedEventArgs.cs" />
+    <Compile Include="CommonEventArgs\OrderItemRemovedEventArgs.cs" />
     <Compile Include="ViewModels\DialogViewModels\RejectOrderDialogViewModel.cs" />
     <Compile Include="Views\Controls\HeaderControl.xaml.cs">
       <DependentUpon>HeaderControl.xaml</DependentUpon>
@@ -205,7 +206,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Stores\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\LogoFinal.png" />
   </ItemGroup>
