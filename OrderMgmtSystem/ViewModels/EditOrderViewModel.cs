@@ -1,5 +1,6 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
@@ -19,8 +20,8 @@ namespace OrderMgmtSystem.ViewModels
             Order = order;
             OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
             _tempOrder = new Order(order);
-            TempOrderItems = new List<OrderItem>();
-            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
+            AddedOrderItems = new List<OrderItem>();
+            RemovedOrderItems = new List<OrderItem>();
             InitialTotal = Order.Total;
         }
         #endregion
@@ -41,7 +42,9 @@ namespace OrderMgmtSystem.ViewModels
                 RaisePropertyChanged();
             }
         }
-        public List<OrderItem> TempOrderItems { get; set; }
+        public List<OrderItem> AddedOrderItems { get; set; }
+        public List<OrderItem> RemovedOrderItems { get; set; }
+
         public override bool CanSubmit => InitialTotal != TempOrder.Total;
         #endregion
 
@@ -76,39 +79,46 @@ namespace OrderMgmtSystem.ViewModels
 
 
         /// <summary>
-        /// Adds the the passed OrderItem to the temporary order.
+        /// Checks whether the passed OrderItem exists or not in the Order and calls the corresponding method accordingly.
         /// </summary>
         /// <remarks>It is called in ChildWindowViewModel</remarks>
         /// <param name="newItem"></param>
-        internal override void AddOrderItem(OrderItem newItem)
+        internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
-            OrderItem repItem = OrderItems
+            OrderItem existingItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
-            if (repItem == null)
+
+            if (existingItem == null)
             {
-                newItem.OrderHeaderId = TempOrder.Id;
-                OrderItems.Add(newItem);
-                TempOrderItems.Add(newItem);
-                TempOrder.AddItem(newItem);
-                RaisePropertyChanged(nameof(TempOrder));
-                SubmitOrderCommand.RaiseCanExecuteChanged();
+                AddNewOrderItem(newItem);
             }
             else
             {
-                TempOrderItems.Add(new OrderItem(newItem));
-                newItem.Quantity += repItem.Quantity;
-                newItem.OnBackOrder += repItem.OnBackOrder;
-                int indx = OrderItems.IndexOf(repItem);
-                _= OrderItems.Remove(repItem);
-                OrderItems.Insert(indx, newItem);
-                TempOrder.OrderItems = new List<OrderItem>(OrderItems);
-                if (newItem.HasItemsOnBackOrder)
-                {
-                    TempOrder.HasItemsOnBackOrder = true;
-                }
-                RaisePropertyChanged(nameof(TempOrder));
-                SubmitOrderCommand.RaiseCanExecuteChanged();
+                UpdateExistingOrderItem(newItem, existingItem);
             }
+            RaisePropertyChanged(nameof(TempOrder));
+            SubmitOrderCommand.RaiseCanExecuteChanged();
+        }
+
+        internal override void AddNewOrderItem(OrderItem newItem)
+        {
+            newItem.OrderHeaderId = TempOrder.Id;
+            OrderItems.Add(newItem);
+            AddedOrderItems.Add(newItem);
+            TempOrder.AddItem(newItem);
+        }
+
+        internal override void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem)
+        {
+            AddedOrderItems.Add(new OrderItem(item));
+
+            item.Quantity += existingItem.Quantity;
+            item.OnBackOrder += existingItem.OnBackOrder;
+            int i = OrderItems.IndexOf(existingItem);
+            _ = OrderItems.Remove(existingItem);
+            OrderItems.Insert(i, item);
+            TempOrder.OrderItems = new List<OrderItem>(OrderItems);
+            TempOrder.HasItemsOnBackOrder = item.HasItemsOnBackOrder;
         }
 
         /// <summary>
@@ -119,9 +129,17 @@ namespace OrderMgmtSystem.ViewModels
         {
             OrderItems.Remove(item);
             TempOrder.RemoveItem(item.StockItemId);
+            RemovedOrderItems.Add(item);
             RaisePropertyChanged(nameof(TempOrder));
+            var itemData = new OrderItemRemovedEventArgs()
+            {
+                OrderHeaderId = item.OrderHeaderId,
+                StockItemId = item.StockItemId,
+                Quantity = item.Quantity,
+                OnBackOrder = item.OnBackOrder
+            };
             SubmitOrderCommand.RaiseCanExecuteChanged();
-            base.OnOrderItemRemoved(item);
+            base.OnOrderItemRemoved(itemData);
         }
 
         /// <summary>
@@ -130,29 +148,86 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         protected override void CancelOperation()
         {
-            bool result = false;
             // if order has changed
             if (CanSubmit)
             {
-                string message = "All the changes will be reverted!";
-                string title = $"Cancel changes in order: {Order.Id}";
-                var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
-                    .CreateDialogViewModel("CancelOrderDialog", title, message);
-                result = _dialogService.OpenDialog(dialogVM);
-            }
-            if (result)
-            {
-                // Return Items to stock
-                foreach (OrderItem item in TempOrderItems)
+                bool result = ConfirmCancelOrder();
+                if (result)
                 {
-                    base.OnOrderItemRemoved(item);
+                    ReturnItemsToStock(); //Has to work both ways it only returns the items to stock but doesnt work when the update was an item removed
+                    ReturnItemsToOrder();
+                    RefreshTempVars();
                 }
-                OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
-                TempOrder = new Order(Order);
-                TempOrderItems.Clear();
-                SubmitOrderCommand.RaiseCanExecuteChanged();
+                else
+                    return;
             }
             base.OnOperationCancelled(Order.Id);
+        }
+
+        // TODO: Maybe we need to keep two lists, one for the added items and one for the removed items. If the order changes are
+        // canceled then we return the items added back to the stock and take back the items removed. Thats the best  I have right now.
+
+
+        /// <summary>
+        /// Gets a confirmation to cancel the changes in the current order.
+        /// </summary>
+        /// <returns>User choice</returns>
+        private bool ConfirmCancelOrder()
+        {
+            bool result;
+            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                     .CreateDialogViewModel("CancelOrderDialog",
+                     $"Cancel changes in order: {Order.Id}",
+                     "All the changes will be reverted!");
+
+            result = _dialogService.OpenDialog(dialogVM);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the Added items in the order back to the stock.
+        /// </summary>
+        private void ReturnItemsToStock()
+        {
+            foreach (OrderItem item in AddedOrderItems)
+            {
+                var itemData = new OrderItemRemovedEventArgs()
+                {
+                    OrderHeaderId = item.OrderHeaderId,
+                    StockItemId = item.StockItemId,
+                    Quantity = item.Quantity,
+                    OnBackOrder = item.OnBackOrder
+                };
+                // Use the eventhandler to updates the stock quantities
+                base.OnOrderItemRemoved(itemData);
+            }
+        }
+
+        private void ReturnItemsToOrder()
+        {
+            foreach (OrderItem item in RemovedOrderItems)
+            {
+                var itemData = new OrderItemRemovedEventArgs()
+                {
+                    OrderHeaderId = item.OrderHeaderId,
+                    StockItemId = item.StockItemId,
+                    Quantity = item.Quantity * -1,
+                    OnBackOrder = item.OnBackOrder
+                };
+                // Use the eventhandler to updates the stock quantities
+                base.OnOrderItemRemoved(itemData);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the EditOrderVM temporary variables in case the user returns to edit this order.
+        /// </summary>
+        private void RefreshTempVars()
+        {
+            OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
+            TempOrder = new Order(Order);
+            AddedOrderItems.Clear();
+            SubmitOrderCommand.RaiseCanExecuteChanged();
         }
 
         /// <summary>
