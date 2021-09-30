@@ -280,7 +280,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void RemoveOrderItem(OrderItem item)
+        public void RemoveOrderItem(int orderId, int qty, int itemId)
         {
             throw new NotImplementedException();
         }

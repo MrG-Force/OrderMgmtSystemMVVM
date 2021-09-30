@@ -27,7 +27,7 @@ namespace DataProvider
         void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists);
         // -- DELETE
         void DeleteOrder(int orderId);
-        void RemoveOrderItem(OrderItem item);
+        void RemoveOrderItem(int orderId, int qty, int itemId);
 
     }
 }

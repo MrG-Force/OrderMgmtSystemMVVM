@@ -23,7 +23,7 @@ namespace DataProvider
         private readonly string[] StockItemNames = new string[] { "Table","Chair", "Sofa", "Wardrobe", "Cupboard",
             "Single Bed", "Double Bed", "Queen Bed","King Bed" };
         private readonly decimal[] StockItemPrices = new decimal[] { 100, 25, 250, 180, 65, 120, 180, 220, 320 };
-        private readonly int[] StockItemStocks = new int[] { 10, 10, 10, 7, 9, 10, 10, 8, 9 };
+        private readonly int[] StockItemStocks = new int[] { 10, 10, 10, 10, 10, 10, 10, 10, 10 };
         #endregion
 
         #region Properties
@@ -107,7 +107,7 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void RemoveOrderItem(OrderItem item)
+        public void RemoveOrderItem(int orderId, int qty, int itemId)
         {
             throw new System.NotImplementedException();
         }
