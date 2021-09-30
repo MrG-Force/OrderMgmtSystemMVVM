@@ -23,7 +23,6 @@ namespace OrderMgmtSystem.ViewModels
         public AddOrderViewModel() : base()
         {
             OrderItems = new ObservableCollection<OrderItem>();
-            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
         }
         #endregion
 
@@ -46,7 +45,7 @@ namespace OrderMgmtSystem.ViewModels
         /// Adds the passed OrderItem to the new Order.
         /// </summary>
         /// <param name="newItem"></param>
-        internal override void AddOrderItem(OrderItem newItem)
+        internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
             // prepare event data that includes the orderItem and bool orderItemExists
             newItem.OrderHeaderId = Order.Id;
@@ -57,23 +56,31 @@ namespace OrderMgmtSystem.ViewModels
 
             if (existingItem == null)
             {
-                OrderItems.Add(newItem);
-                Order.AddItem(newItem);
-                RaisePropertyChanged(nameof(Order));
-                SubmitOrderCommand.RaiseCanExecuteChanged();
-
+                AddNewOrderItem(newItem);
                 eventData.OrderItemExists = false;
             }
             else
             {
-                existingItem.Quantity += newItem.Quantity;
-                // Sincronize items on back order
-                existingItem.OnBackOrder += newItem.OnBackOrder;
-                RaisePropertyChanged(nameof(Order));
-
+                UpdateExistingOrderItem(newItem, existingItem);
                 eventData.OrderItemExists = true;
             }
             base.OnOrderItemAdded(eventData);
+        }
+
+        internal override void AddNewOrderItem(OrderItem newItem)
+        {
+            OrderItems.Add(newItem);
+            Order.AddItem(newItem);
+            RaisePropertyChanged(nameof(Order));
+            SubmitOrderCommand.RaiseCanExecuteChanged();
+        }
+
+        internal override void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem)
+        {
+            existingItem.Quantity += item.Quantity;
+            // Sincronize items on back order
+            existingItem.OnBackOrder += item.OnBackOrder;
+            RaisePropertyChanged(nameof(Order)); ;
         }
 
         /// <summary>
@@ -86,9 +93,15 @@ namespace OrderMgmtSystem.ViewModels
             OrderItems.Remove(item);
             Order.RemoveItem(item.StockItemId);
             RaisePropertyChanged(nameof(Order));
-            
-            base.OnOrderItemRemoved(item);
+            var itemData = new OrderItemRemovedEventArgs()
+            {
+                OrderHeaderId = item.OrderHeaderId,
+                StockItemId = item.StockItemId,
+                Quantity = item.Quantity,
+                OnBackOrder = item.OnBackOrder
+            };
             SubmitOrderCommand.RaiseCanExecuteChanged();
+            base.OnOrderItemRemoved(itemData);
         }
 
         /// <summary>
@@ -114,29 +127,55 @@ namespace OrderMgmtSystem.ViewModels
         /// </remarks>
         protected override void CancelOperation()
         {
-            bool result = true;
             // if order has items
             if (CanSubmit)
             {
-                string message = "This order and all its data will be permanently deleted!";
-                string title = $"Cancel order: {Order.Id}";
-                var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
-                    .CreateDialogViewModel("CancelOrderDialog", title, message);
-                result = _dialogService.OpenDialog(dialogVM);
-            }
-            if (result)
-            {
-                //Order.CancelLastOrder(); //---Remove if not using random data
-                // Return Items to stock
-                foreach (OrderItem item in OrderItems)
+                bool result = ConfirmCancelOrder();
+                if (result)
                 {
-                    base.OnOrderItemRemoved(item);
+                    // Return Items to stock
+                    ReturnItemsToStock();
+                    RefreshTempVars();
                 }
-                OrderItems.Clear();
-                SubmitOrderCommand.RaiseCanExecuteChanged();
-                base.OnOperationCancelled(Order.Id);
-                Order = null;
+                else
+                    return;
             }
+            base.OnOperationCancelled(Order.Id);
+            Order = null;
+        }
+
+        private bool ConfirmCancelOrder()
+        {
+            bool result;
+            string message = "This order and all its data will be permanently deleted!";
+            string title = $"Cancel order: {Order.Id}";
+            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                     .CreateDialogViewModel("CancelOrderDialog", title, message);
+
+            result = _dialogService.OpenDialog(dialogVM);
+            return result;
+        }
+
+        private void ReturnItemsToStock()
+        {
+            foreach (OrderItem item in OrderItems)
+            {
+                var itemData = new OrderItemRemovedEventArgs()
+                {
+                    OrderHeaderId = item.OrderHeaderId,
+                    StockItemId = item.StockItemId,
+                    Quantity = item.Quantity,
+                    OnBackOrder = item.OnBackOrder
+                };
+                // Use the eventhandler to updates the stock quantities
+                base.OnOrderItemRemoved(itemData);
+            }
+        }
+
+        private void RefreshTempVars()
+        {
+            OrderItems.Clear();
+            SubmitOrderCommand.RaiseCanExecuteChanged();
         }
         #endregion
     }
