@@ -145,12 +145,12 @@ namespace SQLDataProvider
         /// Removes the passed OrderItem from the Database and updates the corresponding StockItem.
         /// </summary>
         /// <param name="item"></param>
-        public void RemoveOrderItem(OrderItem item)
+        public void RemoveOrderItem(int headerId, int qty, int itemId)
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrderItemAndUpdateStock");
-            _ = command.Parameters.AddWithValue("@orderHeaderId", item.OrderHeaderId);
-            _ = command.Parameters.AddWithValue("@quantity", item.Quantity);
-            _ = command.Parameters.AddWithValue("@stockItemId", item.StockItemId);
+            _ = command.Parameters.AddWithValue("@orderHeaderId", headerId);
+            _ = command.Parameters.AddWithValue("@quantity", qty);
+            _ = command.Parameters.AddWithValue("@stockItemId", itemId);
 
             SqlServerDataAccess.OpenConnection();
 
