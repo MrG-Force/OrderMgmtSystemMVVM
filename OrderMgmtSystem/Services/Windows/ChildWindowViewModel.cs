@@ -1,6 +1,7 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
+using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
@@ -60,6 +61,7 @@ namespace OrderMgmtSystem.Services.Windows
         private void SubscribeToEvents()
         {
             _orderDetailsVM.EditOrderRequested += OrderDetailsVM_EditOrderRequested;
+            _orderDetailsVM.OrderCompleted += OrderDetailsVM_OrderCompleted;
             _orderDetailsVM.DeleteOrderRequested += OrderDetailsVM_OrderDeletedOrRejected;
             _orderDetailsVM.OrderRejected += OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
@@ -74,6 +76,7 @@ namespace OrderMgmtSystem.Services.Windows
         private void UnsubscribeToEvents()
         {
             _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
+            _orderDetailsVM.OrderCompleted -= OrderDetailsVM_OrderCompleted;
             _orderDetailsVM.DeleteOrderRequested -= OrderDetailsVM_OrderDeletedOrRejected;
             _orderDetailsVM.OrderRejected -= OrderDetailsVM_OrderDeletedOrRejected;
             _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
@@ -90,7 +93,8 @@ namespace OrderMgmtSystem.Services.Windows
         {
             OrderDetailsVM.Order = EditOrderVM.Order;
             EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
-            EditOrderVM.TempOrderItems.Clear();
+            EditOrderVM.AddedOrderItems.Clear();
+            EditOrderVM.RemovedOrderItems.Clear();
             EditOrderVM.InitialTotal = OrderDetailsVM.Order.Total;
             EditOrderVM.RefreshCanSubmit();
         }
@@ -112,10 +116,10 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Contain relevant information to return the item</param>
-        private void EditOrderVM_OrderItemRemoved(object sender, OrderItem item)
+        private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
         {
             //_data.RemoveOrderItem();
-            _addItemVM.ReturnItemToStockList(item.StockItemId, item.Quantity, item.OnBackOrder);
+            _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
         }
 
         /// <summary>
@@ -125,7 +129,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e"></param>
         private void EditOrderVM_OperationCancelled(object sender, int orderId)
         {
-            _data.DeleteOrder(orderId);
+            //_data.DeleteOrder(orderId);
             Navigate("OrderDetailsView");
         }
 
@@ -137,6 +141,11 @@ namespace OrderMgmtSystem.Services.Windows
         private void OrderDetailsVM_EditOrderRequested(object sender, EventArgs e)
         {
             Navigate("EditOrderView");
+        }
+
+        private void OrderDetailsVM_OrderCompleted(object sender, EventArgs e)
+        {
+            _data.UpdateOrderState(_orderDetailsVM.Order.Id, 4);
         }
 
         /// <summary>
@@ -159,7 +168,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="item"></param>
         private void AddItemVM_EditingOrderItemSelected(object sender, OrderItem item)
         {
-            EditOrderVM.AddOrderItem(item);
+            EditOrderVM.CheckNewOrExistingItem(item);
             Navigate("CloseAddItemView");
         }
         #endregion
