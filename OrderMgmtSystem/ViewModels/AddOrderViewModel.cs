@@ -42,8 +42,24 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Adds the passed OrderItem to the new Order.
+        /// Submits the current order and resets the form.
         /// </summary>
+        protected override void SubmitOrder()
+        {
+            // Change order state calling Order.Submit()
+            Order.Submit();
+            // MainWindow grabs this.Order and adds it to the DB and updates OrdersList
+            base.OnOrderSubmitted(Order);
+            // Clear OrderItems prop
+            OrderItems.Clear();
+            // Set this.Order to null
+            Order = null;
+        }
+
+        /// <summary>
+        /// Checks whether the passed OrderItem exists or not in the Order and calls the corresponding method accordingly.
+        /// </summary>
+        /// <remarks>It is called in ChildWindowViewModel</remarks>
         /// <param name="newItem"></param>
         internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
@@ -67,6 +83,10 @@ namespace OrderMgmtSystem.ViewModels
             base.OnOrderItemAdded(eventData);
         }
 
+        /// <summary>
+        /// Adds a new OrderItem to the Order.
+        /// </summary>
+        /// <param name="newItem"></param>
         internal override void AddNewOrderItem(OrderItem newItem)
         {
             OrderItems.Add(newItem);
@@ -75,11 +95,16 @@ namespace OrderMgmtSystem.ViewModels
             SubmitOrderCommand.RaiseCanExecuteChanged();
         }
 
-        internal override void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem)
+        /// <summary>
+        /// Updates the Quantity of an existing OrderItem.
+        /// </summary>
+        /// <param name="newItem">The new item</param>
+        /// <param name="existingItem">An item already in the order with the same id as the newItem</param>
+        internal override void UpdateExistingOrderItem(OrderItem newItem, OrderItem existingItem)
         {
-            existingItem.Quantity += item.Quantity;
+            existingItem.Quantity += newItem.Quantity;
             // Sincronize items on back order
-            existingItem.OnBackOrder += item.OnBackOrder;
+            existingItem.OnBackOrder += newItem.OnBackOrder;
             RaisePropertyChanged(nameof(Order)); ;
         }
 
@@ -105,21 +130,6 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Submits the current order and resets the form.
-        /// </summary>
-        protected override void SubmitOrder()
-        {
-            // Change order state calling Order.Submit()
-            Order.Submit();
-            // MainWindow grabs this.Order and adds it to the DB and updates OrdersList
-            base.OnOrderSubmitted(Order);
-            // Clear OrderItems prop
-            OrderItems.Clear();
-            // Set this.Order to null
-            Order = null;
-        }
-
-        /// <summary>
         /// Cancels the current order. Opens a dialog to confirm cancelation.
         /// </summary>
         /// <remarks>
@@ -130,7 +140,9 @@ namespace OrderMgmtSystem.ViewModels
             // if order has items
             if (CanSubmit)
             {
-                bool result = ConfirmCancelOrder();
+                string title = $"Cancel order: {Order.Id}";
+                string message = "This order and all its data will be permanently deleted!";
+                bool result = ConfirmCancel(title, message);
                 if (result)
                 {
                     // Return Items to stock
@@ -144,18 +156,9 @@ namespace OrderMgmtSystem.ViewModels
             Order = null;
         }
 
-        private bool ConfirmCancelOrder()
-        {
-            bool result;
-            string message = "This order and all its data will be permanently deleted!";
-            string title = $"Cancel order: {Order.Id}";
-            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
-                     .CreateDialogViewModel("CancelOrderDialog", title, message);
-
-            result = _dialogService.OpenDialog(dialogVM);
-            return result;
-        }
-
+        /// <summary>
+        /// Returns the OrderItems back to the stock.
+        /// </summary>
         private void ReturnItemsToStock()
         {
             foreach (OrderItem item in OrderItems)
@@ -172,6 +175,9 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
 
+        /// <summary>
+        /// Clears the collection of OrderItems for the next new order.
+        /// </summary>
         private void RefreshTempVars()
         {
             OrderItems.Clear();

@@ -33,6 +33,10 @@ namespace OrderMgmtSystem.ViewModels
         #region Properties
         public decimal InitialTotal { get; set; }
         public string Title { get; }
+        /// <summary>
+        /// A temporary order that is commited when the order is updated or discarded if the
+        /// operation is cancelled.
+        /// </summary>
         public Order TempOrder
         {
             get => _tempOrder;
@@ -42,9 +46,14 @@ namespace OrderMgmtSystem.ViewModels
                 RaisePropertyChanged();
             }
         }
+        /// <summary>
+        /// Keeps track of OrderItems that have been added while editing the order. 
+        /// </summary>
         public List<OrderItem> AddedOrderItems { get; set; }
+        /// <summary>
+        /// Keeps track of OrderItems that have been removed while editing the order.
+        /// </summary>
         public List<OrderItem> RemovedOrderItems { get; set; }
-
         public override bool CanSubmit => InitialTotal != TempOrder.Total;
         #endregion
 
@@ -77,7 +86,6 @@ namespace OrderMgmtSystem.ViewModels
             OnOrderUpdated(EventArgs.Empty);
         }
 
-
         /// <summary>
         /// Checks whether the passed OrderItem exists or not in the Order and calls the corresponding method accordingly.
         /// </summary>
@@ -85,6 +93,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
+            newItem.OrderHeaderId = Order.Id;
             OrderItem existingItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
 
@@ -100,6 +109,10 @@ namespace OrderMgmtSystem.ViewModels
             SubmitOrderCommand.RaiseCanExecuteChanged();
         }
 
+        /// <summary>
+        /// Adds a new OrderItem to the Order.
+        /// </summary>
+        /// <param name="newItem"></param>
         internal override void AddNewOrderItem(OrderItem newItem)
         {
             newItem.OrderHeaderId = TempOrder.Id;
@@ -108,17 +121,22 @@ namespace OrderMgmtSystem.ViewModels
             TempOrder.AddItem(newItem);
         }
 
-        internal override void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem)
+        /// <summary>
+        /// Updates the Quantity of an existing OrderItem.
+        /// </summary>
+        /// <param name="newItem">The new item</param>
+        /// <param name="existingItem">An item already in the order with the same id as the newItem</param>
+        internal override void UpdateExistingOrderItem(OrderItem newItem, OrderItem existingItem)
         {
-            AddedOrderItems.Add(new OrderItem(item));
+            AddedOrderItems.Add(new OrderItem(newItem));
 
-            item.Quantity += existingItem.Quantity;
-            item.OnBackOrder += existingItem.OnBackOrder;
+            newItem.Quantity += existingItem.Quantity;
+            newItem.OnBackOrder += existingItem.OnBackOrder;
             int i = OrderItems.IndexOf(existingItem);
             _ = OrderItems.Remove(existingItem);
-            OrderItems.Insert(i, item);
+            OrderItems.Insert(i, newItem);
             TempOrder.OrderItems = new List<OrderItem>(OrderItems);
-            TempOrder.HasItemsOnBackOrder = item.HasItemsOnBackOrder;
+            TempOrder.HasItemsOnBackOrder = newItem.HasItemsOnBackOrder;
         }
 
         /// <summary>
@@ -151,7 +169,9 @@ namespace OrderMgmtSystem.ViewModels
             // if order has changed
             if (CanSubmit)
             {
-                bool result = ConfirmCancelOrder();
+                string title = $"Cancel changes in order: {Order.Id}";
+                string message = "All the changes will be reverted!";
+                bool result = ConfirmCancel(title, message);
                 if (result)
                 {
                     ReturnItemsToStock(); //Has to work both ways it only returns the items to stock but doesnt work when the update was an item removed
@@ -162,26 +182,6 @@ namespace OrderMgmtSystem.ViewModels
                     return;
             }
             base.OnOperationCancelled(Order.Id);
-        }
-
-        // TODO: Maybe we need to keep two lists, one for the added items and one for the removed items. If the order changes are
-        // canceled then we return the items added back to the stock and take back the items removed. Thats the best  I have right now.
-
-
-        /// <summary>
-        /// Gets a confirmation to cancel the changes in the current order.
-        /// </summary>
-        /// <returns>User choice</returns>
-        private bool ConfirmCancelOrder()
-        {
-            bool result;
-            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
-                     .CreateDialogViewModel("CancelOrderDialog",
-                     $"Cancel changes in order: {Order.Id}",
-                     "All the changes will be reverted!");
-
-            result = _dialogService.OpenDialog(dialogVM);
-            return result;
         }
 
         /// <summary>
@@ -203,6 +203,10 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
 
+        /// <summary>
+        /// Takes back the StockItems if the changes were cancelled and OrderItems were removed.
+        /// </summary>
+        /// <remarks>Does exactly the opposite of ReturnItemsToStock</remarks>
         private void ReturnItemsToOrder()
         {
             foreach (OrderItem item in RemovedOrderItems)

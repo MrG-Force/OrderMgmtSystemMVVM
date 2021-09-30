@@ -1,8 +1,10 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
+using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
+using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.ObjectModel;
 
@@ -15,16 +17,15 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => _selectedItem != null);
             CancelOperationCommand = new DelegateCommand(CancelOperation);
+            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
             _dialogService = new DialogService();
         }
         #endregion
 
         #region Fields
         protected readonly IDialogService _dialogService;
-
         protected Order _order;
         private OrderItem _selectedItem;
-        // Get a VMFactory field to create dialog view models
         #endregion
 
         #region Properties
@@ -64,7 +65,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         /// Occurs when an OrderItem is removed from the order
         /// </summary>
         /// /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
-        public event EventHandler<OrderItem> OrderItemRemoved;
+        public event EventHandler<OrderItemRemovedEventArgs> OrderItemRemoved;
 
         /// <summary>
         /// Occurs when the Order is submitted.
@@ -80,21 +81,28 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         #endregion
 
         #region Methods
-        /// <summary>
-        /// Adds an OrderItem to the Order.
-        /// </summary>
-        /// <remarks>It is used in conjunction with the NavigateCommand in the MainWindowModel.</remarks>
-        /// <param name="newItem"></param>
-        internal abstract void AddOrderItem(OrderItem newItem);
-
-        /// <summary>
-        /// Removes the passed item from the Order and calls an event handler
-        /// to update the quantity of the items in the StockItems list.
-        /// </summary>
-        /// <param name="item"></param>
+        internal abstract void CheckNewOrExistingItem(OrderItem newItem);
+        internal abstract void AddNewOrderItem(OrderItem newItem);
+        internal abstract void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem);
         internal abstract void RemoveItem(OrderItem item);
         protected abstract void SubmitOrder();
         protected abstract void CancelOperation();
+
+        /// <summary>
+        /// Gets confirmation to proceed with cancelation
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        protected virtual bool ConfirmCancel(string title, string message)
+        {
+            bool result;
+            var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
+                     .CreateDialogViewModel("CancelOrderDialog", title, message);
+
+            result = _dialogService.OpenDialog(dialogVM);
+            return result;
+        }
 
         /// <summary>
         /// Raises the OrderItemAdded event.
@@ -109,9 +117,9 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         /// Raises the OrderItemRemoved event.
         /// </summary>
         /// <param name="e">An eventArgs obj that contains data to update the StockItems</param>
-        protected virtual void OnOrderItemRemoved(OrderItem orderItem)
+        protected virtual void OnOrderItemRemoved(OrderItemRemovedEventArgs e)
         {
-            OrderItemRemoved?.Invoke(this, orderItem);
+            OrderItemRemoved?.Invoke(this, e);
         }
         /// <summary>
         /// Raises the OrderSubmitted event.
