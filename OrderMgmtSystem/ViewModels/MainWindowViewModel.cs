@@ -92,7 +92,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             _addOrderViewModel.OrderSubmitted += AddOrderVM_OrderSubmitted;
             _addOrderViewModel.OperationCancelled += AddOrderVM_OperationCancelled;
-            _addOrderViewModel.OrderItemAdded += AddOrderVM_OrderItemAdded;
+            _addOrderViewModel.OrderItemAdded += AddOrderVM_OrderItemAdded; 
             _addOrderViewModel.OrderItemRemoved += AddOrderVM_OrderItemRemoved;
             _addItemViewModel.NewOrderItemSelected += AddItemVM_NewOrderItemSelected;
         }
@@ -129,10 +129,10 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="stockItemId"></param>
         /// <param name="quantity">The number of items(Quantity) removed from the order.</param>
         /// <param name="onBackOrder">The number of items that were unavailable when the order was placed.</param>
-        private void AddOrderVM_OrderItemRemoved(object sender, OrderItem item)
+        private void AddOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
         {
-            _data.RemoveOrderItem(item);
-            _addItemViewModel.ReturnItemToStockList(item.StockItemId, item.Quantity, item.OnBackOrder);
+            _data.RemoveOrderItem(e.OrderHeaderId, e.Quantity, e.StockItemId);
+            _addItemViewModel.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace OrderMgmtSystem.ViewModels
         private void AddItemVM_NewOrderItemSelected(object sender, OrderItem newItem)
         {
 
-            _addOrderViewModel.AddOrderItem(newItem);
+            _addOrderViewModel.CheckNewOrExistingItem(newItem);
             Navigate("CloseAddItemView");
         }
 
