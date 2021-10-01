@@ -103,10 +103,6 @@ namespace SQLDataProvider
             return orders;
         }
 
-        /// <summary>
-        /// Starts a new order in the database and returns it with the corresponding Id and dateTime.
-        /// </summary>
-        /// <returns></returns>
         public Order GetOrder()
         {
             SqlServerDataAccess.OpenConnection();
@@ -117,6 +113,8 @@ namespace SQLDataProvider
                 while (reader.Read())
                 {
                     newOrder = new Order(reader.GetInt32(0), reader.GetDateTime(1), 1);
+                    Debug.WriteLine(newOrder.HasItemsOnBackOrder);
+                    Debug.WriteLine(newOrder.DateTime);
                 }
             }
             SqlServerDataAccess.CloseConnection();
@@ -145,12 +143,12 @@ namespace SQLDataProvider
         /// Removes the passed OrderItem from the Database and updates the corresponding StockItem.
         /// </summary>
         /// <param name="item"></param>
-        public void RemoveOrderItem(int headerId, int qty, int itemId)
+        public void RemoveOrderItem(OrderItem orderItem)
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrderItemAndUpdateStock");
-            _ = command.Parameters.AddWithValue("@orderHeaderId", headerId);
-            _ = command.Parameters.AddWithValue("@quantity", qty);
-            _ = command.Parameters.AddWithValue("@stockItemId", itemId);
+            _ = command.Parameters.AddWithValue("@orderHeaderId",orderItem.OrderHeaderId);
+            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
+            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
 
             SqlServerDataAccess.OpenConnection();
 
@@ -168,28 +166,20 @@ namespace SQLDataProvider
         /// </summary>
         /// <param name="orderItem"></param>
         /// <param name="orderItemExists"></param>
-        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
+        public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("UpsertOrderItemAndUpdateStock");
             _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
             _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
-            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+            _ = command.Parameters.AddWithValue("@description", orderItem.Description);
+            _ = command.Parameters.AddWithValue("@price", orderItem.Price);
+            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
 
             SqlServerDataAccess.OpenConnection();
-            if (orderItemExists)
-            {
-                command.CommandText = "UpdateOrderItemAndUpdateStock";
-                int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
-            }
-            else
-            {
-                command.CommandText = "InsertOrderItemAndUpdateStock";
-                _ = command.Parameters.AddWithValue("@description", orderItem.Description);
-                _ = command.Parameters.AddWithValue("@price", orderItem.Price);
-                int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
-            }
+
+            int rowsAffected = command.ExecuteNonQuery();
+            Debug.WriteLine($"Records updated:{rowsAffected}");
+
             SqlServerDataAccess.CloseConnection();
             SqlServerDataAccess.ClearCommandParams();
         }
@@ -213,6 +203,83 @@ namespace SQLDataProvider
             SqlServerDataAccess.ClearCommandParams();
         }
 
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="orderItems"></param>
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_UpdateStockItemAmount");
+            _ = command.Parameters.Add("@id", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@amount", System.Data.SqlDbType.Int);
+
+            SqlServerDataAccess.OpenConnection();
+
+            foreach (var item in orderItems)
+            {
+                command.Parameters["@id"].Value = item.StockItemId;
+                command.Parameters["@amount"].Value = item.Quantity - item.OnBackOrder;
+                _ = command.ExecuteNonQuery();
+            }
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
+        }
+
+        public void UpdateOrderItems(List<OrderItem> updatedItems)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertUpdatedOrderItemAndUpdateStock");
+            _ = command.Parameters.Add("@orderHeaderId", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@stockItemId", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@quantity", System.Data.SqlDbType.Int);
+
+            SqlServerDataAccess.OpenConnection();
+
+            foreach (var item in updatedItems)
+            {
+                command.Parameters["@orderHeaderId"].Value = item.OrderHeaderId;
+                command.Parameters["@stockItemId"].Value = item.StockItemId;
+                command.Parameters["@quantity"].Value = item.Quantity - item.OnBackOrder;
+                _ = command.ExecuteNonQuery();
+            }
+
+            SqlServerDataAccess.CloseConnection();
+            SqlServerDataAccess.ClearCommandParams();
+        }
+
+        public void RevertChangesInOrderItems(List<OrderItem> originalList)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertChangesOnOrderItemAndUpdateStock");
+            _ = command.Parameters.Add("@orderHeaderId", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@stockItemId", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@description", System.Data.SqlDbType.VarChar);
+            _ = command.Parameters.Add("@price", System.Data.SqlDbType.Decimal);
+            _ = command.Parameters.Add("@oldQuantity", System.Data.SqlDbType.Int);
+
+            SqlServerDataAccess.OpenConnection();
+            try
+            {
+                foreach (var item in originalList)
+                {
+                    command.Parameters["@orderHeaderId"].Value = item.OrderHeaderId;
+                    command.Parameters["@stockItemId"].Value = item.StockItemId;
+                    command.Parameters["@description"].Value = item.Description;
+                    command.Parameters["@price"].Value = item.Price;
+                    command.Parameters["@oldQuantity"].Value = item.Quantity;
+                    _ = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Execute non-query failed: " + ex.Message);
+            }
+            finally
+            {
+                SqlServerDataAccess.CloseConnection();
+            }
+
+            SqlServerDataAccess.ClearCommandParams();
+        }
 
         #region Not yet implemented
 
@@ -248,48 +315,36 @@ namespace SQLDataProvider
         }
 
 
+        #endregion
         /// <summary>
-        /// MAY NOT BE NEEDED
+        /// DEPRECATED.
         /// </summary>
-        /// <returns></returns>
-        public int StartNewOrder()
+        /// <param name="orderItem"></param>
+        /// <param name="orderItemExists"></param>
+        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
         {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
+            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
+            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+
             SqlServerDataAccess.OpenConnection();
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_InsertOrderHeader]");
-            int Id = 0;
-
-            using (SqlDataReader reader = command.ExecuteReader())
+            if (orderItemExists)
             {
-                while (reader.Read())
-                {
-                    Id = reader.GetInt32(0);
-                }
+                command.CommandText = "UpdateOrderItemAndUpdateStock";
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.WriteLine($"Records updated:{rowsAffected}");
             }
-            SqlServerDataAccess.CloseConnection();
-            return Id;
-        }
-        /// <summary>
-        /// PROBABLY NOT USED
-        /// </summary>
-        /// <param name="orderItems"></param>
-        public void ReturnStockItems(List<OrderItem> orderItems)
-        {
-            SqlServerDataAccess.OpenConnection();
-
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_UpdateStockItemAmount");
-            _ = command.Parameters.Add("@id", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@amount", System.Data.SqlDbType.Int);
-
-            foreach (var item in orderItems)
+            else
             {
-                command.Parameters["@id"].Value = item.StockItemId;
-                command.Parameters["@amount"].Value = item.Quantity;
-                _ = command.ExecuteNonQuery();
+                command.CommandText = "InsertOrderItemAndUpdateStock";
+                _ = command.Parameters.AddWithValue("@description", orderItem.Description);
+                _ = command.Parameters.AddWithValue("@price", orderItem.Price);
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.WriteLine($"Records updated:{rowsAffected}");
             }
-
             SqlServerDataAccess.CloseConnection();
             SqlServerDataAccess.ClearCommandParams();
         }
-        #endregion
     }
 }
