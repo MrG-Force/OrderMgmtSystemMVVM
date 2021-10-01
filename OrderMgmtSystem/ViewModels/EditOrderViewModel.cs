@@ -93,7 +93,6 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
-            newItem.OrderHeaderId = Order.Id;
             OrderItem existingItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
 
@@ -115,10 +114,11 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal override void AddNewOrderItem(OrderItem newItem)
         {
-            newItem.OrderHeaderId = TempOrder.Id;
+            AddedOrderItems.Add(new OrderItem(newItem, Order.Id));
+
             OrderItems.Add(newItem);
-            AddedOrderItems.Add(newItem);
             TempOrder.AddItem(newItem);
+
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="existingItem">An item already in the order with the same id as the newItem</param>
         internal override void UpdateExistingOrderItem(OrderItem newItem, OrderItem existingItem)
         {
-            AddedOrderItems.Add(new OrderItem(newItem));
+            AddedOrderItems.Add(new OrderItem(newItem, Order.Id));
 
             newItem.Quantity += existingItem.Quantity;
             newItem.OnBackOrder += existingItem.OnBackOrder;
@@ -145,19 +145,14 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
+            RemovedOrderItems.Add(item);
+
             OrderItems.Remove(item);
             TempOrder.RemoveItem(item.StockItemId);
-            RemovedOrderItems.Add(item);
             RaisePropertyChanged(nameof(TempOrder));
-            var itemData = new OrderItemRemovedEventArgs()
-            {
-                OrderHeaderId = item.OrderHeaderId,
-                StockItemId = item.StockItemId,
-                Quantity = item.Quantity,
-                OnBackOrder = item.OnBackOrder
-            };
+
             SubmitOrderCommand.RaiseCanExecuteChanged();
-            base.OnOrderItemRemoved(itemData);
+            base.OnOrderItemRemoved(item);
         }
 
         /// <summary>
@@ -174,9 +169,10 @@ namespace OrderMgmtSystem.ViewModels
                 bool result = ConfirmCancel(title, message);
                 if (result)
                 {
-                    ReturnItemsToStock(); //Has to work both ways it only returns the items to stock but doesnt work when the update was an item removed
+                    ReturnItemsToStock();
                     ReturnItemsToOrder();
                     RefreshTempVars();
+                    OnOrderItemsUpdateReverted(EventArgs.Empty);
                 }
                 else
                     return;
@@ -191,16 +187,15 @@ namespace OrderMgmtSystem.ViewModels
         {
             foreach (OrderItem item in AddedOrderItems)
             {
-                var itemData = new OrderItemRemovedEventArgs()
-                {
-                    OrderHeaderId = item.OrderHeaderId,
-                    StockItemId = item.StockItemId,
-                    Quantity = item.Quantity,
-                    OnBackOrder = item.OnBackOrder
-                };
-                // Use the eventhandler to updates the stock quantities
-                base.OnOrderItemRemoved(itemData);
+                // Use the eventhandler to update the stock quantities
+                base.OnOrderItemRemoved(item);
             }
+        }
+        public event EventHandler<EventArgs> OrderItemsUpdateReverted;
+
+        private void OnOrderItemsUpdateReverted(EventArgs e)
+        {
+            OrderItemsUpdateReverted?.Invoke(this, e);
         }
 
         /// <summary>
@@ -211,15 +206,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             foreach (OrderItem item in RemovedOrderItems)
             {
-                var itemData = new OrderItemRemovedEventArgs()
-                {
-                    OrderHeaderId = item.OrderHeaderId,
-                    StockItemId = item.StockItemId,
-                    Quantity = item.Quantity * -1,
-                    OnBackOrder = item.OnBackOrder
-                };
-                // Use the eventhandler to updates the stock quantities
-                base.OnOrderItemRemoved(itemData);
+                base.OnOrderItemRemoved(item); //TODO
             }
         }
 
