@@ -39,16 +39,16 @@ namespace DataModels
             Price = stockItem.Price;
             Description = stockItem.Name;
             Quantity = 0;
-            _onBackOrder = stockItem.OnBackOrder;
+            _onBackOrder = 0;
         }
 
         /// <summary>
         /// To create a temporary orderItem while editing an existing order.
         /// </summary>
         /// <param name="item"></param>
-        public OrderItem(OrderItem item)
+        public OrderItem(OrderItem item, int id = 0)
         {
-            OrderHeaderId = 0;
+            OrderHeaderId = id;
             StockItemId = item.StockItemId;
             Description = item.Description;
             Price = item.Price;
