@@ -1,7 +1,6 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
@@ -67,7 +66,13 @@ namespace OrderMgmtSystem.Services.Windows
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved += EditOrderVM_OrderItemRemoved;
             _editOrderVM.OperationCancelled += EditOrderVM_OperationCancelled;
+            _editOrderVM.OrderItemsUpdateReverted += EditOrderVM_OrderItemsUpdateReverted;
             _addItemVM.EditingOrderItemSelected += AddItemVM_EditingOrderItemSelected;
+        }
+
+        private void EditOrderVM_OrderItemsUpdateReverted(object sender, EventArgs e)
+        {
+            _data.RevertChangesInOrderItems(_orderDetailsVM.Order.OrderItems);
         }
 
         /// <summary>
@@ -82,6 +87,7 @@ namespace OrderMgmtSystem.Services.Windows
             _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
             _editOrderVM.OperationCancelled -= EditOrderVM_OperationCancelled;
+            _editOrderVM.OrderItemsUpdateReverted -= EditOrderVM_OrderItemsUpdateReverted;
             _addItemVM.EditingOrderItemSelected -= AddItemVM_EditingOrderItemSelected;
         }
 
@@ -116,10 +122,10 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">Contain relevant information to return the item</param>
-        private void EditOrderVM_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
+        private void EditOrderVM_OrderItemRemoved(object sender, OrderItem orderItem)
         {
-            //_data.RemoveOrderItem();
-            _addItemVM.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
+            //_data.RemoveOrderItem(orderItem);
+            _addItemVM.ReturnItemToStockList(orderItem);
         }
 
         /// <summary>
@@ -155,10 +161,16 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e"></param>
         private void OrderDetailsVM_OrderDeletedOrRejected(object sender, EventArgs e)
         {
-            foreach (var item in _orderDetailsVM.Order.OrderItems)
+            // check if the order is pending
+            if (_orderDetailsVM.Order.OrderStateId == 2)
             {
-                _addItemVM.ReturnItemToStockList(item.StockItemId, item.Quantity, item.OnBackOrder);
-            };
+                foreach (var item in _orderDetailsVM.Order.OrderItems)
+                {
+                    _addItemVM.ReturnItemToStockList(item);
+                };
+                _data.ReturnStockItems(_orderDetailsVM.Order.OrderItems);
+            }
+            // if order is already rejected this has been done already
         }
 
         /// <summary>
@@ -168,6 +180,8 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="item"></param>
         private void AddItemVM_EditingOrderItemSelected(object sender, OrderItem item)
         {
+            item.OrderHeaderId = _editOrderVM.Order.Id;
+            _data.UpdateOrInsertOrderItem(item);
             EditOrderVM.CheckNewOrExistingItem(item);
             Navigate("CloseAddItemView");
         }
