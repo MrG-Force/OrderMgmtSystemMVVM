@@ -1,6 +1,5 @@
 ﻿using DataModels;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
 using OrderMgmtSystem.Services.Dialogs;
@@ -15,7 +14,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         #region Constructor
         public SingleOrderViewModelBase()
         {
-            RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => _selectedItem != null);
+            RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => SelectedItem != null);
             CancelOperationCommand = new DelegateCommand(CancelOperation);
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
             _dialogService = new DialogService();
@@ -56,16 +55,10 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
 
         #region Events
         /// <summary>
-        /// Occurs when an OrderItem is added to the current order.
-        /// </summary>
-        /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
-        public event EventHandler<OrderItemAddedEventArgs> OrderItemAdded;
-
-        /// <summary>
         /// Occurs when an OrderItem is removed from the order
         /// </summary>
         /// /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
-        public event EventHandler<OrderItemRemovedEventArgs> OrderItemRemoved;
+        public event EventHandler<OrderItem> OrderItemRemoved;
 
         /// <summary>
         /// Occurs when the Order is submitted.
@@ -105,21 +98,12 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         }
 
         /// <summary>
-        /// Raises the OrderItemAdded event.
-        /// </summary>
-        /// <param name="e">An eventArgs obj that contains the OrderItem and a bool</param>
-        protected virtual void OnOrderItemAdded(OrderItemAddedEventArgs e)
-        {
-            OrderItemAdded?.Invoke(this, e);
-        }
-
-        /// <summary>
         /// Raises the OrderItemRemoved event.
         /// </summary>
         /// <param name="e">An eventArgs obj that contains data to update the StockItems</param>
-        protected virtual void OnOrderItemRemoved(OrderItemRemovedEventArgs e)
+        protected virtual void OnOrderItemRemoved(OrderItem orderItem)
         {
-            OrderItemRemoved?.Invoke(this, e);
+            OrderItemRemoved?.Invoke(this, orderItem);
         }
         /// <summary>
         /// Raises the OrderSubmitted event.
