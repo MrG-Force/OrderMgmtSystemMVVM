@@ -87,12 +87,14 @@ namespace OrderMgmtSystem.ViewModels
 
                 if (result)
                 {
-                    Order.OrderStateId = 3;
                     OnOrderRejected(EventArgs.Empty);
+                    Order.OrderStateId = 3;
                     CloseWindow();
                 }
                 else
+                {
                     return;
+                }
             }
             else
             {
