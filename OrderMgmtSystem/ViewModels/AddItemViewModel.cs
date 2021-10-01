@@ -59,6 +59,7 @@ namespace OrderMgmtSystem.ViewModels
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Creates a new OrderItem and updates the corresponding InStock property 
         /// in the StockItems list. 
@@ -118,14 +119,11 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <param name="stockItemId"></param>
         /// <param name="quantity"></param>
-        internal void ReturnItemToStockList(int stockItemId, int quantity, int onBackOrder)
+        internal void ReturnItemToStockList(OrderItem orderItem)
         {
             StockItem returnedItem = StockItems
-                .FirstOrDefault(item => item.Id == stockItemId);
-            if (returnedItem != null)
-            {
-                returnedItem.InStock += quantity - onBackOrder;
-            }
+                .FirstOrDefault(item => item.Id == orderItem.StockItemId);
+            returnedItem.InStock += orderItem.Quantity - orderItem.OnBackOrder;
         }
 
         /// <summary>
