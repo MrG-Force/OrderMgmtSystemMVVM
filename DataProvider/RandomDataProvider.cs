@@ -234,7 +234,18 @@ namespace DataProvider
             }
             return numbers.ToArray();
         }
+
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            return;
+        }
+
         #region Not implemented Interface methods
+        public void UpdateOrderItems(List<OrderItem> updatedItems)
+        {
+            return;
+        }
+
         public void AddNewOrder(Order newOrder)
         {
             throw new NotImplementedException();
@@ -260,7 +271,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderState(int orderId, int stateId)
+        public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
             throw new NotImplementedException();
         }
@@ -277,15 +288,25 @@ namespace DataProvider
 
         public void DeleteOrder(int orderId)
         {
-            throw new NotImplementedException();
+            return;
         }
 
-        public void RemoveOrderItem(int orderId, int qty, int itemId)
+        public void RemoveOrderItem(OrderItem orderItem)
+        {
+            return;
+        }
+
+        public int StartNewOrder()
         {
             throw new NotImplementedException();
         }
 
-        public int StartNewOrder()
+        public void UpdateOrderState(int orderId, int stateId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
             throw new NotImplementedException();
         }

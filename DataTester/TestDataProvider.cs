@@ -96,6 +96,11 @@ namespace DataProvider
             return orders;
         }
 
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            return;
+        }
+
         #region Not implemented Interface methods
         public void AddNewOrder(Order newOrder)
         {
@@ -107,9 +112,9 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void RemoveOrderItem(int orderId, int qty, int itemId)
+        public void RemoveOrderItem(OrderItem orderItem)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public Order GetOrder()
@@ -145,7 +150,12 @@ namespace DataProvider
             throw new System.NotImplementedException();
         }
 
-        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists)
+        public void UpdateOrderItems(List<OrderItem> updatedItems)
+        {
+            return;
+        }
+
+        public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
             throw new System.NotImplementedException();
         }
@@ -156,6 +166,11 @@ namespace DataProvider
         }
 
         public void UpdateStockItemAmount()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
             throw new System.NotImplementedException();
         }
