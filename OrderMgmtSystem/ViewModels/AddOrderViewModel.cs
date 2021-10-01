@@ -63,24 +63,17 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="newItem"></param>
         internal override void CheckNewOrExistingItem(OrderItem newItem)
         {
-            // prepare event data that includes the orderItem and bool orderItemExists
-            newItem.OrderHeaderId = Order.Id;
-            var eventData = new OrderItemAddedEventArgs() { Item = newItem };
-
             OrderItem existingItem = OrderItems
                 .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
 
             if (existingItem == null)
             {
                 AddNewOrderItem(newItem);
-                eventData.OrderItemExists = false;
             }
             else
             {
                 UpdateExistingOrderItem(newItem, existingItem);
-                eventData.OrderItemExists = true;
             }
-            base.OnOrderItemAdded(eventData);
         }
 
         /// <summary>
@@ -118,15 +111,8 @@ namespace OrderMgmtSystem.ViewModels
             OrderItems.Remove(item);
             Order.RemoveItem(item.StockItemId);
             RaisePropertyChanged(nameof(Order));
-            var itemData = new OrderItemRemovedEventArgs()
-            {
-                OrderHeaderId = item.OrderHeaderId,
-                StockItemId = item.StockItemId,
-                Quantity = item.Quantity,
-                OnBackOrder = item.OnBackOrder
-            };
             SubmitOrderCommand.RaiseCanExecuteChanged();
-            base.OnOrderItemRemoved(itemData);
+            base.OnOrderItemRemoved(item);
         }
 
         /// <summary>
@@ -163,15 +149,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             foreach (OrderItem item in OrderItems)
             {
-                var itemData = new OrderItemRemovedEventArgs()
-                {
-                    OrderHeaderId = item.OrderHeaderId,
-                    StockItemId = item.StockItemId,
-                    Quantity = item.Quantity,
-                    OnBackOrder = item.OnBackOrder
-                };
-                // Use the eventhandler to updates the stock quantities
-                base.OnOrderItemRemoved(itemData);
+                base.OnOrderItemRemoved(item);
             }
         }
 
