@@ -145,14 +145,14 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
-            RemovedOrderItems.Add(item);
+            RemovedOrderItems.Add(item); // Keep track or remove item
 
-            OrderItems.Remove(item);
-            TempOrder.RemoveItem(item.StockItemId);
+            OrderItems.Remove(item); // Remove item from view
+            TempOrder.RemoveItem(item.StockItemId);// Remove item for the editing temp order
+
             RaisePropertyChanged(nameof(TempOrder));
-
             SubmitOrderCommand.RaiseCanExecuteChanged();
-            base.OnOrderItemRemoved(item);
+            base.OnOrderItemRemoved(item); // this one returns the item to the stock list
         }
 
         /// <summary>
@@ -170,13 +170,13 @@ namespace OrderMgmtSystem.ViewModels
                 if (result)
                 {
                     ReturnItemsToStock();
-                    ReturnItemsToOrder();
                     RefreshTempVars();
                     OnOrderItemsUpdateReverted(EventArgs.Empty);
                 }
                 else
                     return;
             }
+            // navigate back to OrderDetails
             base.OnOperationCancelled(Order.Id);
         }
 
@@ -187,7 +187,6 @@ namespace OrderMgmtSystem.ViewModels
         {
             foreach (OrderItem item in AddedOrderItems)
             {
-                // Use the eventhandler to update the stock quantities
                 base.OnOrderItemRemoved(item);
             }
         }
@@ -199,25 +198,14 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Takes back the StockItems if the changes were cancelled and OrderItems were removed.
-        /// </summary>
-        /// <remarks>Does exactly the opposite of ReturnItemsToStock</remarks>
-        private void ReturnItemsToOrder()
-        {
-            foreach (OrderItem item in RemovedOrderItems)
-            {
-                base.OnOrderItemRemoved(item); //TODO
-            }
-        }
-
-        /// <summary>
         /// Refreshes the EditOrderVM temporary variables in case the user returns to edit this order.
         /// </summary>
-        private void RefreshTempVars()
+        private void RefreshTempVars() // Repeats UpdateCurrentOrder in ChildWindowVM
         {
             OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
             TempOrder = new Order(Order);
             AddedOrderItems.Clear();
+            RemovedOrderItems.Clear();
             SubmitOrderCommand.RaiseCanExecuteChanged();
         }
 
