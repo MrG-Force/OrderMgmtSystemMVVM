@@ -126,6 +126,16 @@ namespace OrderMgmtSystem.ViewModels
             returnedItem.InStock += orderItem.Quantity - orderItem.OnBackOrder;
         }
 
+        internal void UpdateItemsReturnedToOrder(List<OrderItem> items)
+        {
+            foreach (var item in items)
+            {
+                StockItem stockItem = StockItems
+                    .FirstOrDefault(i => i.Id == item.StockItemId);
+                stockItem.InStock -= item.Quantity - item.OnBackOrder;
+            }
+        }
+
         /// <summary>
         /// Raises NewOrderItemSelected event and passes the OrderItem to the listeners.
         /// </summary>
