@@ -4,6 +4,7 @@ using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.ViewModels;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
+using System.Collections.ObjectModel;
 
 namespace OrderMgmtSystem.Services.Windows
 {
@@ -73,6 +74,7 @@ namespace OrderMgmtSystem.Services.Windows
         private void EditOrderVM_OrderItemsUpdateReverted(object sender, EventArgs e)
         {
             _data.RevertChangesInOrderItems(_orderDetailsVM.Order.OrderItems);
+            _addItemVM.UpdateItemsReturnedToOrder(_editOrderVM.RemovedOrderItems);
         }
 
         /// <summary>
@@ -95,13 +97,14 @@ namespace OrderMgmtSystem.Services.Windows
         /// Synchronize the Order property in the EditOrderVM and OrderDetailsVM and refreshes the properties
         /// in the EditOrderVM to continue editing if needed.
         /// </summary>
-        private void UpdateViewModels()
+        private void UpdateCurrentOrder()
         {
             OrderDetailsVM.Order = EditOrderVM.Order;
-            EditOrderVM.TempOrder = new Order(OrderDetailsVM.Order);
+            //EditOrderVM.OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
+            EditOrderVM.TempOrder = new Order(Order);
             EditOrderVM.AddedOrderItems.Clear();
             EditOrderVM.RemovedOrderItems.Clear();
-            EditOrderVM.InitialTotal = OrderDetailsVM.Order.Total;
+            EditOrderVM.InitialTotal = Order.Total;
             EditOrderVM.RefreshCanSubmit();
         }
 
@@ -113,7 +116,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e"></param>
         private void EditOrderVM_OrderUpdated(object sender, EventArgs e)
         {
-            UpdateViewModels();
+            UpdateCurrentOrder();
             Navigate("OrderDetailsView");
         }
 
@@ -124,7 +127,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e">Contain relevant information to return the item</param>
         private void EditOrderVM_OrderItemRemoved(object sender, OrderItem orderItem)
         {
-            //_data.RemoveOrderItem(orderItem);
+            _data.RemoveOrderItem(orderItem);
             _addItemVM.ReturnItemToStockList(orderItem);
         }
 
