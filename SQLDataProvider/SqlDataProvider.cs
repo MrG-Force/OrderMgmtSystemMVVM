@@ -145,7 +145,7 @@ namespace SQLDataProvider
         /// <param name="item"></param>
         public void RemoveOrderItem(OrderItem orderItem)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrderItemAndUpdateStock");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrUpdateOrderItemAndUpdateStock");
             _ = command.Parameters.AddWithValue("@orderHeaderId",orderItem.OrderHeaderId);
             _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
             _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
@@ -154,6 +154,7 @@ namespace SQLDataProvider
 
             int rowsAffected = command.ExecuteNonQuery();
             Debug.WriteLine($"Records updated:{rowsAffected}");
+            Debug.WriteLine($"OrderItem with StockItemId :{orderItem.StockItemId}, and Quantity: {orderItem.Quantity - orderItem.OnBackOrder} was deleted or updated in DB");
 
             SqlServerDataAccess.CloseConnection();
             SqlServerDataAccess.ClearCommandParams();
@@ -249,7 +250,7 @@ namespace SQLDataProvider
 
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertChangesOnOrderItemAndUpdateStock");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertChangesOnOrderItemAndUpdateStock2");// CHANGE this SP name
             _ = command.Parameters.Add("@orderHeaderId", System.Data.SqlDbType.Int);
             _ = command.Parameters.Add("@stockItemId", System.Data.SqlDbType.Int);
             _ = command.Parameters.Add("@description", System.Data.SqlDbType.VarChar);
