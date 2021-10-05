@@ -119,7 +119,7 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <param name="stockItemId"></param>
         /// <param name="quantity"></param>
-        internal void ReturnItemToStockList(OrderItem orderItem)
+        public void ReturnItemToStockList(OrderItem orderItem)
         {
             StockItem returnedItem = StockItems
                 .FirstOrDefault(item => item.Id == orderItem.StockItemId);
@@ -130,7 +130,7 @@ namespace OrderMgmtSystem.ViewModels
         /// subtracting the corrsponding items from the StockItems list.
         /// </summary>
         /// <param name="items"></param>
-        internal void UpdateItemsReturnedToOrder(List<OrderItem> items)
+        public void UpdateItemsReturnedToOrder(List<OrderItem> items)
         {
             foreach (var item in items)
             {
