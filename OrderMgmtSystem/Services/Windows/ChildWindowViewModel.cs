@@ -62,8 +62,8 @@ namespace OrderMgmtSystem.Services.Windows
         {
             _orderDetailsVM.EditOrderRequested += OrderDetailsVM_EditOrderRequested;
             _orderDetailsVM.OrderCompleted += OrderDetailsVM_OrderCompleted;
-            _orderDetailsVM.DeleteOrderRequested += OrderDetailsVM_OrderDeletedOrRejected;
-            _orderDetailsVM.OrderRejected += OrderDetailsVM_OrderDeletedOrRejected;
+            _orderDetailsVM.DeleteOrderRequested += OrderDetailsVM_OrderDeleted;
+            _orderDetailsVM.OrderRejected += OrderDetailsVM_OrderRejected;
             _editOrderVM.OrderUpdated += EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved += EditOrderVM_OrderItemRemoved;
             _editOrderVM.OperationCancelled += EditOrderVM_OperationCancelled;
@@ -71,11 +71,6 @@ namespace OrderMgmtSystem.Services.Windows
             _addItemVM.EditingOrderItemSelected += AddItemVM_EditingOrderItemSelected;
         }
 
-        private void EditOrderVM_OrderItemsUpdateReverted(object sender, EventArgs e)
-        {
-            _data.RevertChangesInOrderItems(_orderDetailsVM.Order.OrderItems);
-            _addItemVM.UpdateItemsReturnedToOrder(_editOrderVM.RemovedOrderItems);
-        }
 
         /// <summary>
         /// Unsubscribes the class from the events so it can be properly disposed.
@@ -84,8 +79,8 @@ namespace OrderMgmtSystem.Services.Windows
         {
             _orderDetailsVM.EditOrderRequested -= OrderDetailsVM_EditOrderRequested;
             _orderDetailsVM.OrderCompleted -= OrderDetailsVM_OrderCompleted;
-            _orderDetailsVM.DeleteOrderRequested -= OrderDetailsVM_OrderDeletedOrRejected;
-            _orderDetailsVM.OrderRejected -= OrderDetailsVM_OrderDeletedOrRejected;
+            _orderDetailsVM.DeleteOrderRequested -= OrderDetailsVM_OrderDeleted;
+            _orderDetailsVM.OrderRejected -= OrderDetailsVM_OrderRejected;
             _editOrderVM.OrderUpdated -= EditOrderVM_OrderUpdated;
             _editOrderVM.OrderItemRemoved -= EditOrderVM_OrderItemRemoved;
             _editOrderVM.OperationCancelled -= EditOrderVM_OperationCancelled;
@@ -100,7 +95,12 @@ namespace OrderMgmtSystem.Services.Windows
         private void UpdateCurrentOrder()
         {
             OrderDetailsVM.Order = EditOrderVM.Order;
-            //EditOrderVM.OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
+            ResetTempVarsInEditOrderVM();
+        }
+
+        private void ResetTempVarsInEditOrderVM()
+        {
+            EditOrderVM.OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
             EditOrderVM.TempOrder = new Order(Order);
             EditOrderVM.AddedOrderItems.Clear();
             EditOrderVM.RemovedOrderItems.Clear();
@@ -141,6 +141,12 @@ namespace OrderMgmtSystem.Services.Windows
             //_data.DeleteOrder(orderId);
             Navigate("OrderDetailsView");
         }
+        private void EditOrderVM_OrderItemsUpdateReverted(object sender, EventArgs e)
+        {
+            _data.RevertChangesInOrderItems(_orderDetailsVM.Order.OrderItems);
+            _addItemVM.UpdateItemsReturnedToOrder(_editOrderVM.RemovedOrderItems);
+            ResetTempVarsInEditOrderVM();
+        }
 
         /// <summary>
         /// This event handler takes the application to the EditOrderView.
@@ -162,7 +168,7 @@ namespace OrderMgmtSystem.Services.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OrderDetailsVM_OrderDeletedOrRejected(object sender, EventArgs e)
+        private void OrderDetailsVM_OrderDeleted(object sender, EventArgs e)
         {
             // check if the order is pending
             if (_orderDetailsVM.Order.OrderStateId == 2)
@@ -174,6 +180,16 @@ namespace OrderMgmtSystem.Services.Windows
                 _data.ReturnStockItems(_orderDetailsVM.Order.OrderItems);
             }
             // if order is already rejected this has been done already
+        }
+
+        private void OrderDetailsVM_OrderRejected(object sender, EventArgs e)
+        {
+            _data.UpdateOrderState(_orderDetailsVM.Order.Id, 3);
+            foreach (var item in _orderDetailsVM.Order.OrderItems)
+            {
+                _addItemVM.ReturnItemToStockList(item);
+            };
+            _data.ReturnStockItems(_orderDetailsVM.Order.OrderItems);
         }
 
         /// <summary>
