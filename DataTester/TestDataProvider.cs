@@ -33,7 +33,7 @@ namespace DataProvider
 
         #region Methods
         /// <summary>
-        /// Gets a sample list of StockItems for testing.
+        /// Gets a sample list of 9 StockItems with a InStock property of 10.
         /// </summary>
         /// <returns></returns>
         public List<StockItem> GetStockItems()
