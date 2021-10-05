@@ -170,7 +170,6 @@ namespace OrderMgmtSystem.ViewModels
                 if (result)
                 {
                     ReturnItemsToStock();
-                    RefreshTempVars();
                     OnOrderItemsUpdateReverted(EventArgs.Empty);
                 }
                 else
@@ -197,17 +196,7 @@ namespace OrderMgmtSystem.ViewModels
             OrderItemsUpdateReverted?.Invoke(this, e);
         }
 
-        /// <summary>
-        /// Refreshes the EditOrderVM temporary variables in case the user returns to edit this order.
-        /// </summary>
-        private void RefreshTempVars() // Repeats UpdateCurrentOrder in ChildWindowVM
-        {
-            OrderItems = new ObservableCollection<OrderItem>(Order.OrderItems);
-            TempOrder = new Order(Order);
-            AddedOrderItems.Clear();
-            RemovedOrderItems.Clear();
-            SubmitOrderCommand.RaiseCanExecuteChanged();
-        }
+     
 
         /// <summary>
         /// This metod is used to refresh the command so the command is no
