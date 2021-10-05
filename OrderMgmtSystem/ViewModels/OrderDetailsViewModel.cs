@@ -72,7 +72,7 @@ namespace OrderMgmtSystem.ViewModels
         /// Process the current order by changing its state to Complete or Rejected depending
         /// on wether the order has items on back order, will be mark as rejected if true or complete otherwise.
         /// </summary>
-        /// <remarks>If the order is rejects all its stock items will be returned to the inventory</remarks>
+        /// <remarks>If the order is rejected all its stock items will be returned to the inventory</remarks>
         private void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
@@ -87,8 +87,8 @@ namespace OrderMgmtSystem.ViewModels
 
                 if (result)
                 {
-                    OnOrderRejected(EventArgs.Empty);
                     Order.OrderStateId = 3;
+                    OnOrderRejected(EventArgs.Empty);
                     CloseWindow();
                 }
                 else
