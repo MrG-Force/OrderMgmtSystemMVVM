@@ -59,6 +59,7 @@ namespace OrderMgmtSystem.ViewModels
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Creates a new OrderItem and updates the corresponding InStock property 
         /// in the StockItems list. 
@@ -118,13 +119,24 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <param name="stockItemId"></param>
         /// <param name="quantity"></param>
-        internal void ReturnItemToStockList(int stockItemId, int quantity, int onBackOrder)
+        public void ReturnItemToStockList(OrderItem orderItem)
         {
             StockItem returnedItem = StockItems
-                .FirstOrDefault(item => item.Id == stockItemId);
-            if (returnedItem != null)
+                .FirstOrDefault(item => item.Id == orderItem.StockItemId);
+            returnedItem.InStock += orderItem.Quantity - orderItem.OnBackOrder;
+        }
+        /// <summary>
+        /// This method deals with the operationCancelled event updating the StockItems amount by
+        /// subtracting the corrsponding items from the StockItems list.
+        /// </summary>
+        /// <param name="items"></param>
+        public void UpdateItemsReturnedToOrder(List<OrderItem> items)
+        {
+            foreach (var item in items)
             {
-                returnedItem.InStock += quantity - onBackOrder;
+                StockItem stockItem = StockItems
+                    .FirstOrDefault(i => i.Id == item.StockItemId);
+                stockItem.InStock -= item.Quantity - item.OnBackOrder;
             }
         }
 

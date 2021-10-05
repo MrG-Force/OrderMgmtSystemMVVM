@@ -58,6 +58,8 @@ namespace OrderMgmtSystem.ViewModels
         /// <subscribers>MainWindowViewModel, ChildWindowViewModel</subscribers>
         public event EventHandler DeleteOrderRequested;
 
+        public event EventHandler OrderCompleted;
+
         /// <summary>
         /// Occurs when an order is rejected due to srock limitations.
         /// </summary>
@@ -70,7 +72,7 @@ namespace OrderMgmtSystem.ViewModels
         /// Process the current order by changing its state to Complete or Rejected depending
         /// on wether the order has items on back order, will be mark as rejected if true or complete otherwise.
         /// </summary>
-        /// <remarks>If the order is rejects all its stock items will be returned to the inventory</remarks>
+        /// <remarks>If the order is rejected all its stock items will be returned to the inventory</remarks>
         private void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
@@ -89,11 +91,16 @@ namespace OrderMgmtSystem.ViewModels
                     OnOrderRejected(EventArgs.Empty);
                     CloseWindow();
                 }
+                else
+                {
+                    return;
+                }
             }
             else
             {
                 Order.OrderStateId = 4;
                 // TODO: Inform order has been completed
+                OnOrderCompleted(EventArgs.Empty);
                 CloseWindow();
             }
         }
@@ -112,7 +119,6 @@ namespace OrderMgmtSystem.ViewModels
         /// <remarks>Prompts user to confirm the action</remarks>
         private void DeleteOrder()
         {
-            // TODO: Add Dialog to confirm deletion
             string message = "This order and all its data will be permanently deleted. Are you sure?";
             string title = $"Delete order: {Order.Id}?";
             var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
@@ -123,6 +129,11 @@ namespace OrderMgmtSystem.ViewModels
                 OnDeleteOrderRequested(EventArgs.Empty);
                 CloseWindow();
             }
+        }
+
+        private void OnOrderCompleted(EventArgs e)
+        {
+            OrderCompleted?.Invoke(this, e);
         }
 
         /// <summary>
@@ -161,8 +172,5 @@ namespace OrderMgmtSystem.ViewModels
             Close?.Invoke();
         }
         #endregion
-
-
-
     }
 }

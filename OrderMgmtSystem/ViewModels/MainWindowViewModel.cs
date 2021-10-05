@@ -92,9 +92,10 @@ namespace OrderMgmtSystem.ViewModels
         {
             _addOrderViewModel.OrderSubmitted += AddOrderVM_OrderSubmitted;
             _addOrderViewModel.OperationCancelled += AddOrderVM_OperationCancelled;
-            _addOrderViewModel.OrderItemRemoved += AddOrder_OrderItemRemoved;
+            _addOrderViewModel.OrderItemRemoved += AddOrderVM_OrderItemRemoved;
             _addItemViewModel.NewOrderItemSelected += AddItemVM_NewOrderItemSelected;
         }
+
 
         /// <summary>
         /// Handles the OrderSubmitted event by adding new orders to the 
@@ -103,7 +104,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="order">The new order to add</param>
         private void AddOrderVM_OrderSubmitted(object sender, Order order)
         {
-            // Submit order to DB logic goes here
+            _data.UpdateOrderState(order.Id, 2);
             _ordersViewModel.Orders.Add(order);
             Navigate("OrdersView");
         }
@@ -111,21 +112,10 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Handles the OperationCancelled event by navigating back to the OrdersView.
         /// </summary>
-        private void AddOrderVM_OperationCancelled(object sender, EventArgs e)
+        private void AddOrderVM_OperationCancelled(object sender, int orderId)
         {
+            _data.DeleteOrder(orderId);
             Navigate("OrdersView");
-        }
-
-        /// <summary>
-        /// Handles the NewOrderItemSelected event by calling the corresponding method 
-        /// in the AddOrderViewModel to add the received item to the order. Closes the
-        /// (modal) AddItemView.
-        /// </summary>
-        /// <param name="newItem">The item to add</param>
-        private void AddItemVM_NewOrderItemSelected(object sender, OrderItem newItem)
-        {
-            _addOrderViewModel.AddOrderItem(newItem);
-            Navigate("CloseAddItemView");
         }
 
         /// <summary>
@@ -134,10 +124,25 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="stockItemId"></param>
         /// <param name="quantity">The number of items(Quantity) removed from the order.</param>
         /// <param name="onBackOrder">The number of items that were unavailable when the order was placed.</param>
-        private void AddOrder_OrderItemRemoved(object sender, OrderItemRemovedEventArgs e)
+        private void AddOrderVM_OrderItemRemoved(object sender, OrderItem orderItem)
         {
-            _addItemViewModel.ReturnItemToStockList(e.StockItemId, e.Quantity, e.OnBackOrder);
+            _data.RemoveOrderItem(orderItem);
+            _addItemViewModel.ReturnItemToStockList(orderItem);
         }
+
+        /// <summary>
+        /// Handles the NewOrderItemSelected event by calling the corresponding methods 
+        /// in the ViewModel and in the DataProvider. Closes the (modal)AddItemView.
+        /// </summary>
+        /// <param name="newItem">The item to add</param>
+        private void AddItemVM_NewOrderItemSelected(object sender, OrderItem newItem)
+        {
+            newItem.OrderHeaderId = _addOrderViewModel.Order.Id;
+            _data.UpdateOrInsertOrderItem(newItem);
+            _addOrderViewModel.CheckNewOrExistingItem(newItem);
+            Navigate("CloseAddItemView");
+        }
+
 
         /// <summary>
         /// This event handler deletes the SelectedOrder in the OrdersView.
@@ -146,6 +151,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="e"></param>
         private void OrderDetailsVM_DeleteOrderRequested(object sender, EventArgs e)
         {
+            _data.DeleteOrder(_ordersViewModel.SelectedOrder.Id);
             _ordersViewModel.DeleteOrder();
         }
 

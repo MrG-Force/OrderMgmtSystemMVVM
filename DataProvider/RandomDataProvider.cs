@@ -9,6 +9,19 @@ namespace DataProvider
     /// </summary>
     public class RandomDataProvider : IOrdersDataProvider
     {
+        #region Constructor
+        public RandomDataProvider()
+        {
+            _stockItems = GetStockItems();
+            _dBStockItems = GetDBTestStockItems();
+            _dbOrderItems = GetDbOrderItems(5);
+            if (_orders == null)
+            {
+                _orders = GetOrders();
+            }
+        }
+        #endregion
+
         #region Fields
         readonly Random random = new Random();
         private static List<StockItem> _stockItems;
@@ -32,19 +45,6 @@ namespace DataProvider
         private DateTime lowEndDate = DateTime.Today.AddDays(-14);
         #endregion
 
-        #region Constructor
-        public RandomDataProvider()
-        {
-            _stockItems = GetStockItems();
-            _dBStockItems = GetDBTestStockItems();
-            _dbOrderItems = GetDbOrderItems(5);
-            if (_orders == null)
-            {
-                _orders = GetOrders();
-            }
-        }
-        #endregion
-
         #region Properties
         public List<Order> Orders => _orders;
         public List<StockItem> StockItems => _stockItems;
@@ -53,7 +53,6 @@ namespace DataProvider
         #endregion
 
         #region Methods
-
         public List<StockItem> GetDBTestStockItems()
         {
             List<StockItem> dBstockItems = new List<StockItem>();
@@ -235,7 +234,18 @@ namespace DataProvider
             }
             return numbers.ToArray();
         }
+
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            return;
+        }
+
         #region Not implemented Interface methods
+        public void UpdateOrderItems(List<OrderItem> updatedItems)
+        {
+            return;
+        }
+
         public void AddNewOrder(Order newOrder)
         {
             throw new NotImplementedException();
@@ -261,7 +271,7 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderState()
+        public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
             throw new NotImplementedException();
         }
@@ -271,22 +281,32 @@ namespace DataProvider
             throw new NotImplementedException();
         }
 
-        public void UpdateOrderItem()
+        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteOrder()
+        public void DeleteOrder(int orderId)
         {
-            throw new NotImplementedException();
+            return;
         }
 
-        public void DeleteOrderItem()
+        public void RemoveOrderItem(OrderItem orderItem)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public int StartNewOrder()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateOrderState(int orderId, int stateId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
             throw new NotImplementedException();
         }

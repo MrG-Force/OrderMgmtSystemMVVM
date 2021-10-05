@@ -43,8 +43,8 @@ namespace OrderMgmtSystem.Factories
                 case "Orders":
                     return new OrdersViewModel(_dataProvider);
                 case "ChildWindow":
-                    return new ChildWindowViewModel
-                        ((OrderDetailsViewModel)CreateViewModel("OrderDetails", order), 
+                    return new ChildWindowViewModel(_dataProvider,
+                        (OrderDetailsViewModel)CreateViewModel("OrderDetails", order), 
                         (EditOrderViewModel)CreateViewModel("EditOrder", order),
                         addItemViewModel);
                 default:

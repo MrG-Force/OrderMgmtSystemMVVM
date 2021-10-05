@@ -2,6 +2,7 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.ViewModels;
+using SQLDataProvider;
 using System.Windows;
 
 namespace OrderMgmtSystem
@@ -26,7 +27,9 @@ namespace OrderMgmtSystem
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            _dataProvider = new RandomDataProvider();
+            //_dataProvider = new RandomDataProvider();
+            //_dataProvider = new TestDataProvider();
+            _dataProvider = new SqlDataProvider();
             var vMFactory = new ViewModelFactory(_dataProvider);
             ComposeObjects(vMFactory);
             CloseAppCommand = new DelegateCommand(CloseApp);

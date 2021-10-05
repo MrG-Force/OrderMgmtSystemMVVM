@@ -151,8 +151,9 @@
               Width="auto"
               Margin="15, 10, 15, 5"
               Height="30"
-              IsCancel="True"
-              Background="#FFEC6A6A" />
+              Background="#FFEC6A6A"
+              Command="{Binding CancelSelectQuantityCommand}"
+              CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"/>
     </Grid>
   </Grid>
 </UserControl>

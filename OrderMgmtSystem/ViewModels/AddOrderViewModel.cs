@@ -23,7 +23,6 @@ namespace OrderMgmtSystem.ViewModels
         public AddOrderViewModel() : base()
         {
             OrderItems = new ObservableCollection<OrderItem>();
-            SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
         }
         #endregion
 
@@ -43,51 +42,6 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Adds the passed OrderItem to the new Order.
-        /// </summary>
-        /// <param name="newItem"></param>
-        internal override void AddOrderItem(OrderItem newItem)
-        {
-            OrderItem repItem = OrderItems
-                .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
-            if (repItem == null)
-            {
-                newItem.OrderHeaderId = Order.Id;
-                OrderItems.Add(newItem);
-                Order.AddItem(newItem);
-                RaisePropertyChanged(nameof(Order));
-                SubmitOrderCommand.RaiseCanExecuteChanged();
-            }
-            else
-            {
-                // Notify bindings
-                repItem.Quantity += newItem.Quantity;
-                // Sincronize items on back order
-                repItem.OnBackOrder += newItem.OnBackOrder;
-                RaisePropertyChanged(nameof(Order));
-            }
-        }
-
-        /// <summary>
-        /// Removes the passed OrderItem from the new Order.
-        /// </summary>
-        /// <param name="newItem"></param>
-        internal override void RemoveItem(OrderItem item)
-        {
-            OrderItems.Remove(item);
-            Order.RemoveItem(item.StockItemId);
-            RaisePropertyChanged(nameof(Order));
-            var itemData = new OrderItemRemovedEventArgs()
-            {
-                StockItemId = item.StockItemId,
-                Quantity = item.Quantity,
-                OnBackOrder = item.OnBackOrder
-            };
-            base.OnOrderItemRemoved(itemData);
-            SubmitOrderCommand.RaiseCanExecuteChanged();
-        }
-
-        /// <summary>
         /// Submits the current order and resets the form.
         /// </summary>
         protected override void SubmitOrder()
@@ -103,6 +57,65 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
+        /// Checks whether the passed OrderItem exists or not in the Order and calls the corresponding method accordingly.
+        /// </summary>
+        /// <remarks>It is called in ChildWindowViewModel</remarks>
+        /// <param name="newItem"></param>
+        internal override void CheckNewOrExistingItem(OrderItem newItem)
+        {
+            OrderItem existingItem = OrderItems
+                .FirstOrDefault(item => item.StockItemId == newItem.StockItemId);
+
+            if (existingItem == null)
+            {
+                AddNewOrderItem(newItem);
+            }
+            else
+            {
+                UpdateExistingOrderItem(newItem, existingItem);
+            }
+        }
+
+        /// <summary>
+        /// Adds a new OrderItem to the Order.
+        /// </summary>
+        /// <param name="newItem"></param>
+        internal override void AddNewOrderItem(OrderItem newItem)
+        {
+            OrderItems.Add(newItem);
+            Order.AddItem(newItem);
+            RaisePropertyChanged(nameof(Order));
+            SubmitOrderCommand.RaiseCanExecuteChanged();
+        }
+
+        /// <summary>
+        /// Updates the Quantity of an existing OrderItem.
+        /// </summary>
+        /// <param name="newItem">The new item</param>
+        /// <param name="existingItem">An item already in the order with the same id as the newItem</param>
+        internal override void UpdateExistingOrderItem(OrderItem newItem, OrderItem existingItem)
+        {
+            existingItem.Quantity += newItem.Quantity;
+            // Sincronize items on back order
+            existingItem.OnBackOrder += newItem.OnBackOrder;
+            RaisePropertyChanged(nameof(Order)); ;
+        }
+
+        /// <summary>
+        /// Removes the passed OrderItem from the new Order.
+        /// </summary>
+        /// <remarks>The item is passed through binding from DataGrid as SelectedItem</remarks>
+        /// <param name="item"></param>
+        internal override void RemoveItem(OrderItem item)
+        {
+            OrderItems.Remove(item);
+            Order.RemoveItem(item.StockItemId);
+            RaisePropertyChanged(nameof(Order));
+            SubmitOrderCommand.RaiseCanExecuteChanged();
+            base.OnOrderItemRemoved(item);
+        }
+
+        /// <summary>
         /// Cancels the current order. Opens a dialog to confirm cancelation.
         /// </summary>
         /// <remarks>
@@ -110,36 +123,43 @@ namespace OrderMgmtSystem.ViewModels
         /// </remarks>
         protected override void CancelOperation()
         {
-            bool result = true;
             // if order has items
             if (CanSubmit)
             {
-                string message = "This order and all its data will be permanently deleted!";
                 string title = $"Cancel order: {Order.Id}";
-                var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
-                    .CreateDialogViewModel("CancelOrderDialog", title, message);
-                result = _dialogService.OpenDialog(dialogVM);
-            }
-            if (result)
-            {
-                Order.CancelLastOrder(); //---Remove if not using random data
-                // Return Items to stock
-                foreach (OrderItem item in OrderItems)
+                string message = "This order and all its data will be permanently deleted!";
+                bool result = ConfirmCancel(title, message);
+                if (result)
                 {
-                    var itemData = new OrderItemRemovedEventArgs()
-                    {
-                        StockItemId = item.StockItemId,
-                        Quantity = item.Quantity,
-                        OnBackOrder = item.OnBackOrder
-                    };
-                    // Use the eventhandler to updates the stock quantities
-                    base.OnOrderItemRemoved(itemData);
+                    // Return Items to stock
+                    ReturnItemsToStock();
+                    RefreshTempVars();
                 }
-                OrderItems.Clear();
-                SubmitOrderCommand.RaiseCanExecuteChanged();
-                Order = null;
-                base.OnOperationCancelled(EventArgs.Empty);
+                else
+                    return;
             }
+            base.OnOperationCancelled(Order.Id);
+            Order = null;
+        }
+
+        /// <summary>
+        /// Returns the OrderItems back to the stock.
+        /// </summary>
+        private void ReturnItemsToStock()
+        {
+            foreach (OrderItem item in OrderItems)
+            {
+                base.OnOrderItemRemoved(item);
+            }
+        }
+
+        /// <summary>
+        /// Clears the collection of OrderItems for the next new order.
+        /// </summary>
+        private void RefreshTempVars()
+        {
+            OrderItems.Clear();
+            SubmitOrderCommand.RaiseCanExecuteChanged();
         }
         #endregion
     }

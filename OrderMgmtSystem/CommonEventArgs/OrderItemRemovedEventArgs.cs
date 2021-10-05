@@ -7,6 +7,7 @@ namespace OrderMgmtSystem.CommonEventArgs
     /// </summary>
     public class OrderItemRemovedEventArgs : EventArgs
     {
+        public int OrderHeaderId { get; set; }
         public int StockItemId { get; set; }
         public int Quantity { get; set; }
         public int OnBackOrder { get; set; }

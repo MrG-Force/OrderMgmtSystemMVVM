@@ -44,6 +44,14 @@ namespace DataModels
             _id = id++; // This line to be deleted when dummy data is no longer needed.
         }
 
+        public Order(int id, DateTime dateTime, int stateId)
+        {
+            Id = id;
+            _dateTime = dateTime;
+            _orderStateId = stateId;
+            _orderItems = new List<OrderItem>();
+        }
+
         /// <summary>
         /// This constructor is used to create a dummy order with a passed random
         /// date and a random state.
@@ -152,6 +160,8 @@ namespace DataModels
         {
             OrderItem item = _orderItems.Find(i => i.StockItemId.Equals(id));
             _orderItems.Remove(item);
+            item = _orderItems.Find(i => i.OnBackOrder > 0);
+            HasItemsOnBackOrder = item != null;
             RaisePropertyChanged(nameof(Total));
             RaisePropertyChanged(nameof(HasItemsOnBackOrder));
         }

@@ -40,7 +40,6 @@ namespace OrderMgmtSystem.ViewModels
         public void DeleteOrder()
         {
             Orders.Remove(SelectedOrder);
-            // Call RemoveFromDB
         }
         #endregion
     }

@@ -8,8 +8,6 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
     /// </summary>
     public class QuantityViewModel : DialogViewModelBase<int>
     {
-        private string _warningMessage = "This order might be rejected if there is not enough stock when the " +
-            "order is processed.";
         private int _numValue;
 
         public QuantityViewModel(string title, string message) : base(title, message)
@@ -19,11 +17,13 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
             DecreaseQuantityCommand = new DelegateCommand(DecreaseQuantity, () => CanDecrease);
             IncreaseQuantityCommand = new DelegateCommand(IncreaseQuantity, () => CanIncrease);
             AddToOrderCommand = new RelayCommandT<IDialogWindow>(SelectQuantity, () => IsValidQuantity);
+            CancelSelectQuantityCommand = new RelayCommandT<IDialogWindow>(CancelSelectQuantity);
         }
 
         public DelegateCommand IncreaseQuantityCommand { get; }
         public DelegateCommand DecreaseQuantityCommand { get; }
         public RelayCommandT<IDialogWindow> AddToOrderCommand { get; }
+        public RelayCommandT<IDialogWindow> CancelSelectQuantityCommand { get; }
 
         public int NumValue
         {
@@ -42,7 +42,9 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         public bool CanIncrease => NumValue < 99;
         public bool IsValidQuantity => NumValue < 100 && NumValue > 0;
         public bool NotEnoughStock => NumValue > AvailableStock;
-        public string WarningMessage { get => _warningMessage; }
+        public string WarningMessage { get; } = "This order might be rejected if there is not enough stock when the " +
+            "order is processed.";
+        public override int DefaultDialogResult => 0;
 
         /// <summary>
         /// A simple method to bind to the increase quantity button.
@@ -63,10 +65,20 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         /// Calls the CloseDialogResult method from the base class to get the result and close
         /// the dialog.
         /// </summary>
-        /// <param name="window">Passed with binding from the view</param>
+        /// <param name="window">An IDialog object Passed through binding from the view</param>
         public void SelectQuantity(IDialogWindow window)
         {
             CloseDialogWithResult(window, NumValue);
+            NumValue = 1;
+        }
+
+        /// <summary>
+        /// Binds to the cancel button and calls the CancelAndClose method from the base class.
+        /// </summary>
+        /// <param name="window">An IDialog object Passed through binding from the view</param>
+        public void CancelSelectQuantity(IDialogWindow window)
+        {
+            CancelAndClose(window, DefaultDialogResult);
             NumValue = 1;
         }
     }

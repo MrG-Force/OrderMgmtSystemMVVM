@@ -64,6 +64,10 @@
       <Project>{3f152bc4-22a0-4c7f-b92f-4d23187d2de0}</Project>
       <Name>DataProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DataTester\DataTester.csproj">
+      <Project>{94fa27e6-9b92-4cba-8b97-c2ce1d908cbe}</Project>
+      <Name>DataTester</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OrderMgmtSystem\OrderMgmtSystem.csproj">
       <Project>{d922c1a7-8f74-457c-b2c2-d9ad33e858bb}</Project>
       <Name>OrderMgmtSystem</Name>

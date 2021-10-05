@@ -21,13 +21,11 @@ namespace DataModels
                 _inStock = value;
                 if (_inStock < 0)
                 {
-                    OnBackOrder = Math.Abs(_inStock);
                     _inStock = 0;
                 }
                 PropertyChanged(this, new PropertyChangedEventArgs("InStock"));
             }
         }
-        public int OnBackOrder { get; set; } = 0;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         //public override string ToString()

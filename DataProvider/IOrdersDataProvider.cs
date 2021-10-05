@@ -12,7 +12,6 @@ namespace DataProvider
         List<StockItem> StockItems { get; }
         //-- CREATE
         void AddNewOrder(Order newOrder);
-        int StartNewOrder();
         void InsertOrderItem();
         // -- READ
         List<Order> GetOrders();
@@ -22,12 +21,15 @@ namespace DataProvider
         Order GetOrderById();
         StockItem GetStockItembyId();
         // -- UPDATE
-        void UpdateOrderState();
+        void ReturnStockItems(List<OrderItem> orderItems);
+        void UpdateOrderState(int orderId, int stateId);
         void UpdateStockItemAmount();
-        void UpdateOrderItem();
+        void UpdateOrInsertOrderItem(OrderItem orderItem);
+        void UpdateOrderItems(List<OrderItem> updatedItems);
+        void RevertChangesInOrderItems(List<OrderItem> originalList);
         // -- DELETE
-        void DeleteOrder();
-        void DeleteOrderItem();
+        void DeleteOrder(int orderId);
+        void RemoveOrderItem(OrderItem orderItem);
 
     }
 }
