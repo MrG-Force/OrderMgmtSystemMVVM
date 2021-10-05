@@ -125,7 +125,11 @@ namespace OrderMgmtSystem.ViewModels
                 .FirstOrDefault(item => item.Id == orderItem.StockItemId);
             returnedItem.InStock += orderItem.Quantity - orderItem.OnBackOrder;
         }
-
+        /// <summary>
+        /// This method deals with the operationCancelled event updating the StockItems amount by
+        /// subtracting the corrsponding items from the StockItems list.
+        /// </summary>
+        /// <param name="items"></param>
         internal void UpdateItemsReturnedToOrder(List<OrderItem> items)
         {
             foreach (var item in items)
