@@ -2,8 +2,11 @@
 using DataProvider;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SQLDataProvider
 {
@@ -22,15 +25,14 @@ namespace SQLDataProvider
         public List<Order> Orders { get; }
         public List<StockItem> StockItems { get; }
 
-
         /// <summary>
         /// Gets the list of StockItems from the database.
         /// </summary>
         /// <returns>The list with the current inventory of StockItems</returns>
         public List<StockItem> GetStockItems()
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
             List<StockItem> stockItems = new List<StockItem>();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("[sp_SelectStockItems]");
 
             SqlServerDataAccess.OpenConnection();
             try
@@ -41,10 +43,10 @@ namespace SQLDataProvider
                     {
                         StockItem item = new StockItem()
                         {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Price = reader.GetDecimal(2),
-                            InStock = reader.GetInt32(3)
+                            Id = reader.GetFieldValue<int>(0),
+                            Name = reader.GetFieldValue<string>(1),
+                            Price = reader.GetFieldValue<decimal>(2),
+                            InStock = reader.GetFieldValue<int>(3)
                         };
                         stockItems.Add(item);
                     }
@@ -79,9 +81,9 @@ namespace SQLDataProvider
                     while (reader.Read())
                     {
                         Order order = new Order(
-                            reader.GetInt32(0),
-                            reader.GetDateTime(1),
-                            reader.GetInt32(2));
+                            reader.GetFieldValue<int>(0),
+                            reader.GetFieldValue<DateTime>(1),
+                            reader.GetFieldValue<int>(2));
                         orders.Add(order);
                     }
                 }
@@ -98,11 +100,11 @@ namespace SQLDataProvider
                         {
                             OrderItem orderItem = new OrderItem()
                             {
-                                OrderHeaderId = reader.GetInt32(0),
-                                StockItemId = reader.GetInt32(3),
-                                Description = reader.GetString(4),
-                                Price = reader.GetDecimal(5),
-                                Quantity = reader.GetInt32(6)
+                                OrderHeaderId = reader.GetFieldValue<int>(0),
+                                StockItemId = reader.GetFieldValue<int>(3),
+                                Description = reader.GetFieldValue<string>(4),
+                                Price = reader.GetFieldValue<decimal>(5),
+                                Quantity = reader.GetFieldValue<int>(6)
                             };
                             o.AddItem(orderItem);
                         }
@@ -137,7 +139,7 @@ namespace SQLDataProvider
                 {
                     while (reader.Read())
                     {
-                        newOrder = new Order(reader.GetInt32(0), reader.GetDateTime(1), 1);
+                        newOrder = new Order(reader.GetFieldValue<int>(0), reader.GetFieldValue<DateTime>(1), 1);
                     }
                 }
             }
@@ -194,7 +196,6 @@ namespace SQLDataProvider
             {
                 int rowsAffected = command.ExecuteNonQuery();
                 Debug.WriteLine($"Records updated:{rowsAffected}");
-                Debug.WriteLine($"OrderItem with StockItemId :{orderItem.StockItemId}, and Quantity: {orderItem.Quantity - orderItem.OnBackOrder} was deleted or updated in DB");
             }
             catch (Exception ex)
             {
@@ -274,8 +275,8 @@ namespace SQLDataProvider
         public void ReturnStockItems(List<OrderItem> orderItems)
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_UpdateStockItemAmount");
-            _ = command.Parameters.Add("@id", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@amount", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@id", SqlDbType.Int);
+            _ = command.Parameters.Add("@amount", SqlDbType.Int);
 
             SqlServerDataAccess.OpenConnection();
             try
@@ -306,9 +307,9 @@ namespace SQLDataProvider
         public void UpdateOrderItems(List<OrderItem> updatedItems)
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertUpdatedOrderItemAndUpdateStock");
-            _ = command.Parameters.Add("@orderHeaderId", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@stockItemId", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@quantity", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@orderHeaderId", SqlDbType.Int);
+            _ = command.Parameters.Add("@stockItemId", SqlDbType.Int);
+            _ = command.Parameters.Add("@quantity", SqlDbType.Int);
 
             SqlServerDataAccess.OpenConnection();
             try
@@ -339,11 +340,11 @@ namespace SQLDataProvider
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertChangesOnOrderItemAndUpdateStock2");// CHANGE this SP name
-            _ = command.Parameters.Add("@orderHeaderId", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@stockItemId", System.Data.SqlDbType.Int);
-            _ = command.Parameters.Add("@description", System.Data.SqlDbType.VarChar);
-            _ = command.Parameters.Add("@price", System.Data.SqlDbType.Decimal);
-            _ = command.Parameters.Add("@oldQuantity", System.Data.SqlDbType.Int);
+            _ = command.Parameters.Add("@orderHeaderId", SqlDbType.Int);
+            _ = command.Parameters.Add("@stockItemId", SqlDbType.Int);
+            _ = command.Parameters.Add("@description", SqlDbType.VarChar);
+            _ = command.Parameters.Add("@price", SqlDbType.Decimal);
+            _ = command.Parameters.Add("@oldQuantity", SqlDbType.Int);
 
             SqlServerDataAccess.OpenConnection();
             try
@@ -410,30 +411,60 @@ namespace SQLDataProvider
         /// </summary>
         /// <param name="orderItem"></param>
         /// <param name="orderItemExists"></param>
-        public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
-        {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
-            _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
-            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
-            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
+        //public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
+        //{
+        //    SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
+        //    _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
+        //    _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
+        //    _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
 
-            SqlServerDataAccess.OpenConnection();
-            if (orderItemExists)
-            {
-                command.CommandText = "UpdateOrderItemAndUpdateStock";
-                int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
-            }
-            else
-            {
-                command.CommandText = "InsertOrderItemAndUpdateStock";
-                _ = command.Parameters.AddWithValue("@description", orderItem.Description);
-                _ = command.Parameters.AddWithValue("@price", orderItem.Price);
-                int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
-            }
-            SqlServerDataAccess.CloseConnection();
-            SqlServerDataAccess.ClearCommandParams();
-        }
+        //    SqlServerDataAccess.OpenConnection();
+        //    if (orderItemExists)
+        //    {
+        //        command.CommandText = "UpdateOrderItemAndUpdateStock";
+        //        int rowsAffected = command.ExecuteNonQuery();
+        //        Debug.WriteLine($"Records updated:{rowsAffected}");
+        //    }
+        //    else
+        //    {
+        //        command.CommandText = "InsertOrderItemAndUpdateStock";
+        //        _ = command.Parameters.AddWithValue("@description", orderItem.Description);
+        //        _ = command.Parameters.AddWithValue("@price", orderItem.Price);
+        //        int rowsAffected = command.ExecuteNonQuery();
+        //        Debug.WriteLine($"Records updated:{rowsAffected}");
+        //    }
+        //    SqlServerDataAccess.CloseConnection();
+        //    SqlServerDataAccess.ClearCommandParams();
+        //}
+
+        //public List<StockItem> GetStockItems()
+        //{
+        //    List<StockItem> stockItems = new List<StockItem>();
+        //    DataTable dt = null;
+        //    using (SqlConnection cnn = new SqlConnection(ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"].ConnectionString))
+        //    {
+        //        using (SqlCommand cmd = new SqlCommand("sp_SelectStockItems", cnn))
+        //        {
+        //            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+        //            {
+        //                dt = new DataTable();
+        //                da.Fill(dt);
+        //                if (dt.Rows.Count > 0)
+        //                {
+        //                    stockItems =
+        //                        (from row in dt.AsEnumerable()
+        //                         select new StockItem
+        //                         {
+        //                             Id = row.Field<int>("Id"),
+        //                             Name = row.Field<string>("Name"),
+        //                             Price = row.Field<decimal>("Price"),
+        //                             InStock = row.Field<int>("InStock")
+        //                         }).ToList();
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return stockItems;
+        //}
     }
 }
