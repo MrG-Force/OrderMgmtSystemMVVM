@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace SQLDataProvider
 {
@@ -12,6 +13,7 @@ namespace SQLDataProvider
     {
         static ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];
         static SqlConnection conn = new SqlConnection(settings.ConnectionString);
+        //static SqlConnection conn = new SqlConnection(GetConnectionString());
         static SqlCommand command = new SqlCommand();
 
         public static SqlCommand GetSqlCommand(string sql = null)
@@ -20,6 +22,24 @@ namespace SQLDataProvider
             command.Connection = conn;
             command.CommandType = CommandType.StoredProcedure;
             return command;
+        }
+
+        /// <summary>
+        /// Gets a connection string to work with a local instance of SqlServer2019.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetConnectionString()
+        {
+            SqlConnectionStringBuilder builder =
+                new SqlConnectionStringBuilder
+                {
+                    ApplicationName = "XYZ & Co Order Management System",
+                    DataSource = @"DESKTOP-HMEUNEN\SQLSERVER2019",
+                    InitialCatalog = "OrderManagementDbTestData",
+                    IntegratedSecurity = true
+                };
+            Debug.WriteLine(builder.ToString());
+            return builder.ToString();
         }
 
         public static void ClearCommandParams()
