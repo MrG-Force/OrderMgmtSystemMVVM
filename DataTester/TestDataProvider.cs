@@ -95,6 +95,11 @@ namespace DataProvider
             }
             return orders;
         }
+        public Order GetOrder()
+        {
+            Order order = new Order();
+            return order;
+        }
 
         public void ReturnStockItems(List<OrderItem> orderItems)
         {
@@ -117,11 +122,6 @@ namespace DataProvider
             return;
         }
 
-        public Order GetOrder()
-        {
-            Order order = new Order();
-            return order;
-        }
 
         public Order GetOrderById()
         {
