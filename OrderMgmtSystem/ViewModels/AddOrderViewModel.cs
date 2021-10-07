@@ -2,6 +2,8 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
+using OrderMgmtSystem.Services;
+using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
@@ -20,7 +22,7 @@ namespace OrderMgmtSystem.ViewModels
     public class AddOrderViewModel : SingleOrderViewModelBase
     {
         #region Constructor
-        public AddOrderViewModel() : base()
+        public AddOrderViewModel(IDialogService dialogService) : base(dialogService)
         {
             OrderItems = new ObservableCollection<OrderItem>();
         }
@@ -44,7 +46,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Submits the current order and resets the form.
         /// </summary>
-        protected override void SubmitOrder()
+        internal override void SubmitOrder()
         {
             // Change order state calling Order.Submit()
             Order.Submit();
@@ -121,7 +123,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <remarks>
         /// Reclaims the generated OrderId, clears the OrderItem Lis and updates the stocks
         /// </remarks>
-        protected override void CancelOperation()
+        internal override void CancelOperation()
         {
             // if order has items
             if (CanSubmit)
@@ -145,7 +147,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Returns the OrderItems back to the stock.
         /// </summary>
-        private void ReturnItemsToStock()
+        internal void ReturnItemsToStock()
         {
             foreach (OrderItem item in OrderItems)
             {

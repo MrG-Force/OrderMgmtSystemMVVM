@@ -2,6 +2,7 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
+using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
@@ -14,7 +15,7 @@ namespace OrderMgmtSystem.ViewModels
     public class EditOrderViewModel : SingleOrderViewModelBase
     {
         #region Constructor
-        public EditOrderViewModel(Order order) : base()
+        public EditOrderViewModel(Order order, DialogService dialogService) : base(dialogService)
         {
             Title = $"Editing order number: {order.Id}";
             Order = order;
@@ -78,7 +79,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Commits the changes to the Order and calls the OrderUpdated event publisher.
         /// </summary>
-        protected override void SubmitOrder()
+        internal override void SubmitOrder()
         {
             Order.OrderItems = this.OrderItems.ToList();
             Order.DateTime = TempOrder.DateTime;
@@ -145,7 +146,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
-            RemovedOrderItems.Add(item); // Keep track or remove item
+            RemovedOrderItems.Add(item); // Keep track of removed item
 
             OrderItems.Remove(item); // Remove item from view
             TempOrder.RemoveItem(item.StockItemId);// Remove item for the editing temp order
@@ -159,7 +160,7 @@ namespace OrderMgmtSystem.ViewModels
         /// Cancel the changes made in the EditOrder view and return the corresponding stockItems
         /// to the inventory.
         /// </summary>
-        protected override void CancelOperation()
+        internal override void CancelOperation()
         {
             // if order has changed
             if (CanSubmit)

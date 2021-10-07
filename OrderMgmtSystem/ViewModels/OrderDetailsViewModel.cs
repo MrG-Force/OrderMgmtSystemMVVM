@@ -17,7 +17,7 @@ namespace OrderMgmtSystem.ViewModels
     public class OrderDetailsViewModel : ViewModelBase, ICloseWindows, IHandleOneOrder
     {
         #region Constructor
-        public OrderDetailsViewModel(Order order)
+        public OrderDetailsViewModel(Order order, IDialogService dialogService)
         {
             Order = order;
             Title = $"Order number: {order.Id}";
@@ -25,7 +25,7 @@ namespace OrderMgmtSystem.ViewModels
             ProcessOrderCommand = new DelegateCommand(ProcessOrder, () => CanProcessOrEdit);
             EditOrderCommand = new DelegateCommand(EditOrder, () => CanProcessOrEdit);
             DeleteOrderCommand = new DelegateCommand(DeleteOrder, () => CanDelete);
-            _dialogService = new DialogService();
+            _dialogService = dialogService;
         }
         #endregion
 
@@ -73,7 +73,7 @@ namespace OrderMgmtSystem.ViewModels
         /// on wether the order has items on back order, will be mark as rejected if true or complete otherwise.
         /// </summary>
         /// <remarks>If the order is rejected all its stock items will be returned to the inventory</remarks>
-        private void ProcessOrder()
+        internal void ProcessOrder()
         {
             if (Order.HasItemsOnBackOrder)
             {
@@ -131,6 +131,10 @@ namespace OrderMgmtSystem.ViewModels
             }
         }
 
+        /// <summary>
+        /// Raises the OrderCompleted event.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnOrderCompleted(EventArgs e)
         {
             OrderCompleted?.Invoke(this, e);
