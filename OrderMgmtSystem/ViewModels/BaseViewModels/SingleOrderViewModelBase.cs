@@ -12,12 +12,12 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
     public abstract class SingleOrderViewModelBase : ViewModelBase, IHandleOneOrder
     {
         #region Constructor
-        public SingleOrderViewModelBase()
+        public SingleOrderViewModelBase(IDialogService dialogService)
         {
             RemoveItemCommand = new DelegateCommand<OrderItem>(RemoveItem, (SelectedItem) => SelectedItem != null);
             CancelOperationCommand = new DelegateCommand(CancelOperation);
             SubmitOrderCommand = new DelegateCommand(SubmitOrder, () => CanSubmit);
-            _dialogService = new DialogService();
+            _dialogService = dialogService;
         }
         #endregion
 
@@ -78,8 +78,8 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         internal abstract void AddNewOrderItem(OrderItem newItem);
         internal abstract void UpdateExistingOrderItem(OrderItem item, OrderItem existingItem);
         internal abstract void RemoveItem(OrderItem item);
-        protected abstract void SubmitOrder();
-        protected abstract void CancelOperation();
+        internal abstract void SubmitOrder();
+        internal abstract void CancelOperation();
 
         /// <summary>
         /// Gets confirmation to proceed with cancelation
