@@ -4,7 +4,7 @@
     {
         public T OpenDialog<T>(DialogViewModelBase<T> viewModel)
         {
-            return viewModel.DialogResult;
+            return viewModel.DefaultDialogResult;
         }
     }
 }
