@@ -32,8 +32,17 @@ namespace OrderMgmtSystem.ViewModels
         #endregion
 
         #region Properties
+        /// <summary>
+        /// The total of the order before editing.
+        /// </summary>
+        /// <remarks>This property is used to detect changes in the order</remarks>
         public decimal InitialTotal { get; set; }
+
+        /// <summary>
+        /// The title of the window that has this viewModel as DataContext.
+        /// </summary>
         public string Title { get; }
+
         /// <summary>
         /// A temporary order that is commited when the order is updated or discarded if the
         /// operation is cancelled.
@@ -47,14 +56,20 @@ namespace OrderMgmtSystem.ViewModels
                 RaisePropertyChanged();
             }
         }
+
         /// <summary>
         /// Keeps track of OrderItems that have been added while editing the order. 
         /// </summary>
         public List<OrderItem> AddedOrderItems { get; set; }
+
         /// <summary>
         /// Keeps track of OrderItems that have been removed while editing the order.
         /// </summary>
         public List<OrderItem> RemovedOrderItems { get; set; }
+
+        /// <summary>
+        /// Enables or disables the base.SubmitOrderCommand
+        /// </summary>
         public override bool CanSubmit => InitialTotal != TempOrder.Total;
         #endregion
 
@@ -64,6 +79,11 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         /// <subscribers>ChildWIndowViewModel</subscribers>
         public event EventHandler OrderUpdated;
+
+        /// <summary>
+        /// Occurs when the user cancel the edit order process.
+        /// </summary>
+        public event EventHandler<EventArgs> OrderItemsUpdateReverted;
         #endregion
 
         #region Methods
@@ -190,14 +210,15 @@ namespace OrderMgmtSystem.ViewModels
                 base.OnOrderItemRemoved(item);
             }
         }
-        public event EventHandler<EventArgs> OrderItemsUpdateReverted;
 
+        /// <summary>
+        /// Raises the OrderItemsUpdateReverted event.
+        /// </summary>
+        /// <param name="e"></param>
         private void OnOrderItemsUpdateReverted(EventArgs e)
         {
             OrderItemsUpdateReverted?.Invoke(this, e);
         }
-
-     
 
         /// <summary>
         /// This metod is used to refresh the command so the command is no
