@@ -14,7 +14,7 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         }
 
         public string Warning { get; set; }
-
+        public override bool DefaultDialogResult => true;
         public ICommand ProceedCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }
 

@@ -35,11 +35,11 @@ namespace OrderMgmtSystem.Factories
                         new DialogService(), 
                         (DialogViewModelBase<int>)CreateDialogViewModel("Quantity", "Quantity", "Please enter a quantity:"));
                 case "AddOrder":
-                    return new AddOrderViewModel();
+                    return new AddOrderViewModel(new DialogService());
                 case "EditOrder":
-                    return new EditOrderViewModel(order);
+                    return new EditOrderViewModel(order, new DialogService());
                 case "OrderDetails":
-                    return new OrderDetailsViewModel(order);
+                    return new OrderDetailsViewModel(order, new DialogService());
                 case "Orders":
                     return new OrdersViewModel(_dataProvider);
                 case "ChildWindow":

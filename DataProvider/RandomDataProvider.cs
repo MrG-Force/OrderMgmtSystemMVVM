@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace DataProvider
 {
     /// <summary>
-    /// A class to supply sample random data and test the application.
+    /// A class to supply sample random data only for GUI testing purposes.
     /// </summary>
     public class RandomDataProvider : IOrdersDataProvider
     {
@@ -241,42 +241,23 @@ namespace DataProvider
         }
 
         #region Not implemented Interface methods
-        public void UpdateOrderItems(List<OrderItem> updatedItems)
-        {
-            return;
-        }
 
-        public void AddNewOrder(Order newOrder)
+        public int CountAllOrderHeaders()
         {
             throw new NotImplementedException();
         }
 
-        public void InsertOrderItem()
+        public Order GetOrderById(int OrderId)
         {
             throw new NotImplementedException();
         }
 
-        public string GetStatusString()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Order GetOrderById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public StockItem GetStockItembyId()
+        public StockItem GetStockItembyId(int itemId)
         {
             throw new NotImplementedException();
         }
 
         public void UpdateOrInsertOrderItem(OrderItem orderItem)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateStockItemAmount()
         {
             throw new NotImplementedException();
         }

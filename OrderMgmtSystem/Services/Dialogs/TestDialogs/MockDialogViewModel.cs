@@ -6,7 +6,7 @@ namespace OrderMgmtSystem.Services.Dialogs.TestDialogs
     {
         public MockDialogViewModel(string title, string message): base(title, message)
         {
-            DialogResult = 3;
         }
+        public override int DefaultDialogResult => 3;
     }
 }

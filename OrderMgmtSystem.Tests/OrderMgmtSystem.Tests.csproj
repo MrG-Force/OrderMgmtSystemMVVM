@@ -50,10 +50,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddItemViewModelTests.cs" />
+    <Compile Include="AddOrderViewModelTests.cs" />
+    <Compile Include="OrderDetailsViewModelTests.cs" />
+    <Compile Include="OrdersViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataModels\DataModels.csproj">
@@ -71,6 +76,10 @@
     <ProjectReference Include="..\OrderMgmtSystem\OrderMgmtSystem.csproj">
       <Project>{d922c1a7-8f74-457c-b2c2-d9ad33e858bb}</Project>
       <Name>OrderMgmtSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLDataProvider\SQLDataProvider.csproj">
+      <Project>{C16B3D70-3F17-4036-9DF4-7680366D04AA}</Project>
+      <Name>SQLDataProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

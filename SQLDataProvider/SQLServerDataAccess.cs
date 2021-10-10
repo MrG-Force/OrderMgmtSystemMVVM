@@ -7,7 +7,8 @@ using System.Diagnostics;
 namespace SQLDataProvider
 {
     /// <summary>
-    /// This class establish communication with the DataBase.
+    /// This class provides methods to open and close a connection with the DataBase
+    /// and provides a SqlCommand object to execute queries.
     /// </summary>
     internal static class SqlServerDataAccess
     {
@@ -42,11 +43,17 @@ namespace SQLDataProvider
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Clears the parameters in the static SqlCommand object.
+        /// </summary>
         public static void ClearCommandParams()
         {
             command.Parameters.Clear();
         }
 
+        /// <summary>
+        /// Opens a connection with the database.
+        /// </summary>
         public static void OpenConnection()
         {
             try
@@ -63,6 +70,10 @@ namespace SQLDataProvider
                 Console.WriteLine("Open connection failed: " + ex.Message);
             }
         }
+
+        /// <summary>
+        /// Closes the connection with the database.
+        /// </summary>
         public static void CloseConnection()
         {
             try
@@ -77,7 +88,6 @@ namespace SQLDataProvider
             {
                 Console.WriteLine("Close connection error: " + ex.Message);
             }
-
         }
     }
 }
