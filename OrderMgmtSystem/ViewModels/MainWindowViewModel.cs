@@ -1,14 +1,11 @@
 ﻿using DataModels;
 using DataProvider;
 using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-//TODO: Return Items to stock when order is deleted on edit order mode
 
 namespace OrderMgmtSystem.ViewModels
 {
@@ -218,9 +215,8 @@ namespace OrderMgmtSystem.ViewModels
         }
 
         /// <summary>
-        /// Handles all the navigation between views.
+        /// Handles the navigation between views.
         /// </summary>
-        /// <remarks>When needed the function also helps to call functions to initialize views</remarks>
         /// <param name="destination"></param>
         private void Navigate(string destination)
         {
