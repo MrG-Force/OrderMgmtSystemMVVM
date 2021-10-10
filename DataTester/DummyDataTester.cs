@@ -18,7 +18,7 @@ namespace DataTester
             TestGetSTockItems();
 
             // Add Order
-            //SqlDataTester.AddNewOrder();
+            //SqlDataTester.CountAllOrderHeaders();
 
             Console.WriteLine("Press any key to finish...");
             Console.ReadKey(true);

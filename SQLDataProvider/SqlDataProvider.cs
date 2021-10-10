@@ -2,11 +2,9 @@
 using DataProvider;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Linq;
 
 namespace SQLDataProvider
 {
@@ -61,6 +59,41 @@ namespace SQLDataProvider
                 SqlServerDataAccess.CloseConnection();
             }
             return stockItems;
+        }
+
+        public StockItem GetStockItembyId(int itemId)
+        {
+            StockItem stockItem = null;
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_SelectStockItemById");
+            _ = command.Parameters.AddWithValue("@id", itemId);
+
+            SqlServerDataAccess.OpenConnection();
+            try
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stockItem = new StockItem()
+                        {
+                            Id = reader.GetFieldValue<int>(0),
+                            Name = reader.GetFieldValue<string>(1),
+                            Price = reader.GetFieldValue<decimal>(2),
+                            InStock = reader.GetFieldValue<int>(3)
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Execute non-query failed: " + ex.Message);
+            }
+            finally
+            {
+                SqlServerDataAccess.CloseConnection();
+            }
+            SqlServerDataAccess.ClearCommandParams();
+            return stockItem;
         }
 
         /// <summary>
@@ -153,6 +186,55 @@ namespace SQLDataProvider
             }
             return newOrder;
         }
+        public Order GetOrderById(int Id)
+        {
+            Order order = null;
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("MySelectOrderHeaderDetailsById");
+            _ = command.Parameters.AddWithValue("@id", Id);
+
+            SqlServerDataAccess.OpenConnection();
+            try
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        order = new Order(
+                            reader.GetFieldValue<int>(0),
+                            reader.GetFieldValue<DateTime>(1),
+                            reader.GetFieldValue<int>(2));
+                    }
+                }
+
+                command.CommandText = "sp_SelectOrderHeaderById"; 
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        OrderItem orderItem = new OrderItem()
+                        {
+                            OrderHeaderId = reader.GetFieldValue<int>(0),
+                            StockItemId = reader.GetFieldValue<int>(3),
+                            Description = reader.GetFieldValue<string>(4),
+                            Price = reader.GetFieldValue<decimal>(5),
+                            Quantity = reader.GetFieldValue<int>(6)
+                        };
+                        order.AddItem(orderItem);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Execute non-query failed: " + ex.Message);
+            }
+            finally
+            {
+                SqlServerDataAccess.CloseConnection();
+            }
+
+            SqlServerDataAccess.ClearCommandParams();
+            return order;
+        }
 
         /// <summary>
         /// Deletes the order with the passed Id from the database.
@@ -179,35 +261,6 @@ namespace SQLDataProvider
             }
             SqlServerDataAccess.ClearCommandParams();
         }
-
-        /// <summary>
-        /// Removes the passed OrderItem from the Database and updates the corresponding StockItem.
-        /// </summary>
-        /// <param name="item"></param>
-        public void RemoveOrderItem(OrderItem orderItem)
-        {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrUpdateOrderItemAndUpdateStock");
-            _ = command.Parameters.AddWithValue("@orderHeaderId",orderItem.OrderHeaderId);
-            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
-            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
-
-            SqlServerDataAccess.OpenConnection();
-            try
-            {
-                int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Execute non-query failed: " + ex.Message);
-            }
-            finally
-            {
-                SqlServerDataAccess.CloseConnection();
-            }
-            SqlServerDataAccess.ClearCommandParams();
-        }
-
 
         /// <summary>
         /// Updates the quantity of an OrderItem if the item already exists in the Order,
@@ -240,6 +293,35 @@ namespace SQLDataProvider
             }
             SqlServerDataAccess.ClearCommandParams();
         }
+
+        /// <summary>
+        /// Removes the passed OrderItem from the Database and updates the corresponding StockItem.
+        /// </summary>
+        /// <param name="item"></param>
+        public void RemoveOrderItem(OrderItem orderItem)
+        {
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrUpdateOrderItemAndUpdateStock");
+            _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
+            _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
+            _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
+
+            SqlServerDataAccess.OpenConnection();
+            try
+            {
+                int rowsAffected = command.ExecuteNonQuery();
+                Debug.WriteLine($"Records updated:{rowsAffected}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Execute non-query failed: " + ex.Message);
+            }
+            finally
+            {
+                SqlServerDataAccess.CloseConnection();
+            }
+            SqlServerDataAccess.ClearCommandParams();
+        }
+
 
         /// <summary>
         /// Updates the state of the order with the passed Id to the passed StateId.
@@ -301,39 +383,6 @@ namespace SQLDataProvider
         }
 
         /// <summary>
-        /// DELETE, not used
-        /// </summary>
-        /// <param name="updatedItems"></param>
-        public void UpdateOrderItems(List<OrderItem> updatedItems)
-        {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertUpdatedOrderItemAndUpdateStock");
-            _ = command.Parameters.Add("@orderHeaderId", SqlDbType.Int);
-            _ = command.Parameters.Add("@stockItemId", SqlDbType.Int);
-            _ = command.Parameters.Add("@quantity", SqlDbType.Int);
-
-            SqlServerDataAccess.OpenConnection();
-            try
-            {
-                foreach (var item in updatedItems)
-                {
-                    command.Parameters["@orderHeaderId"].Value = item.OrderHeaderId;
-                    command.Parameters["@stockItemId"].Value = item.StockItemId;
-                    command.Parameters["@quantity"].Value = item.Quantity - item.OnBackOrder;
-                    _ = command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Execute non-query failed: " + ex.Message);
-            }
-            finally
-            {
-                SqlServerDataAccess.CloseConnection();
-            }
-            SqlServerDataAccess.ClearCommandParams();
-        }
-
-        /// <summary>
         /// Restores the OrderItems list in an order to its previous state.
         /// </summary>
         /// <param name="originalList"></param>
@@ -370,101 +419,29 @@ namespace SQLDataProvider
 
             SqlServerDataAccess.ClearCommandParams();
         }
-
-        #region Not yet implemented
-
-
-        public string GetStatusString()
+        public int CountAllOrderHeaders()
         {
-            throw new NotImplementedException();
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("SelectCountAllOrderHeaders");
+            command.Parameters.Add(new SqlParameter { ParameterName = "@Total", IsNullable = false, DbType = DbType.Int32, Direction = ParameterDirection.Output });
+
+            SqlServerDataAccess.OpenConnection();
+            try
+            {
+                _ = command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Execute non-query failed: " + ex.Message);
+            }
+            finally
+            {
+                SqlServerDataAccess.CloseConnection();
+            }
+
+            int total = (int)command.Parameters["@Total"].Value;
+            SqlServerDataAccess.ClearCommandParams();
+            return total;
         }
 
-        public Order GetOrderById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public StockItem GetStockItembyId()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void InsertOrderItem()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateStockItemAmount()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddNewOrder(Order newOrder)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        #endregion
-        /// <summary>
-        /// DEPRECATED.
-        /// </summary>
-        /// <param name="orderItem"></param>
-        /// <param name="orderItemExists"></param>
-        //public void UpdateOrInsertOrderItem(OrderItem orderItem, bool orderItemExists)
-        //{
-        //    SqlCommand command = SqlServerDataAccess.GetSqlCommand("");
-        //    _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
-        //    _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
-        //    _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity);
-
-        //    SqlServerDataAccess.OpenConnection();
-        //    if (orderItemExists)
-        //    {
-        //        command.CommandText = "UpdateOrderItemAndUpdateStock";
-        //        int rowsAffected = command.ExecuteNonQuery();
-        //        Debug.WriteLine($"Records updated:{rowsAffected}");
-        //    }
-        //    else
-        //    {
-        //        command.CommandText = "InsertOrderItemAndUpdateStock";
-        //        _ = command.Parameters.AddWithValue("@description", orderItem.Description);
-        //        _ = command.Parameters.AddWithValue("@price", orderItem.Price);
-        //        int rowsAffected = command.ExecuteNonQuery();
-        //        Debug.WriteLine($"Records updated:{rowsAffected}");
-        //    }
-        //    SqlServerDataAccess.CloseConnection();
-        //    SqlServerDataAccess.ClearCommandParams();
-        //}
-
-        //public List<StockItem> GetStockItems()
-        //{
-        //    List<StockItem> stockItems = new List<StockItem>();
-        //    DataTable dt = null;
-        //    using (SqlConnection cnn = new SqlConnection(ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"].ConnectionString))
-        //    {
-        //        using (SqlCommand cmd = new SqlCommand("sp_SelectStockItems", cnn))
-        //        {
-        //            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-        //            {
-        //                dt = new DataTable();
-        //                da.Fill(dt);
-        //                if (dt.Rows.Count > 0)
-        //                {
-        //                    stockItems =
-        //                        (from row in dt.AsEnumerable()
-        //                         select new StockItem
-        //                         {
-        //                             Id = row.Field<int>("Id"),
-        //                             Name = row.Field<string>("Name"),
-        //                             Price = row.Field<decimal>("Price"),
-        //                             InStock = row.Field<int>("InStock")
-        //                         }).ToList();
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return stockItems;
-        //}
     }
 }
