@@ -99,7 +99,6 @@ namespace DataModels
             }
         }
 
-        // --- These props are to translate the Sql tables into this app
         public string OrderStatus => Enum.GetName(typeof(OrderState), OrderStateId);
 
         //--- enum ---
@@ -115,7 +114,7 @@ namespace DataModels
                 return _orderItems.Sum(x => x.Total);
             }
         }
-        // --- These props are not in a table but they are in a relationship between tables OrderHeaders and OrderItems
+     
         public List<OrderItem> OrderItems
         {
             get
@@ -131,7 +130,9 @@ namespace DataModels
                 RaisePropertyChanged(nameof(HasItemsOnBackOrder));
             }
         }
+
         public int ItemsCount => _orderItems.Count;
+
         public bool HasItemsOnBackOrder { get; set; }
         #endregion
 
