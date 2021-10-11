@@ -2,11 +2,7 @@
 using DataProvider;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SQLDataProvider;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrderMgmtSystem.Tests
 {
@@ -14,8 +10,7 @@ namespace OrderMgmtSystem.Tests
     public class DataProviderTests
     {
         readonly IOrdersDataProvider dataProvider = new SqlDataProvider();
-
-        OrderItem orderItem1 = new OrderItem()
+        private readonly OrderItem orderItem1 = new OrderItem()
         {
             StockItemId = 2,
             Description = "Chair",
@@ -23,8 +18,7 @@ namespace OrderMgmtSystem.Tests
             Quantity = 5,
             OnBackOrder = 0
         };
-
-        OrderItem orderItem2 = new OrderItem()
+        private readonly OrderItem orderItem2 = new OrderItem()
         {
             StockItemId = 1,
             Description = "Table",
@@ -32,8 +26,7 @@ namespace OrderMgmtSystem.Tests
             Quantity = 5,
             OnBackOrder = 0
         };
-
-        OrderItem orderItem3 = new OrderItem()
+        private readonly OrderItem orderItem3 = new OrderItem()
         {
             StockItemId = 1,
             Description = "Table",
@@ -41,7 +34,9 @@ namespace OrderMgmtSystem.Tests
             Quantity = 5,
             OnBackOrder = 0
         };
-
+        /// <summary>
+        /// Confirms that the GetStockItems method returns a List of StockItems from the Database.
+        /// </summary>
         [TestMethod]
         public void OnGetStockItems_ListOfStockItemsIsReturned()
         {
@@ -54,6 +49,9 @@ namespace OrderMgmtSystem.Tests
             Assert.IsTrue(propertyStockItems.Count == testStockItems.Count);
         }
 
+        /// <summary>
+        /// Confirms that the GetOrders method returns a List of Orders.
+        /// </summary>
         [TestMethod]
         public void OnGetOrders_ListOfAllOrdersInDBIsReturned()
         {
@@ -65,6 +63,9 @@ namespace OrderMgmtSystem.Tests
             Assert.IsTrue(testOrders.Count == propertyOrders.Count);
         }
 
+        /// <summary>
+        /// Confirms that the GetOrder method creates a "New" Order and returns it.
+        /// </summary>
         [TestMethod]
         public void OnGetOrder_NewOrderIsCreatedAndReturned()
         {
@@ -80,6 +81,9 @@ namespace OrderMgmtSystem.Tests
             dataProvider.DeleteOrder(order.Id);
         }
 
+        /// <summary>
+        /// Confirms that the DeleteOrder method deletes an Order with a given Id.
+        /// </summary>
         [TestMethod]
         public void OnDeleteOrder_OrderIsDeleted()
         {
@@ -93,6 +97,10 @@ namespace OrderMgmtSystem.Tests
             Assert.IsTrue(afterCount == beforeCount - 1);
         }
 
+        /// <summary>
+        /// Confirms that the UpdateOrInsertOrderItem method adds the given OrderItem to the Order if the
+        /// given item does not already exists in the Order and updates the stock.
+        /// </summary>
         [TestMethod]
         public void OnUpdateOrInsertOrderItem_NewItemIsInsertedAndStockUpdated()
         {
@@ -113,7 +121,10 @@ namespace OrderMgmtSystem.Tests
             dataProvider.DeleteOrder(order.Id);
 
         }
-
+        /// <summary>
+        /// Confirms that the UpdateOrInsertOrderItem method updates the given 
+        /// OrderItem quantity and the stock.
+        /// </summary>
         [TestMethod]
         public void OnUpdateOrInsertOrderItem_ItemAndStockAreUpdated()
         {
@@ -142,6 +153,10 @@ namespace OrderMgmtSystem.Tests
             dataProvider.DeleteOrder(order.Id);
         }
 
+        /// <summary>
+        /// Confirms that when the RemoveOrderItem method is called the given OrderItem
+        /// is removed from the Order and the stock is updated.
+        /// </summary>
         [TestMethod]
         public void OnRemoveOrderItem_OrderItemIsRemovedStockUpdated()
         {
@@ -167,6 +182,10 @@ namespace OrderMgmtSystem.Tests
             dataProvider.DeleteOrder(order.Id);
         }
 
+        /// <summary>
+        /// Confirms that the UpdateOrderState changes the state of an order 
+        /// in the database.
+        /// </summary>
         [TestMethod]
         public void OnUpdateOrderState_OrderStatusChanges()
         {
