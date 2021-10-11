@@ -61,6 +61,11 @@ namespace SQLDataProvider
             return stockItems;
         }
 
+        /// <summary>
+        /// Gets the StockItem with the given Id.
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
         public StockItem GetStockItembyId(int itemId)
         {
             StockItem stockItem = null;
@@ -186,6 +191,12 @@ namespace SQLDataProvider
             }
             return newOrder;
         }
+
+        /// <summary>
+        /// Gets an Order object with the given id from the database.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
         public Order GetOrderById(int Id)
         {
             Order order = null;
@@ -281,7 +292,7 @@ namespace SQLDataProvider
             try
             {
                 int rowsAffected = command.ExecuteNonQuery();
-                Debug.WriteLine($"Records updated:{rowsAffected}");
+                Console.WriteLine($"Records updated:{rowsAffected}");
             }
             catch (Exception ex)
             {
@@ -321,7 +332,6 @@ namespace SQLDataProvider
             }
             SqlServerDataAccess.ClearCommandParams();
         }
-
 
         /// <summary>
         /// Updates the state of the order with the passed Id to the passed StateId.
@@ -419,6 +429,12 @@ namespace SQLDataProvider
 
             SqlServerDataAccess.ClearCommandParams();
         }
+
+        /// <summary>
+        /// Returns a count of all the OrderHeaders currently in the data base regardless
+        /// they have OrderItems or not.
+        /// </summary>
+        /// <returns></returns>
         public int CountAllOrderHeaders()
         {
             SqlCommand command = SqlServerDataAccess.GetSqlCommand("SelectCountAllOrderHeaders");
