@@ -42,5 +42,21 @@ namespace OrderMgmtSystem.Tests
             // Assert
             Assert.IsTrue(viewModel.Order.OrderStatus == "Rejected");
         }
+        [TestMethod]
+        public void OnDeleteOrder_DeleteOrderRequestedIsRaised()
+        {
+            // Arrange
+            int eventCount = 0;
+            viewModel.DeleteOrderRequested += delegate (object sender, System.EventArgs e)
+            {
+                if (sender != null) eventCount++;
+            };
+
+            // Act
+            viewModel.DeleteOrder();
+
+            // Assert
+            Assert.IsTrue(eventCount > 0);
+        }
     }
 }
