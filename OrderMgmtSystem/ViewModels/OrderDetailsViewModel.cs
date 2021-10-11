@@ -77,15 +77,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             if (Order.HasItemsOnBackOrder)
             {
-                string title = $"Reject order: {Order.Id}";
-                string warning = "Not enough items in stock:";
-                string message = "This order will be rejected!";
-                var dialogVM = (RejectOrderDialogViewModel)ViewModelFactory
-                    .CreateDialogViewModel("RejectOrderDialog",
-                    title, message, warning);
-                bool result = _dialogService.OpenDialog(dialogVM);
-
-                if (result)
+                if (ConfirmRejectOrderWithDialog())
                 {
                     Order.OrderStateId = 3;
                     OnOrderRejected(EventArgs.Empty);
@@ -98,11 +90,27 @@ namespace OrderMgmtSystem.ViewModels
             }
             else
             {
-                Order.OrderStateId = 4;
                 // TODO: Inform order has been completed
+                Order.OrderStateId = 4;
                 OnOrderCompleted(EventArgs.Empty);
                 CloseWindow();
             }
+        }
+
+        /// <summary>
+        /// Gets user's approval to reject an Order due to low stock.
+        /// </summary>
+        /// <returns></returns>
+        private bool ConfirmRejectOrderWithDialog()
+        {
+            string title = $"Reject order: {Order.Id}";
+            string warning = "Not enough items in stock:";
+            string message = "This order will be rejected!";
+            var dialogVM = (RejectOrderDialogViewModel)ViewModelFactory
+                .CreateDialogViewModel("RejectOrderDialog",
+                title, message, warning);
+            bool result = _dialogService.OpenDialog(dialogVM);
+            return result;
         }
 
         /// <summary>
@@ -117,7 +125,7 @@ namespace OrderMgmtSystem.ViewModels
         /// Deletes the current order.
         /// </summary>
         /// <remarks>Prompts user to confirm the action</remarks>
-        private void DeleteOrder()
+        internal void DeleteOrder()
         {
             string message = "This order and all its data will be permanently deleted. Are you sure?";
             string title = $"Delete order: {Order.Id}?";
