@@ -15,6 +15,8 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
             CancelCommand = new DelegateCommand<IDialogWindow>(Cancel);
         }
 
+        public override bool DefaultDialogResult { get => true; }
+
         private void Proceed(IDialogWindow window)
         {
             CloseDialogWithResult(window, true);
