@@ -16,7 +16,7 @@ namespace OrderMgmtSystem.ViewModels
     /// Provides logic and functionality for the AddOrderView.
     /// </summary>
     /// <remarks>
-    /// Note that the navigation command for adding a new item resides in 
+    /// The navigation command for adding a new item resides in 
     /// the MainWindowModel and its accessed through the view using Binding.
     /// </remarks>
     public class AddOrderViewModel : SingleOrderViewModelBase
@@ -48,11 +48,11 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         internal override void SubmitOrder()
         {
-            // Change order state calling Order.Submit()
+            // Changes order state
             Order.Submit();
-            // MainWindow grabs this.Order and adds it to the DB and updates OrdersList
+            // MainWindow grabs this.Order, adds it to the DB and updates OrdersList
             base.OnOrderSubmitted(Order);
-            // Clear OrderItems prop
+            // Clears this.OrderItems
             OrderItems.Clear();
             // Set this.Order to null
             Order = null;

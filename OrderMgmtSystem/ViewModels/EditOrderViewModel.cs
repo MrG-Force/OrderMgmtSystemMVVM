@@ -12,6 +12,9 @@ using System.Linq;
 
 namespace OrderMgmtSystem.ViewModels
 {
+    /// <summary>
+    /// Provides logic and functionality for the EditOrderView.
+    /// </summary>
     public class EditOrderViewModel : SingleOrderViewModelBase
     {
         #region Constructor

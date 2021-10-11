@@ -93,7 +93,6 @@ namespace OrderMgmtSystem.ViewModels
             _addItemViewModel.NewOrderItemSelected += AddItemVM_NewOrderItemSelected;
         }
 
-
         /// <summary>
         /// Handles the OrderSubmitted event by adding new orders to the 
         /// orders list and navigating back to the ordersView.
@@ -139,7 +138,6 @@ namespace OrderMgmtSystem.ViewModels
             _addOrderViewModel.CheckNewOrExistingItem(newItem);
             Navigate("CloseAddItemView");
         }
-
 
         /// <summary>
         /// This event handler deletes the SelectedOrder in the OrdersView.
