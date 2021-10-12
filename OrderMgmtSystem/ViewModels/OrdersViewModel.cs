@@ -39,7 +39,7 @@ namespace OrderMgmtSystem.ViewModels
         /// </summary>
         public void DeleteOrder()
         {
-            Orders.Remove(SelectedOrder);
+            _ = Orders.Remove(SelectedOrder);
         }
         #endregion
     }

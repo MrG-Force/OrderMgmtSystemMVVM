@@ -3,7 +3,9 @@ using System.Windows.Controls;
 
 namespace ModalControl
 {
-    /// Logic for a Modal content control that enables a pop up View in the project.
+    /// <summary>
+    /// Provides logic for a Modal content control that enables a pop up View in the project.
+    /// </summary>
     public class Modal : ContentControl
     {
         public static readonly DependencyProperty IsOpenProperty =

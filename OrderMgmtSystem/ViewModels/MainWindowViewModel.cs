@@ -19,6 +19,7 @@ namespace OrderMgmtSystem.ViewModels
         /// <summary>
         /// Sets up the MainWindowModel.
         /// </summary>
+        /// <remarks>Uses dependency injection through constructor</remarks>
         /// <param name="ordersData">An object to comunicate with the data source</param>
         /// <param name="ordersVM"></param>
         /// <param name="addOrderVM"></param>
@@ -32,6 +33,7 @@ namespace OrderMgmtSystem.ViewModels
             _addItemViewModel = addItemVM;
             _currentViewModel = _ordersViewModel;
             _vMFactory = vMFactory;
+
             _isModalOpen = false;
             NavigateCommand = new RelayCommandT<string>(Navigate);
             ViewOrderDetailsCommand = new DelegateCommand<Order>(ViewOrderDetails);

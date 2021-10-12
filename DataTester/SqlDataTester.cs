@@ -8,6 +8,9 @@ using System.Data.SqlClient;
 
 namespace DataTester
 {
+    /// <summary>
+    /// Provides methods to test some stored procedures and the connection to the database.
+    /// </summary>
     public class SqlDataTester
     {
         public static ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];

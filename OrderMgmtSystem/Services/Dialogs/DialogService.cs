@@ -10,7 +10,7 @@
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="viewModel"></param>
-        /// <returns>A result of type <T> from the dialog ViewModel</returns>
+        /// <returns>A result of type T from the dialog ViewModel</returns>
         public T OpenDialog<T>(DialogViewModelBase<T> viewModel)
         {
             IDialogWindow window = new DialogWindow

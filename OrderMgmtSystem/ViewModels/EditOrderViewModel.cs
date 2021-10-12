@@ -1,10 +1,6 @@
 ﻿using DataModels;
-using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
-using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
-using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -169,14 +165,14 @@ namespace OrderMgmtSystem.ViewModels
         /// <param name="item"></param>
         internal override void RemoveItem(OrderItem item)
         {
-            RemovedOrderItems.Add(item); // Keep track of removed item
+            RemovedOrderItems.Add(item);
 
-            OrderItems.Remove(item); // Remove item from view
-            TempOrder.RemoveItem(item.StockItemId);// Remove item for the editing temp order
+            _ = OrderItems.Remove(item);
+            TempOrder.RemoveItem(item.StockItemId);
 
             RaisePropertyChanged(nameof(TempOrder));
             SubmitOrderCommand.RaiseCanExecuteChanged();
-            base.OnOrderItemRemoved(item); // this one returns the item to the stock list
+            base.OnOrderItemRemoved(item); // this line returns the item to the stock list
         }
 
         /// <summary>

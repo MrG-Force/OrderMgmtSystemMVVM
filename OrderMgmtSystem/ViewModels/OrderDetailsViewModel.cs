@@ -2,7 +2,6 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.Services.Windows;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
@@ -90,7 +89,7 @@ namespace OrderMgmtSystem.ViewModels
             }
             else
             {
-                // TODO: Inform order has been completed
+                InformOrderCompleted();
                 Order.OrderStateId = 4;
                 OnOrderCompleted(EventArgs.Empty);
                 CloseWindow();
@@ -111,6 +110,19 @@ namespace OrderMgmtSystem.ViewModels
                 title, message, warning);
             bool result = _dialogService.OpenDialog(dialogVM);
             return result;
+        }
+
+        /// <summary>
+        /// Informs that order has been completed.
+        /// </summary>
+        private void InformOrderCompleted()
+        {
+            string title = $"Order: {Order.Id}";
+            string message = $"This Order ({Order.Id}) has been successfully processed!";
+            var dialogVM = (SuccessDialogViewModel)ViewModelFactory
+                .CreateDialogViewModel("SuccessDialog",
+                title, message);
+            _ = _dialogService.OpenDialog(dialogVM);
         }
 
         /// <summary>

@@ -28,9 +28,5 @@ namespace DataModels
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        //public override string ToString()
-        //{
-        //    return $"Id: {Id} | Name: {Name} | Price: {Price:C} | InStock: {InStock}";
-        //}
     }
 }

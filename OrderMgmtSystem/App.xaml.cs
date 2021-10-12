@@ -27,9 +27,12 @@ namespace OrderMgmtSystem
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Uncomment the DataProvider you want to use
+
             //_dataProvider = new RandomDataProvider();
             //_dataProvider = new TestDataProvider();
             _dataProvider = new SqlDataProvider();
+
             var vMFactory = new ViewModelFactory(_dataProvider);
             ComposeObjects(vMFactory);
             CloseAppCommand = new DelegateCommand(CloseApp);

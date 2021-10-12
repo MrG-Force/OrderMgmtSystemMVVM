@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.Commands
 {
+    /// <summary>
+    /// A class that implements the ICommand interface used to bind methods to UserControl components.
+    /// </summary>
     public class DelegateCommand : ICommand
     {
         private readonly Action _execute;
@@ -39,7 +42,9 @@ namespace OrderMgmtSystem.Commands
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
-
+    /// <summary>
+    /// A generic class that implements the ICommand interface used to bind methods to UserControl components.
+    /// </summary>
     public class DelegateCommand<T> : ICommand
     {
         private readonly Action<T> _execute;

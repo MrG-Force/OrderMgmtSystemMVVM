@@ -2,13 +2,15 @@
 using OrderMgmtSystem.Commands;
 using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.DialogViewModels;
 using System;
 using System.Collections.ObjectModel;
 
 namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
+    /// <summary>
+    /// Defines methods and properties for ViewModels that handle a single order.
+    /// </summary>
     public abstract class SingleOrderViewModelBase : ViewModelBase, IHandleOneOrder
     {
         #region Constructor
@@ -105,6 +107,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             OrderItemRemoved?.Invoke(this, orderItem);
         }
+
         /// <summary>
         /// Raises the OrderSubmitted event.
         /// </summary>
@@ -113,6 +116,7 @@ namespace OrderMgmtSystem.ViewModels.BaseViewModels
         {
             OrderSubmitted?.Invoke(this, order);
         }
+
         /// <summary>
         /// Raises the OperationCancelled event passing the Order id so the unfinished order
         /// can be deleted.

@@ -70,7 +70,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
-            // Fetch a quantity from the user
+            
             int qty = GetQuantity(_dialogViewModel);
             if (qty == 0)
             {
@@ -80,10 +80,8 @@ namespace OrderMgmtSystem.ViewModels
             StockItem changedItem = StockItems
                 .FirstOrDefault(item => item.Id == SelectedStockItem.Id);
 
-            // The StockItem class handles the negative stock if not enough items available
             if (changedItem != null) changedItem.InStock -= qty;
 
-            // Create the new OrderItem
             OrderItem orderItem = new OrderItem(SelectedStockItem)
             {
                 Quantity = qty

@@ -37,6 +37,10 @@ namespace OrderMgmtSystem.Tests
             OnBackOrder = 0
         };
 
+        /// <summary>
+        /// Checks that a new Order is loaded in the ViewModel using the Data provider method
+        /// and that its State is set to "New".
+        /// </summary>
         [TestMethod]
         public void OnLoadNewOrder_ANewOrderIsLoaded()
         {

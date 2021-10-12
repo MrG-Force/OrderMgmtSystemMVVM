@@ -74,6 +74,7 @@ namespace OrderMgmtSystem.Tests
             // Act
             Order order = dataProvider.GetOrder();
             int afterCount = dataProvider.CountAllOrderHeaders();
+            order = dataProvider.GetOrderById(order.Id);
             // Assert
             Assert.IsTrue(order.OrderStatus == "New" &&
                 afterCount == beforeCount + 1);

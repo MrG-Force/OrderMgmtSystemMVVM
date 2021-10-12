@@ -35,7 +35,7 @@ namespace DataModels
         /// Production constructor, gets the Id from the database query.
         /// </summary>
         /// <param name="id"></param>
-        public Order(int id) // TODO: this ctor needs to pass the date time from db, conflicted with next ctor
+        public Order(int id)
         {
             _orderItems = new List<OrderItem>();
             _dateTime = DateTime.Now;
@@ -43,7 +43,6 @@ namespace DataModels
             Id = id;
             _id = id++; // This line to be deleted when dummy data is no longer needed.
         }
-
         public Order(int id, DateTime dateTime, int stateId)
         {
             Id = id;
@@ -51,7 +50,6 @@ namespace DataModels
             _orderStateId = stateId;
             _orderItems = new List<OrderItem>();
         }
-
         /// <summary>
         /// This constructor is used to create a dummy order with a passed random
         /// date and a random state.
@@ -65,7 +63,6 @@ namespace DataModels
             OrderStateId = StateId;
             Id = _id++;
         }
-
         public Order(Order order)
         {
             Id = order.Id;
@@ -155,7 +152,6 @@ namespace DataModels
         /// <summary>
         /// Removes the item with the given id from the order.
         /// </summary>
-        /// <remarks>Note that this method removes the item regardless of the Quantity of the item</remarks>
         /// <param name="id">This is usually the SKU of the item</param>
         public void RemoveItem(int id)
         {
@@ -170,6 +166,7 @@ namespace DataModels
         /// <summary>
         /// When the last order was cancelled before submit the Id goes back one position.
         /// </summary>
+        /// <remarks>Used only for testing</remarks>
         public void CancelLastOrder()
         {
             _id--;

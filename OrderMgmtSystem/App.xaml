@@ -17,6 +17,9 @@
     <DataTemplate DataType="{x:Type dialogmodel:RejectOrderDialogViewModel}">
       <dialogview:RejectOrderDialogView />
     </DataTemplate>
+    <DataTemplate DataType="{x:Type dialogmodel:SuccessDialogViewModel}">
+      <dialogview:SuccessDialogView />
+    </DataTemplate>
     <!--#endregion-->
     <!--#region STYLES-->
     <!--#region Buttons-->

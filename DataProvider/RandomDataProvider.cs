@@ -199,6 +199,7 @@ namespace DataProvider
             }
             return order;
         }
+
         /// <summary>
         /// Gets consecutive dates that differ by roughly one day. It
         /// is used in conjunction with a for loop where the index 
@@ -235,10 +236,6 @@ namespace DataProvider
             return numbers.ToArray();
         }
 
-        public void ReturnStockItems(List<OrderItem> orderItems)
-        {
-            return;
-        }
 
         #region Not implemented Interface methods
 
@@ -290,6 +287,10 @@ namespace DataProvider
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
             throw new NotImplementedException();
+        }
+        public void ReturnStockItems(List<OrderItem> orderItems)
+        {
+            return;
         }
         #endregion
 

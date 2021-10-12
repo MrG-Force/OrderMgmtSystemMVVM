@@ -8,6 +8,12 @@ using System.Collections.ObjectModel;
 
 namespace OrderMgmtSystem.Services.Windows
 {
+    /// <summary>
+    /// Provides logic and functionality to a child window opened within the application.
+    /// </summary>
+    /// <remarks>
+    /// Similarly to the MainWindowViewModel, this class provides navigation and passes data between views.
+    /// </remarks>
     public class ChildWindowViewModel : ViewModelBase, IHandleOneOrder
     {
         #region Constructor
@@ -138,7 +144,6 @@ namespace OrderMgmtSystem.Services.Windows
         /// <param name="e"></param>
         private void EditOrderVM_OperationCancelled(object sender, int orderId)
         {
-            //_data.DeleteOrder(orderId);
             Navigate("OrderDetailsView");
         }
         private void EditOrderVM_OrderItemsUpdateReverted(object sender, EventArgs e)
@@ -179,7 +184,6 @@ namespace OrderMgmtSystem.Services.Windows
                 };
                 _data.ReturnStockItems(_orderDetailsVM.Order.OrderItems);
             }
-            // if order is already rejected this has been done already
         }
 
         private void OrderDetailsVM_OrderRejected(object sender, EventArgs e)

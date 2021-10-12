@@ -14,15 +14,20 @@ namespace SQLDataProvider
     /// </summary>
     public class SqlDataProvider : IOrdersDataProvider
     {
+        #region Constructor
         public SqlDataProvider()
         {
             StockItems = GetStockItems();
             Orders = GetOrders();
         }
+        #endregion
 
+        #region Properties
         public List<Order> Orders { get; }
         public List<StockItem> StockItems { get; }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Gets the list of StockItems from the database.
         /// </summary>
@@ -168,7 +173,7 @@ namespace SQLDataProvider
         /// <returns></returns>
         public Order GetOrder()
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("sp_InsertOrderHeader_V3");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_InsertOrderHeader");
             Order newOrder = null;
             SqlServerDataAccess.OpenConnection();
             try
@@ -200,7 +205,7 @@ namespace SQLDataProvider
         public Order GetOrderById(int Id)
         {
             Order order = null;
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("MySelectOrderHeaderDetailsById");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_SelectAllOrderHeaderDetailsById");
             _ = command.Parameters.AddWithValue("@id", Id);
 
             SqlServerDataAccess.OpenConnection();
@@ -217,7 +222,7 @@ namespace SQLDataProvider
                     }
                 }
 
-                command.CommandText = "sp_SelectOrderHeaderById"; 
+                command.CommandText = "sp_SelectOrderHeaderById";
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -242,7 +247,6 @@ namespace SQLDataProvider
             {
                 SqlServerDataAccess.CloseConnection();
             }
-
             SqlServerDataAccess.ClearCommandParams();
             return order;
         }
@@ -281,7 +285,7 @@ namespace SQLDataProvider
         /// <param name="orderItemExists"></param>
         public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("UpsertOrderItemAndUpdateStock");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_UpsertOrderItemAndUpdateStock");
             _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
             _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
             _ = command.Parameters.AddWithValue("@description", orderItem.Description);
@@ -311,7 +315,7 @@ namespace SQLDataProvider
         /// <param name="item"></param>
         public void RemoveOrderItem(OrderItem orderItem)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("DeleteOrUpdateOrderItemAndUpdateStock");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_DeleteOrUpdateOrderItemAndUpdateStock");
             _ = command.Parameters.AddWithValue("@orderHeaderId", orderItem.OrderHeaderId);
             _ = command.Parameters.AddWithValue("@quantity", orderItem.Quantity - orderItem.OnBackOrder);
             _ = command.Parameters.AddWithValue("@stockItemId", orderItem.StockItemId);
@@ -398,7 +402,7 @@ namespace SQLDataProvider
         /// <param name="originalList"></param>
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("RevertChangesOnOrderItemAndUpdateStock2");// CHANGE this SP name
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_RevertChangesOnOrderItemAndUpdateStock");
             _ = command.Parameters.Add("@orderHeaderId", SqlDbType.Int);
             _ = command.Parameters.Add("@stockItemId", SqlDbType.Int);
             _ = command.Parameters.Add("@description", SqlDbType.VarChar);
@@ -437,7 +441,7 @@ namespace SQLDataProvider
         /// <returns></returns>
         public int CountAllOrderHeaders()
         {
-            SqlCommand command = SqlServerDataAccess.GetSqlCommand("SelectCountAllOrderHeaders");
+            SqlCommand command = SqlServerDataAccess.GetSqlCommand("my_SelectCountAllOrderHeaders");
             command.Parameters.Add(new SqlParameter { ParameterName = "@Total", IsNullable = false, DbType = DbType.Int32, Direction = ParameterDirection.Output });
 
             SqlServerDataAccess.OpenConnection();
@@ -458,6 +462,6 @@ namespace SQLDataProvider
             SqlServerDataAccess.ClearCommandParams();
             return total;
         }
-
+        #endregion
     }
 }

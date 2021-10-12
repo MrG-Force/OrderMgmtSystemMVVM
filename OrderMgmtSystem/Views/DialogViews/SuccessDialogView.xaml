@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="OrderMgmtSystem.Views.DialogViews.SuccessDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrderMgmtSystem.Views.DialogViews"
+             mc:Ignorable="d"
+             Height="100"
+             Width="300">
+    <Grid>
+    <Border BorderThickness="3"
+            BorderBrush="LightGreen">
+      <Grid Background="#F4F4F6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="10" />
+          <ColumnDefinition Width="55" />
+          <ColumnDefinition Width="10" />
+          <ColumnDefinition />
+          <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="10" />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition Height="15" />
+        </Grid.RowDefinitions>
+        <Image x:Name="SuccessIcon"
+               Source="/Images/SuccessIcon.png"
+               Height="50"
+               HorizontalAlignment="Left"
+               Grid.Row="1"
+               Grid.RowSpan="2"
+               Grid.Column="1"
+               VerticalAlignment="Top"
+               OpacityMask="#A5000000" />
+        <TextBlock Text="{Binding Message}"
+                   Grid.Column="2"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="1"
+                   TextWrapping="Wrap"
+                   Padding="5,0,5,2"
+                   TextAlignment="Center"
+                   VerticalAlignment="Center" />
+        <Button Content="OK"
+                Style="{StaticResource GreenGoButton}"
+                Grid.Column="3"
+                Grid.Row="2"
+                Width="100"
+                Height="25"
+                VerticalAlignment="Bottom"
+                Command="{Binding ProceedCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

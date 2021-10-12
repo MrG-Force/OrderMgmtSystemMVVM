@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace OrderMgmtSystem.ViewModels.BaseViewModels
 {
     /// <summary>
-    /// This class implements INotifyPropertyChanged to support one-way and two-way bindings
+    /// This class implements INotifyPropertyChanged to support one and two way bindings
     /// </summary>
     public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {

@@ -4,6 +4,9 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.ViewModels.DialogViewModels
 {
+    /// <summary>
+    /// A class to define the logic and functionality for a dialog that confirms or rejects the cancellation of an order.
+    /// </summary>
     internal class CancelOrderDialogViewModel : DialogViewModelBase<bool>
     {
         public ICommand ProceedCommand { get; private set; }
@@ -21,6 +24,7 @@ namespace OrderMgmtSystem.ViewModels.DialogViewModels
         {
             CloseDialogWithResult(window, true);
         }
+
         private void Cancel(IDialogWindow window)
         {
             CloseDialogWithResult(window, false);

@@ -1,9 +1,11 @@
 ﻿using OrderMgmtSystem.ViewModels.BaseViewModels;
 using System;
-using System.ComponentModel;
 
 namespace OrderMgmtSystem.Services.Windows
 {
+    /// <summary>
+    /// A class to open and close windows.
+    /// </summary>
     public class ChildWindowService : IChildWindowService
     {
         #region Constructor

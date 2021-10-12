@@ -4,6 +4,9 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.ViewModels.DialogViewModels
 {
+    /// <summary>
+    /// This class provides functionality for a dialog that inform of an order being rejected.
+    /// </summary>
     internal class RejectOrderDialogViewModel : DialogViewModelBase<bool>
     {
         public RejectOrderDialogViewModel(string title, string message, string warning) : base(title, message)

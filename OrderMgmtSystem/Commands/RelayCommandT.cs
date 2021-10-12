@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace OrderMgmtSystem.Commands
 {
+    /// <summary>
+    /// A class that implements the ICommand interface used to bind methods to UserControl components.
+    /// </summary>
     public class RelayCommandT<T> : ICommand
     {
         private readonly Action<T> _execute;

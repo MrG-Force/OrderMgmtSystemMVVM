@@ -14,7 +14,6 @@ namespace SQLDataProvider
     {
         static ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["OrdersMgmtConnectionString"];
         static SqlConnection conn = new SqlConnection(settings.ConnectionString);
-        //static SqlConnection conn = new SqlConnection(GetConnectionString());
         static SqlCommand command = new SqlCommand();
 
         public static SqlCommand GetSqlCommand(string sql = null)

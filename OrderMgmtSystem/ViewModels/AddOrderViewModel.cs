@@ -1,12 +1,6 @@
 ﻿using DataModels;
-using OrderMgmtSystem.Commands;
-using OrderMgmtSystem.CommonEventArgs;
-using OrderMgmtSystem.Factories;
 using OrderMgmtSystem.Services;
-using OrderMgmtSystem.Services.Dialogs;
 using OrderMgmtSystem.ViewModels.BaseViewModels;
-using OrderMgmtSystem.ViewModels.DialogViewModels;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
