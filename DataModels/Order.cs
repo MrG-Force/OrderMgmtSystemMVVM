@@ -104,20 +104,11 @@ namespace DataModels
         /// <summary>
         /// The sum of each item total in this order.
         /// </summary>
-        public decimal Total
-        {
-            get
-            {
-                return _orderItems.Sum(x => x.Total);
-            }
-        }
-     
+        public decimal Total => _orderItems.Sum(x => x.Total);
+
         public List<OrderItem> OrderItems
         {
-            get
-            {
-                return _orderItems;
-            }
+            get => _orderItems;
             set
             {
                 _orderItems = value;
@@ -156,7 +147,7 @@ namespace DataModels
         public void RemoveItem(int id)
         {
             OrderItem item = _orderItems.Find(i => i.StockItemId.Equals(id));
-            _orderItems.Remove(item);
+            _ = _orderItems.Remove(item);
             item = _orderItems.Find(i => i.OnBackOrder > 0);
             HasItemsOnBackOrder = item != null;
             RaisePropertyChanged(nameof(Total));

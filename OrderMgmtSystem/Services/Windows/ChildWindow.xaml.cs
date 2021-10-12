@@ -31,7 +31,7 @@ namespace OrderMgmtSystem.Services.Windows
                         viewModel.Dispose();
                     };
                 }
-                
+
             };
         }
     }

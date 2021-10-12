@@ -21,7 +21,7 @@ namespace OrderMgmtSystem.Services.Windows
         {
             _data = data;
             _orderDetailsVM = orderDetailsVM;
-            _editOrderVM = editOrderVM;;
+            _editOrderVM = editOrderVM; ;
             _addItemVM = addItemVM;
             _currentViewModel = orderDetailsVM;
             _isModalOpen = false;

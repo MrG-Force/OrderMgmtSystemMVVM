@@ -70,7 +70,7 @@ namespace OrderMgmtSystem.ViewModels
         {
             int availableStock = SelectedStockItem.InStock;
             _dialogViewModel.AvailableStock = availableStock;
-            
+
             int qty = GetQuantity(_dialogViewModel);
             if (qty == 0)
             {

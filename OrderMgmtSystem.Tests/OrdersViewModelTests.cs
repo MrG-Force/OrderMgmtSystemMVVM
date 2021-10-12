@@ -9,8 +9,8 @@ namespace OrderMgmtSystem.Tests
     public class OrdersViewModelTests
     {
         private static readonly IOrdersDataProvider ordersData = new TestDataProvider();
-        private OrdersViewModel viewModel = new OrdersViewModel(ordersData);
-        
+        private readonly OrdersViewModel viewModel = new OrdersViewModel(ordersData);
+
         [TestMethod]
         public void OnDeleteOrder_SelectedOrderIsRemoved()
         {

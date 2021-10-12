@@ -9,7 +9,7 @@ namespace OrderMgmtSystem.Tests
     [TestClass]
     public class DataProviderTests
     {
-        readonly IOrdersDataProvider dataProvider = new SqlDataProvider();
+        private readonly IOrdersDataProvider dataProvider = new SqlDataProvider();
         private readonly OrderItem orderItem1 = new OrderItem()
         {
             StockItemId = 2,
@@ -175,7 +175,7 @@ namespace OrderMgmtSystem.Tests
             dataProvider.RemoveOrderItem(orderItem1);
 
             // Assert
-            Assert.IsTrue(dataProvider.GetOrderById(order.Id).ItemsCount == itemsInOrderBefore -1);
+            Assert.IsTrue(dataProvider.GetOrderById(order.Id).ItemsCount == itemsInOrderBefore - 1);
             Assert.IsTrue(dataProvider.GetStockItembyId(2).InStock == inStockBefore);
 
             // Clean 

@@ -15,7 +15,7 @@ namespace OrderMgmtSystem.Factories
     /// </summary>
     public class ViewModelFactory
     {
-        private IOrdersDataProvider _dataProvider;
+        private readonly IOrdersDataProvider _dataProvider;
 
         public ViewModelFactory(IOrdersDataProvider dataProvider)
         {
@@ -36,13 +36,13 @@ namespace OrderMgmtSystem.Factories
                 case "MainWindow":
                     return new MainWindowViewModel
                         (_dataProvider,
-                        (OrdersViewModel)CreateViewModel("Orders"), 
-                        (AddOrderViewModel)CreateViewModel("AddOrder"), 
+                        (OrdersViewModel)CreateViewModel("Orders"),
+                        (AddOrderViewModel)CreateViewModel("AddOrder"),
                         (AddItemViewModel)CreateViewModel("AddItem"), this);
                 case "AddItem":
                     return new AddItemViewModel
-                        (_dataProvider.StockItems, 
-                        new DialogService(), 
+                        (_dataProvider.StockItems,
+                        new DialogService(),
                         (DialogViewModelBase<int>)CreateDialogViewModel("Quantity", "Quantity", "Please enter a quantity:"));
                 case "AddOrder":
                     return new AddOrderViewModel(new DialogService());
@@ -54,7 +54,7 @@ namespace OrderMgmtSystem.Factories
                     return new OrdersViewModel(_dataProvider);
                 case "ChildWindow":
                     return new ChildWindowViewModel(_dataProvider,
-                        (OrderDetailsViewModel)CreateViewModel("OrderDetails", order), 
+                        (OrderDetailsViewModel)CreateViewModel("OrderDetails", order),
                         (EditOrderViewModel)CreateViewModel("EditOrder", order),
                         addItemViewModel);
                 default:

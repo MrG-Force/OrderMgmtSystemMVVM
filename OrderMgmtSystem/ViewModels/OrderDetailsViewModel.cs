@@ -39,8 +39,8 @@ namespace OrderMgmtSystem.ViewModels
         public DelegateCommand ProcessOrderCommand { get; private set; }
         public DelegateCommand EditOrderCommand { get; private set; }
         public DelegateCommand DeleteOrderCommand { get; private set; }
-        public bool CanProcessOrEdit { get => Order.OrderStateId == 2; }
-        public bool CanDelete { get => Order.OrderStateId == 2 || Order.OrderStateId == 3; }
+        public bool CanProcessOrEdit => Order.OrderStateId == 2;
+        public bool CanDelete => Order.OrderStateId == 2 || Order.OrderStateId == 3;
         public Action Close { get; set; }
         #endregion
 
@@ -143,7 +143,7 @@ namespace OrderMgmtSystem.ViewModels
             string title = $"Delete order: {Order.Id}?";
             var dialogVM = (CancelOrderDialogViewModel)ViewModelFactory
                     .CreateDialogViewModel("CancelOrderDialog", title, message);
-            
+
             if (_dialogService.OpenDialog(dialogVM))
             {
                 OnDeleteOrderRequested(EventArgs.Empty);
