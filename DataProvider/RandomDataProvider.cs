@@ -241,27 +241,27 @@ namespace DataProvider
 
         public int CountAllOrderHeaders()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public Order GetOrderById(int OrderId)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public StockItem GetStockItembyId(int itemId)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void UpdateOrInsertOrderItem(OrderItem orderItem, bool exists)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void DeleteOrder(int orderId)
@@ -274,19 +274,14 @@ namespace DataProvider
             return;
         }
 
-        public int StartNewOrder()
-        {
-            throw new NotImplementedException();
-        }
-
         public void UpdateOrderState(int orderId, int stateId)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
-            throw new NotImplementedException();
+           return;
         }
         public void ReturnStockItems(List<OrderItem> orderItems)
         {

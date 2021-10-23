@@ -109,12 +109,12 @@ namespace DataProvider
         #region Not implemented Interface methods
         public int CountAllOrderHeaders()
         {
-            throw new System.NotImplementedException();
+            return 0;
         }
 
         public void DeleteOrder(int orderId)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public void RemoveOrderItem(OrderItem orderItem)
@@ -124,27 +124,27 @@ namespace DataProvider
 
         public Order GetOrderById(int OrderId)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public StockItem GetStockItembyId(int itemId)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public void UpdateOrInsertOrderItem(OrderItem orderItem)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public void UpdateOrderState(int orderId, int stateId)
         {
-            throw new System.NotImplementedException();
+            return;
         }
 
         public void RevertChangesInOrderItems(List<OrderItem> originalList)
         {
-            throw new System.NotImplementedException();
+            return;
         }
         #endregion
         #endregion
