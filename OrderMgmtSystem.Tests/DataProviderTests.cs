@@ -38,7 +38,7 @@ namespace OrderMgmtSystem.Tests
         /// Confirms that the GetStockItems method returns a List of StockItems from the Database.
         /// </summary>
         [TestMethod]
-        public void OnGetStockItems_ListOfStockItemsIsReturned()
+        public void GetStockItems_ReturnsListOfStockItems()
         {
             // Arrange
             List<StockItem> propertyStockItems = dataProvider.StockItems;
@@ -53,7 +53,7 @@ namespace OrderMgmtSystem.Tests
         /// Confirms that the GetOrders method returns a List of Orders.
         /// </summary>
         [TestMethod]
-        public void OnGetOrders_ListOfAllOrdersInDBIsReturned()
+        public void GetOrders_ReturnsListOfAllOrdersInDB()
         {
             // Arrange
             List<Order> propertyOrders = dataProvider.Orders;
@@ -67,7 +67,7 @@ namespace OrderMgmtSystem.Tests
         /// Confirms that the GetOrder method creates a "New" Order and returns it.
         /// </summary>
         [TestMethod]
-        public void OnGetOrder_NewOrderIsCreatedAndReturned()
+        public void GetOrder_CreatesAndReturnsNewOrder()
         {
             // Arrange
             int beforeCount = dataProvider.CountAllOrderHeaders();
@@ -86,7 +86,7 @@ namespace OrderMgmtSystem.Tests
         /// Confirms that the DeleteOrder method deletes an Order with a given Id.
         /// </summary>
         [TestMethod]
-        public void OnDeleteOrder_OrderIsDeleted()
+        public void DeleteOrder_DeletesTheOrder()
         {
             // Arrange
             Order order = dataProvider.GetOrder();
@@ -103,7 +103,7 @@ namespace OrderMgmtSystem.Tests
         /// given item does not already exists in the Order and updates the stock.
         /// </summary>
         [TestMethod]
-        public void OnUpdateOrInsertOrderItem_NewItemIsInsertedAndStockUpdated()
+        public void UpdateOrInsertOrderItem_InsertsNewItemAndUpdatesStock()
         {
             // Arrange
             Order order = dataProvider.GetOrder();
@@ -127,7 +127,7 @@ namespace OrderMgmtSystem.Tests
         /// OrderItem quantity and the stock.
         /// </summary>
         [TestMethod]
-        public void OnUpdateOrInsertOrderItem_ItemAndStockAreUpdated()
+        public void UpdateOrInsertOrderItem_UpdatesItemAndStock()
         {
             // Arrange
             Order order = dataProvider.GetOrder();
@@ -159,7 +159,7 @@ namespace OrderMgmtSystem.Tests
         /// is removed from the Order and the stock is updated.
         /// </summary>
         [TestMethod]
-        public void OnRemoveOrderItem_OrderItemIsRemovedStockUpdated()
+        public void RemoveOrderItem_RemovesOrderItemAndUpdatesStock()
         {
             // Arrange
             int inStockBefore = dataProvider.GetStockItembyId(2).InStock;
@@ -188,7 +188,7 @@ namespace OrderMgmtSystem.Tests
         /// in the database.
         /// </summary>
         [TestMethod]
-        public void OnUpdateOrderState_OrderStatusChanges()
+        public void UpdateOrderState_ChangesOrderStatus()
         {
             // Arrange
             Order order = dataProvider.GetOrder();
