@@ -29,9 +29,9 @@ namespace OrderMgmtSystem
         {
             // Uncomment the DataProvider you want to use
 
-            //_dataProvider = new RandomDataProvider();
+            _dataProvider = new RandomDataProvider();
             //_dataProvider = new TestDataProvider();
-            _dataProvider = new SqlDataProvider();
+            //_dataProvider = new SqlDataProvider();
 
             var vMFactory = new ViewModelFactory(_dataProvider);
             ComposeObjects(vMFactory);
