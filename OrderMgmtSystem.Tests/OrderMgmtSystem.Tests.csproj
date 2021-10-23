@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AddItemViewModelTests.cs" />
     <Compile Include="AddOrderViewModelTests.cs" />
+    <Compile Include="DataModelsTests.cs" />
     <Compile Include="OrderDetailsViewModelTests.cs" />
     <Compile Include="OrdersViewModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
